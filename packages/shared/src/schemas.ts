@@ -1,0 +1,316 @@
+/**
+ * 四阶段MCP项目管理工具 - Zod 校验 Schema
+ *
+ * 与 types.ts 一一对应，作为数据统一校验层。
+ * 关键设计：
+ * - 图节点采用 discriminated union 按 type 校验，防止跨类型字段混用
+ * - 业务层模型（Diagram 等）不含坐标/尺寸/颜色等视觉字段
+ * - 布局结果 LayoutDiagram 为独立内部模型，不走 MCP
+ */
+import { z } from "zod";
+
+/* ========== 通用基础 ========== */
+
+export const StageSchema = z.enum(["s1", "s2", "s3", "s4"]);
+export const DiagramTypeSchema = z.enum(["architecture", "class", "flow"]);
+export const RequirementStatusSchema = z.enum(["active", "done", "archived"]);
+export const TaskStatusSchema = z.enum(["pending", "in_progress", "done"]);
+
+/* ========== 6.1 Project 项目实体 ========== */
+
+export const ProjectSchema = z.object({
+  projectId: z.string().min(1),
+  projectName: z.string().min(1),
+  currentStage: StageSchema,
+  createdAt: z.number().int().nonnegative(),
+  updatedAt: z.number().int().nonnegative(),
+  stage1: z.object({
+    docId: z.string().min(1),
+    diagramIds: z.array(z.string())
+  }),
+  stage2: z.object({
+    taskDocId: z.string().min(1),
+    requirementIds: z.array(z.string()),
+    diagramIds: z.array(z.string())
+  }),
+  stage3: z.object({
+    changeRecordIds: z.array(z.string())
+  }),
+  stage4: z.object({
+    bugRecordIds: z.array(z.string())
+  }),
+  indexId: z.string().min(1)
+});
+
+/* ========== 6.2 Requirement 需求实体 ========== */
+
+export const RequirementSchema = z.object({
+  requirementId: z.string().min(1),
+  title: z.string().min(1),
+  description: z.string().optional(),
+  branchName: z.string().optional(),
+  status: RequirementStatusSchema,
+  taskIds: z.array(z.string()),
+  createdAt: z.number().int().nonnegative(),
+  updatedAt: z.number().int().nonnegative()
+});
+
+/* ========== 6.3 Diagram 业务图模型 ========== */
+
+/** 业务语义模型禁止出现坐标/尺寸/颜色等视觉字段——通过仅声明必要字段的 Schema 天然约束 */
+export const ArchitectureNodeSchema = z.object({
+  nodeId: z.string().min(1),
+  label: z.string().min(1),
+  layer: z.string().optional(),
+  nodeKind: z
+    .enum(["service", "database", "mq", "cache", "external", "gateway"])
+    .optional(),
+  description: z.string().optional(),
+  payload: z.record(z.string(), z.unknown()).optional()
+});
+
+export const ClassAttributeSchema = z.object({
+  name: z.string().min(1),
+  type: z.string().min(1),
+  visibility: z.enum(["public", "private", "protected"]).optional(),
+  static: z.boolean().optional(),
+  description: z.string().optional()
+});
+
+export const ClassMethodSchema = z.object({
+  name: z.string().min(1),
+  params: z
+    .array(
+      z.object({
+        name: z.string().min(1),
+        type: z.string().min(1)
+      })
+    )
+    .optional(),
+  returnType: z.string().optional(),
+  visibility: z.enum(["public", "private", "protected"]).optional(),
+  static: z.boolean().optional(),
+  abstract: z.boolean().optional(),
+  description: z.string().optional()
+});
+
+export const ClassNodeSchema = z.object({
+  nodeId: z.string().min(1),
+  label: z.string().min(1),
+  kind: z.enum(["class", "interface", "abstract", "enum"]).optional(),
+  attributes: z.array(ClassAttributeSchema).optional(),
+  methods: z.array(ClassMethodSchema).optional(),
+  description: z.string().optional()
+});
+
+export const FlowNodeSchema = z.object({
+  nodeId: z.string().min(1),
+  label: z.string().min(1),
+  nodeKind: z
+    .enum([
+      "start",
+      "end",
+      "process",
+      "decision",
+      "inputOutput",
+      "subprocess"
+    ])
+    .optional(),
+  description: z.string().optional(),
+  payload: z.record(z.string(), z.unknown()).optional()
+});
+
+export const EdgeSchema = z.object({
+  edgeId: z.string().min(1),
+  from: z.string().min(1),
+  to: z.string().min(1),
+  label: z.string().optional(),
+  payload: z.record(z.string(), z.unknown()).optional()
+});
+
+export const GroupSchema = z.object({
+  groupId: z.string().min(1),
+  title: z.string().min(1),
+  axis: z.enum(["vertical", "horizontal"]).optional(),
+  nodeIds: z.array(z.string()),
+  parentGroupId: z.string().optional(),
+  collapsible: z.boolean().optional()
+});
+
+/**
+ * Diagram 图容器：nodes 按 type 用 discriminated union 区分校验
+ * 防止跨类型字段混用（如把 class 节点塞进 architecture 图）
+ */
+export const DiagramSchema = z
+  .object({
+    diagramId: z.string().min(1),
+    type: DiagramTypeSchema,
+    metadata: z.object({
+      title: z.string().min(1),
+      version: z.number().int().nonnegative(),
+      description: z.string().optional()
+    }),
+    nodes: z.union([
+      z.array(ArchitectureNodeSchema),
+      z.array(ClassNodeSchema),
+      z.array(FlowNodeSchema)
+    ]),
+    edges: z.array(EdgeSchema),
+    groups: z.array(GroupSchema)
+  })
+  .superRefine((diagram, ctx) => {
+    // 按图类型校验节点：确保 nodes 元素与 type 一致，防止跨类型字段混用
+    const typeToNodeKey: Record<string, "layer" | "kind" | "nodeKind"> = {
+      architecture: "layer",
+      class: "kind",
+      flow: "nodeKind"
+    };
+    const nodeKey = typeToNodeKey[diagram.type];
+
+    const mismatch = diagram.nodes.find((node) => !(nodeKey in node));
+    if (mismatch) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `节点 ${mismatch.nodeId} 缺少 ${diagram.type} 图类型特征字段，存在跨类型节点`
+      });
+    }
+  });
+
+/* ========== 6.4 LayoutDiagram 布局结果模型（内部渲染用） ========== */
+
+export const LayoutDiagramSchema = z.object({
+  diagramId: z.string().min(1),
+  width: z.number().nonnegative(),
+  height: z.number().nonnegative(),
+  nodes: z.array(
+    z.object({
+      nodeId: z.string().min(1),
+      x: z.number(),
+      y: z.number(),
+      width: z.number().nonnegative(),
+      height: z.number().nonnegative()
+    })
+  ),
+  edges: z.array(
+    z.object({
+      edgeId: z.string().min(1),
+      points: z.array(
+        z.object({
+          x: z.number(),
+          y: z.number()
+        })
+      )
+    })
+  ),
+  groups: z.array(
+    z.object({
+      groupId: z.string().min(1),
+      x: z.number(),
+      y: z.number(),
+      width: z.number().nonnegative(),
+      height: z.number().nonnegative()
+    })
+  )
+});
+
+/* ========== 6.5 ProjectIndex 项目索引 ========== */
+
+export const ProjectIndexSchema = z.object({
+  projectId: z.string().min(1),
+  version: z.number().int().nonnegative(),
+  documentIndex: z.array(
+    z.object({
+      docId: z.string().min(1),
+      title: z.string().min(1),
+      summary: z.string(),
+      fragmentIds: z.array(z.string())
+    })
+  ),
+  diagramIndex: z.array(
+    z.object({
+      diagramId: z.string().min(1),
+      title: z.string().min(1),
+      type: z.string().min(1),
+      nodeCount: z.number().int().nonnegative(),
+      edgeCount: z.number().int().nonnegative()
+    })
+  ),
+  requirementIndex: z.array(
+    z.object({
+      requirementId: z.string().min(1),
+      title: z.string().min(1),
+      status: z.string().min(1),
+      branchName: z.string().optional(),
+      taskCount: z.number().int().nonnegative()
+    })
+  ),
+  taskIndex: z.array(
+    z.object({
+      taskId: z.string().min(1),
+      title: z.string().min(1),
+      status: z.string().min(1),
+      requirementId: z.string().min(1)
+    })
+  )
+});
+
+/* ========== 6.6 DocumentFragment 文档分片 ========== */
+
+export const DocumentFragmentSchema = z.object({
+  fragmentId: z.string().min(1),
+  docId: z.string().min(1),
+  order: z.number().int().nonnegative(),
+  title: z.string(),
+  content: z.string()
+});
+
+/* ========== 阶段2任务 ========== */
+
+export const TaskSchema = z.object({
+  taskId: z.string().min(1),
+  requirementId: z.string().min(1),
+  title: z.string().min(1),
+  description: z.string(),
+  status: TaskStatusSchema,
+  acceptanceCriteria: z.string(),
+  files: z.array(z.string()),
+  changeType: z.enum(["新增", "修改", "删除"]),
+  createdAt: z.number().int().nonnegative(),
+  updatedAt: z.number().int().nonnegative()
+});
+
+/* ========== 阶段3变更记录 ========== */
+
+export const ChangeRecordSchema = z.object({
+  changeId: z.string().min(1),
+  taskId: z.string().min(1),
+  description: z.string(),
+  filesChanged: z.array(z.string()),
+  createdAt: z.number().int().nonnegative()
+});
+
+/* ========== 阶段4 Bug记录 ========== */
+
+export const BugRecordSchema = z.object({
+  bugId: z.string().min(1),
+  title: z.string().min(1),
+  description: z.string(),
+  rootCause: z.string(),
+  fixPlan: z.string(),
+  regressionChecks: z.string(),
+  status: z.enum(["open", "fixing", "fixed", "verified"]),
+  createdAt: z.number().int().nonnegative(),
+  updatedAt: z.number().int().nonnegative()
+});
+
+/* ========== 类型推导（供外部使用 Schema 推断类型） ========== */
+
+export type ProjectType = z.infer<typeof ProjectSchema>;
+export type RequirementType = z.infer<typeof RequirementSchema>;
+export type DiagramTypeModel = z.infer<typeof DiagramSchema>;
+export type LayoutDiagramType = z.infer<typeof LayoutDiagramSchema>;
+export type ProjectIndexType = z.infer<typeof ProjectIndexSchema>;
+export type DocumentFragmentType = z.infer<typeof DocumentFragmentSchema>;
+export type TaskType = z.infer<typeof TaskSchema>;
+export type ChangeRecordType = z.infer<typeof ChangeRecordSchema>;
+export type BugRecordType = z.infer<typeof BugRecordSchema>;

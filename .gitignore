@@ -1,0 +1,17 @@
+# 编译产物
+dist/
+node_modules/
+
+# 依赖
+*.tsbuildinfo
+
+# four-stage 工具临时文件
+.fourstage/*.tmp
+.fourstage/**/*.tmp
+
+# 环境
+.env
+.env.local
+
+# 日志
+*.log
