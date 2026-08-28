@@ -25,11 +25,11 @@ export const ProjectSchema = z.object({
   createdAt: z.number().int().nonnegative(),
   updatedAt: z.number().int().nonnegative(),
   stage1: z.object({
-    docId: z.string().min(1),
+    docId: z.string(), // 初始创建时可为空串（尚未分配文档）
     diagramIds: z.array(z.string())
   }),
   stage2: z.object({
-    taskDocId: z.string().min(1),
+    taskDocId: z.string(), // 初始创建时可为空串
     requirementIds: z.array(z.string()),
     diagramIds: z.array(z.string())
   }),
@@ -160,14 +160,16 @@ export const DiagramSchema = z
   })
   .superRefine((diagram, ctx) => {
     // 按图类型校验节点：确保 nodes 元素与 type 一致，防止跨类型字段混用
-    const typeToNodeKey: Record<string, "layer" | "kind" | "nodeKind"> = {
-      architecture: "layer",
-      class: "kind",
-      flow: "nodeKind"
+    const typeToNodeKeys: Record<string, string[]> = {
+      architecture: ["layer", "nodeKind"],
+      class: ["kind", "attributes", "methods"],
+      flow: ["nodeKind"]
     };
-    const nodeKey = typeToNodeKey[diagram.type];
+    const nodeKeys = typeToNodeKeys[diagram.type];
 
-    const mismatch = diagram.nodes.find((node) => !(nodeKey in node));
+    const mismatch = diagram.nodes.find(
+      (node) => !nodeKeys.some((key) => key in node)
+    );
     if (mismatch) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
