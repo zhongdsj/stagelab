@@ -7,7 +7,9 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "dev": "tsx watch src/index.ts",
+    "dev:index": "tsx watch src/index.ts",
+    "dev:http": "tsx src/http/server.ts",
+    "dev:mcp": "tsx src/mcp/server.ts",
     "start": "node dist/index.js"
   },
   "dependencies": {

@@ -12,6 +12,87 @@
 
 ------
 
+## 零、快速启动
+
+> 本工具为 npm workspaces monorepo，三个包：`@fourstage/shared`（共享类型与 Zod Schema）、`@fourstage/server`（后端：MCP 服务 + HTTP 服务）、`@fourstage/web`（Vue3 前端）。
+
+### 0.1 安装依赖（首次）
+
+```powershell
+npm install
+```
+
+### 0.2 启动后端
+
+#### HTTP 服务（Web 前端用，默认端口 3000）
+
+```powershell
+# 开发模式（tsx 直跑，免构建）
+npm run dev:http
+
+# 生产模式（先构建再运行）
+npm run build -w @fourstage/server
+node packages/server/dist/http/server.js
+```
+
+> 默认监听 `0.0.0.0:3000`，可用环境变量 `PORT` 修改端口。
+
+#### MCP 服务（AI 客户端接入，stdio 模式）
+
+```powershell
+npm run dev:mcp
+# 或（生产）
+node packages/server/dist/mcp/server.js
+```
+
+### 0.3 启动前端（端口 5173）
+
+```powershell
+npm run dev:web
+```
+
+> vite 已配置将 `/api` 代理到 `http://localhost:3000`，浏览器打开 `http://localhost:5173`，点「新建项目」创建项目后进入详情页。
+
+### 0.4 常用脚本（根 package.json）
+
+| 命令 | 作用 |
+| ---- | ---- |
+| `dev.bat` | 一键开启 3 个 cmd 窗口（MCP + HTTP + 前端） |
+| `npm run dev:http` | 开发模式启动后端 HTTP 服务（端口 3000） |
+| `npm run dev:mcp` | 开发模式启动 MCP 服务（stdio 模式） |
+| `npm run dev:web` | 开发模式启动前端（vite，端口 5173） |
+| `npm run build` | 依次构建 shared → server → web |
+| `npm run typecheck` | shared + server 类型检查 |
+
+### 0.5 完整开发启动
+
+**方式一：双击 `dev.bat`**，自动开启 3 个窗口：
+- `fourstage-mcp` → MCP 服务（stdio，日志走 stderr）
+- `fourstage-http` → HTTP server（3000）
+- `fourstage-web` → 前端（5173，代理 `/api`）
+
+**方式二：手动分终端启动**
+
+```powershell
+# 终端 1：后端 HTTP 服务
+npm run dev:http -- --repo "D:\some\repo"
+# 终端 2：MCP 服务（可选）
+npm run dev:mcp
+# 终端 3：前端
+npm run dev:web
+```
+
+> 后端启动时会自动从注册表（`%APPDATA%/fourstage/registry.json`）恢复历史仓库，故 `--repo` 可省略。
+
+生产部署先执行 `npm run build`，再运行编译产物（`dist/` 下对应入口）。
+
+### 0.6 运行日志
+
+- HTTP server 输出每个请求日志（方法 / 路径 / 状态码 / 耗时）及启动、停止信息。
+- MCP 服务因走 stdio 协议，stdout 是协议通道，日志统一写 **stderr**（工具调用 / 完成 / 失败），使用 `dev.bat` 时可从独立窗口查看。
+
+------
+
 ## 一、项目解决的核心痛点
 
 1. **AI 每次开发都重复学一遍系统 → 极高冗余 Token**：同一个系统，AI 每次会话都要重新 grep/read 探索，成本重复且无沉淀。

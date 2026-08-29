@@ -8,7 +8,9 @@
   ],
   "scripts": {
     "build": "npm run build -w @fourstage/shared && npm run build -w @fourstage/server && npm run build -w @fourstage/web",
-    "dev": "npm run dev -w @fourstage/server",
+    "dev:mcp": "npm run dev:mcp -w @fourstage/server",
+    "dev:http": "npm run dev:http -w @fourstage/server",
+    "dev:index": "npm run dev:index -w @fourstage/server",
     "dev:web": "npm run dev -w @fourstage/web",
     "typecheck": "npm run typecheck -w @fourstage/shared && npm run typecheck -w @fourstage/server"
   },

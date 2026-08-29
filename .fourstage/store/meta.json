@@ -1,0 +1,23 @@
+{
+  "projectId": "34a29cd8-790c-43c4-8ce9-e2c25573cfa0",
+  "projectName": "测试项目",
+  "currentStage": "s1",
+  "createdAt": 1787984152121,
+  "updatedAt": 1787984904563,
+  "stage1": {
+    "docId": "",
+    "diagramIds": []
+  },
+  "stage2": {
+    "taskDocId": "",
+    "requirementIds": [],
+    "diagramIds": []
+  },
+  "stage3": {
+    "changeRecordIds": []
+  },
+  "stage4": {
+    "bugRecordIds": []
+  },
+  "indexId": "index-34a29cd8-790c-43c4-8ce9-e2c25573cfa0"
+}

@@ -4,9 +4,14 @@
  * 对应开发文档 8.1 工具：create_project / list_projects / get_project_meta / switch_project_stage
  */
 import crypto from "node:crypto";
+import fs from "node:fs";
 import type { Stage, Project } from "@fourstage/shared";
 import type { RepoWorkspace } from "../storage/workspace.js";
 import { createRepositories } from "../storage/repositories/factory.js";
+import { fourstageRoot } from "../storage/paths.js";
+import { clearCache } from "../storage/io.js";
+import { removeWorkspace } from "../storage/workspace.js";
+import { removeRepo } from "../storage/registry.js";
 
 /** 创建项目（默认进入阶段1） */
 export async function createProject(
@@ -68,6 +73,41 @@ export async function switchProjectStage(
   project.updatedAt = Date.now();
   await repos.project.save(project);
   return project;
+}
+
+/** 重命名项目（修改项目名称） */
+export async function updateProjectName(
+  workspace: RepoWorkspace,
+  projectName: string
+): Promise<Project> {
+  const repos = createRepositories(workspace);
+  const project = await repos.project.get(workspace.entry.projectId);
+  project.projectName = projectName;
+  project.updatedAt = Date.now();
+  await repos.project.save(project);
+  return project;
+}
+
+/**
+ * 删除项目（级联删除整仓库 .fourstage 目录）
+ *
+ * 一个仓库绑定一个 Project，删除项目即删除该仓库的 .fourstage 数据目录，
+ * 并从已加载工作区实例中移除（MCP 端不暴露此操作，仅 HTTP/前端可调用）。
+ */
+export async function deleteProject(workspace: RepoWorkspace): Promise<void> {
+  // 校验项目存在
+  const repos = createRepositories(workspace);
+  await repos.project.get(workspace.entry.projectId);
+  // 删除整个 .fourstage 目录（含 meta/index/文档/图/需求/任务/记录）
+  await fs.promises.rm(fourstageRoot(workspace.repoRoot), {
+    recursive: true,
+    force: true
+  });
+  // 从注册表移除该仓库地址（下次启动不再恢复）
+  removeRepo(workspace.repoRoot);
+  // 清空文件缓存，并从已加载工作区移除，避免后续读取残留旧数据
+  clearCache();
+  removeWorkspace(workspace.repoRoot);
 }
 
 /** 生成通用 ID */

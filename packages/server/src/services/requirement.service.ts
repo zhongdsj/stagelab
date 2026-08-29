@@ -85,14 +85,37 @@ export async function updateRequirement(
 ): Promise<Requirement> {
   const repos = createRepositories(workspace);
   const req = await repos.requirement.get(requirementId);
+  // 过滤 undefined 字段，避免展开合并时覆盖实体原有有效值（如 status，问题3）
+  const cleanPatch = Object.fromEntries(
+    Object.entries(patch).filter(([, v]) => v !== undefined)
+  ) as Partial<Requirement>;
   const updated: Requirement = {
     ...req,
-    ...patch,
+    ...cleanPatch,
     requirementId,
     updatedAt: Date.now()
   };
   await repos.requirement.save(updated);
   return updated;
+}
+
+/**
+ * 删除需求（级联删除其下全部任务）
+ *
+ * 需求为独立实体，删除需求同时清理该需求下的所有任务文件。
+ * MCP 端不暴露此操作，仅 HTTP/前端可调用。
+ */
+export async function deleteRequirement(
+  workspace: RepoWorkspace,
+  requirementId: string
+): Promise<void> {
+  const repos = createRepositories(workspace);
+  const req = await repos.requirement.get(requirementId);
+  // 级联删除需求下全部任务
+  for (const taskId of req.taskIds) {
+    await repos.task.delete(taskId);
+  }
+  await repos.requirement.delete(requirementId);
 }
 
 /** 在指定需求下创建任务 */
@@ -143,6 +166,42 @@ export async function updateTaskStatus(
   return updated;
 }
 
+/**
+ * 更新任务内容（标题/描述/验收标准/文件/变更类型；状态单独走 updateTaskStatus）
+ * 与 updateRequirement 一致，合并前过滤 undefined 字段，防止覆盖有效值
+ */
+export async function updateTask(
+  workspace: RepoWorkspace,
+  taskId: string,
+  patch: Partial<{
+    title: string;
+    description: string;
+    acceptanceCriteria: string;
+    files: string[];
+    changeType: "新增" | "修改" | "删除";
+  }>
+): Promise<Task> {
+  const repos = createRepositories(workspace);
+  const task = await repos.task.get(taskId);
+  const cleanPatch = Object.fromEntries(
+    Object.entries(patch).filter(([, v]) => v !== undefined)
+  ) as Partial<Task>;
+  const updated: Task = { ...task, ...cleanPatch, taskId, updatedAt: Date.now() };
+  await repos.task.save(updated);
+  return updated;
+}
+
+/** 删除任务（同时从所属需求的 taskIds 中移除引用） */
+export async function deleteTask(
+  workspace: RepoWorkspace,
+  taskId: string
+): Promise<void> {
+  const repos = createRepositories(workspace);
+  const task = await repos.task.get(taskId);
+  await repos.task.delete(taskId);
+  await repos.requirement.removeTask(task.requirementId, taskId);
+}
+
 /** 获取指定需求下的任务列表（轻量摘要） */
 export async function listTasksByRequirement(
   workspace: RepoWorkspace,
@@ -150,11 +209,21 @@ export async function listTasksByRequirement(
 ) {
   const repos = createRepositories(workspace);
   const req = await repos.requirement.get(requirementId);
-  const tasks: Array<{ taskId: string; title: string; status: TaskStatus }> = [];
+  const tasks: Array<{
+    taskId: string;
+    title: string;
+    status: TaskStatus;
+    changeType: Task["changeType"];
+  }> = [];
   for (const taskId of req.taskIds) {
     try {
       const t = await repos.task.get(taskId);
-      tasks.push({ taskId: t.taskId, title: t.title, status: t.status });
+      tasks.push({
+        taskId: t.taskId,
+        title: t.title,
+        status: t.status,
+        changeType: t.changeType
+      });
     } catch {
       // 跳过缺失任务
     }

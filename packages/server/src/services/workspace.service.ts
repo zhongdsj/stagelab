@@ -7,6 +7,7 @@ import {
   openWorkspace,
   getWorkspace,
   listWorkspaces,
+  loadRegisteredWorkspaces,
   parseRepoArg,
   type RepoWorkspace
 } from "../storage/workspace.js";
@@ -43,8 +44,14 @@ export async function listWorkingRepos() {
   }));
 }
 
-/** 从进程参数初始化默认仓库（--repo 解析） */
+/**
+ * 从进程参数初始化工作区
+ *
+ * 1. 先恢复注册表中的历史仓库（重启后项目列表自动恢复）
+ * 2. --repo 显式指定的仓库优先加载（未在注册表则一并登记）
+ */
 export async function initFromArgs(argv: string[]): Promise<RepoWorkspace | null> {
+  await loadRegisteredWorkspaces();
   const repoRoot = parseRepoArg(argv);
   if (!repoRoot) return null;
   return openWorkspace(repoRoot);
