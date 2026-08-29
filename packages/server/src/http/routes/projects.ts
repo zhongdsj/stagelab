@@ -4,8 +4,12 @@
  * GET  /api/projects                        项目列表
  * POST /api/projects                        创建项目（默认进入阶段1）
  * GET  /api/projects/:id                    项目详情
+ * PUT  /api/projects/:id                    重命名项目（修改）
+ * DELETE /api/projects/:id                  删除项目（级联删除 .fourstage 目录）
  * PUT  /api/projects/:id/stage              切换阶段
  * GET  /api/projects/:id/index              获取项目索引
+ *
+ * 注：项目删除/重命名仅 HTTP 层提供，MCP 端不暴露删除操作（方案1）。
  */
 import type { FastifyInstance } from "fastify";
 import { StageSchema } from "@fourstage/shared";
@@ -14,7 +18,9 @@ import {
   listProjects,
   createProject,
   getProjectMeta,
-  switchProjectStage
+  switchProjectStage,
+  updateProjectName,
+  deleteProject
 } from "../../services/project.service.js";
 import { getProjectIndex } from "../../services/index.service.js";
 import {
@@ -51,6 +57,25 @@ export function registerProjectRoutes(app: FastifyInstance): void {
     const { id } = request.params as { id: string };
     const ws = requireWorkspaceByProjectId(id);
     return getProjectMeta(ws);
+  });
+
+  // 重命名项目（修改）
+  app.put("/api/projects/:id", async (request) => {
+    const { id } = request.params as { id: string };
+    const body = (request.body ?? {}) as { projectName?: string };
+    if (!body.projectName || !String(body.projectName).trim()) {
+      throw new HttpError(400, "projectName 必填");
+    }
+    const ws = requireWorkspaceByProjectId(id);
+    return updateProjectName(ws, String(body.projectName).trim());
+  });
+
+  // 删除项目（级联删除 .fourstage 目录，并从已加载工作区移除）
+  app.delete("/api/projects/:id", async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const ws = requireWorkspaceByProjectId(id);
+    await deleteProject(ws);
+    reply.code(204).send();
   });
 
   // 切换阶段

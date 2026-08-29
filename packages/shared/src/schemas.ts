@@ -58,16 +58,18 @@ export const RequirementSchema = z.object({
 /* ========== 6.3 Diagram 业务图模型 ========== */
 
 /** 业务语义模型禁止出现坐标/尺寸/颜色等视觉字段——通过仅声明必要字段的 Schema 天然约束 */
-export const ArchitectureNodeSchema = z.object({
-  nodeId: z.string().min(1),
-  label: z.string().min(1),
-  layer: z.string().optional(),
-  nodeKind: z
-    .enum(["service", "database", "mq", "cache", "external", "gateway"])
-    .optional(),
-  description: z.string().optional(),
-  payload: z.record(z.string(), z.unknown()).optional()
-});
+export const ArchitectureNodeSchema = z
+  .object({
+    nodeId: z.string().min(1),
+    label: z.string().min(1),
+    layer: z.string().optional(),
+    nodeKind: z
+      .enum(["service", "database", "mq", "cache", "external", "gateway"])
+      .optional(),
+    description: z.string().optional(),
+    payload: z.record(z.string(), z.unknown()).optional()
+  })
+  .strict();
 
 export const ClassAttributeSchema = z.object({
   name: z.string().min(1),
@@ -94,31 +96,35 @@ export const ClassMethodSchema = z.object({
   description: z.string().optional()
 });
 
-export const ClassNodeSchema = z.object({
-  nodeId: z.string().min(1),
-  label: z.string().min(1),
-  kind: z.enum(["class", "interface", "abstract", "enum"]).optional(),
-  attributes: z.array(ClassAttributeSchema).optional(),
-  methods: z.array(ClassMethodSchema).optional(),
-  description: z.string().optional()
-});
+export const ClassNodeSchema = z
+  .object({
+    nodeId: z.string().min(1),
+    label: z.string().min(1),
+    kind: z.enum(["class", "interface", "abstract", "enum"]).optional(),
+    attributes: z.array(ClassAttributeSchema).optional(),
+    methods: z.array(ClassMethodSchema).optional(),
+    description: z.string().optional()
+  })
+  .strict();
 
-export const FlowNodeSchema = z.object({
-  nodeId: z.string().min(1),
-  label: z.string().min(1),
-  nodeKind: z
-    .enum([
-      "start",
-      "end",
-      "process",
-      "decision",
-      "inputOutput",
-      "subprocess"
-    ])
-    .optional(),
-  description: z.string().optional(),
-  payload: z.record(z.string(), z.unknown()).optional()
-});
+export const FlowNodeSchema = z
+  .object({
+    nodeId: z.string().min(1),
+    label: z.string().min(1),
+    nodeKind: z
+      .enum([
+        "start",
+        "end",
+        "process",
+        "decision",
+        "inputOutput",
+        "subprocess"
+      ])
+      .optional(),
+    description: z.string().optional(),
+    payload: z.record(z.string(), z.unknown()).optional()
+  })
+  .strict();
 
 export const EdgeSchema = z.object({
   edgeId: z.string().min(1),
