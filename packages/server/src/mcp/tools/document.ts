@@ -2,6 +2,7 @@
  * MCP 工具：文档操作类（开发文档 8.2，共 4 个）
  *
  * get_document_index / read_document_fragment / write_document_fragment / create_document
+ * 约束：MCP 不提供全量读取（分层分片按需读取，避免全量拉取大对象，见开发文档 10.2）
  */
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -73,13 +74,14 @@ export function registerDocumentTools(server: McpServer): void {
       inputSchema: {
         docId: z.string().min(1),
         title: z.string().min(1),
+        docType: z.string().optional().describe("文档类型（自由文本，帮助 AI 快速理解文档性质）"),
         content: z.string()
       }
     },
     async (args) =>
       safeCall(async () => {
         const ws = await getWorkspace();
-        return createDocument(ws, args.docId, args.title, args.content);
+        return createDocument(ws, args.docId, args.title, args.content, args.docType);
       })
   );
 }

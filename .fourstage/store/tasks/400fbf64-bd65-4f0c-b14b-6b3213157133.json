@@ -1,0 +1,15 @@
+{
+  "taskId": "400fbf64-bd65-4f0c-b14b-6b3213157133",
+  "requirementId": "48b8d597-c399-4168-ab88-ee56777c2f45",
+  "title": "T39 架构层：节点点击关联图检测与气泡按钮",
+  "description": "## 任务描述\n\n架构层节点点击联动：\n\n- `DiagramSvg.vue` 节点 rect 增加 @click 事件（仅 architecture 图类型）\n- 点击后读取节点 payload.linkedDiagrams（数组，含关联图 id + 类型）\n- 有类图 → 弹出「转到类图」气泡按钮\n- 有流程图 → 弹出「转到流程图」气泡按钮\n- 两者都有 → 弹出两个按钮\n- 都没有 → 提示无关联图\n- 气泡按钮点击 → 路由跳转到对应图页面\n\n## 涉及文件\n- `packages/web/src/components/diagram/DiagramSvg.vue`（修改）\n- `packages/web/src/components/diagram/DiagramView.vue`（修改，气泡状态与跳转）\n\n## 变更类型\n修改\n\n## 验收标准\n1. 点击架构节点按 payload.linkedDiagrams 弹气泡\n2. 有/无关联图分支正确\n3. 气泡按钮可跳转对应图",
+  "status": "in_progress",
+  "acceptanceCriteria": "点击架构节点弹出关联图气泡按钮；无关联提示",
+  "files": [
+    "packages/web/src/components/diagram/DiagramSvg.vue",
+    "packages/web/src/components/diagram/DiagramView.vue"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788155875251,
+  "updatedAt": 1788157063447
+}

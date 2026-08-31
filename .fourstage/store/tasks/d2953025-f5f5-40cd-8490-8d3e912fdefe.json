@@ -1,0 +1,14 @@
+{
+  "taskId": "d2953025-f5f5-40cd-8490-8d3e912fdefe",
+  "requirementId": "36c53c3a-5666-4ed4-942b-d0a148c4d306",
+  "title": "T23 前端：新增图查看页面（左右结构）",
+  "description": "## 任务描述\n\n新增独立图查看页面 `views/DiagramPageView.vue`，采用左右布局：\n\n- 左侧边栏：项目全部图 tab 列表（来自 getProjectIndex.diagrams）+ 「返回项目」按钮\n- 右侧内容区：复用 `DiagramView` 渲染当前选中图（含语义模型 + 布局 + 折叠/展开交互）\n- 点击左侧 tab 切换 diagramId（同步更新路由，保持 active tab 高亮）\n- 当前图不存在/空列表时给出提示\n\n## 涉及文件\n- `packages/web/src/views/DiagramPageView.vue`（新增）\n- 复用 `packages/web/src/components/diagram/DiagramView.vue`（不修改）\n\n## 变更类型\n新增\n\n## 验收标准\n1. 左侧显示项目全部图 tab + 返回按钮，右侧渲染选中图\n2. 点击左侧 tab 右侧图随之切换，URL 同步更新\n3. 返回按钮回到项目详情页 `/projects/:id`",
+  "status": "done",
+  "acceptanceCriteria": "左右布局正常；tab 切换与返回均可用",
+  "files": [
+    "packages/web/src/views/DiagramPageView.vue"
+  ],
+  "changeType": "新增",
+  "createdAt": 1788139850776,
+  "updatedAt": 1788142384204
+}

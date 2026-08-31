@@ -29,7 +29,7 @@ export function setEntityChangedHandler(handler: EntityChangedHandler | null): v
 }
 
 /** 触发变更回调 */
-async function notifyChanged(repoRoot: string): Promise<void> {
+export async function notifyChanged(repoRoot: string): Promise<void> {
   if (globalChangedHandler) {
     await globalChangedHandler(repoRoot);
   }
@@ -50,7 +50,7 @@ export interface EntityRepositoryOptions<T> {
 export abstract class EntityRepository<T extends object> {
   protected repoRoot: string;
   private filePath: (repoRoot: string, id: string) => string;
-  private schema: z.ZodType<T>;
+  protected schema: z.ZodType<T>;
   private idField: keyof T & string;
 
   constructor(workspace: RepoWorkspace, options: EntityRepositoryOptions<T>) {

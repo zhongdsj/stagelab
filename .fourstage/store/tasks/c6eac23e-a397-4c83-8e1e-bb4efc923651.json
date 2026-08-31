@@ -1,0 +1,15 @@
+{
+  "taskId": "c6eac23e-a397-4c83-8e1e-bb4efc923651",
+  "requirementId": "6c3990f0-4296-4f32-aad9-c23f3d53c2e8",
+  "title": "T17 需求/任务 description 字段链路打通",
+  "description": "服务端 listTasksByRequirement / getRequirement 返回 description；前端 RequirementItem / TaskSummary 接口增加 description 字段。\n\n完成记录：requirement.service.ts 任务摘要含 description；api/requirements.ts 类型增加 description。",
+  "status": "done",
+  "acceptanceCriteria": "任务列表接口返回 description；前端类型含 description 字段。",
+  "files": [
+    "packages/server/src/services/requirement.service.ts",
+    "packages/web/src/api/requirements.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788094346440,
+  "updatedAt": 1788145265305
+}

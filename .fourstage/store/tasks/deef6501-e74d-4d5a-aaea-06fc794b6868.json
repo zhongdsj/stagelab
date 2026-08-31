@@ -1,0 +1,15 @@
+{
+  "taskId": "deef6501-e74d-4d5a-aaea-06fc794b6868",
+  "requirementId": "af4b430a-b283-49ec-885b-680608580794",
+  "title": "T38 构建验证与联调",
+  "description": "## 任务描述\n\n全量构建与端到端验证：\n\n- 执行 server + web 全量构建（vue-tsc -b && vite build）\n- 浏览器验证四项：内容居中于画布、画布空白可拖拽、滚轮缩放以光标为中心、重置视图恢复 fit\n- 验证三种图类型（架构/类/流程）均正常\n- 回归验证：折叠/聚合/连线渲染不受影响\n\n## 涉及文件\n- `packages/web`、`packages/server`（构建验证）\n\n## 变更类型\n修改（验证）\n\n## 验收标准\n1. server + web 构建通过\n2. 无限画布行为端到端验证通过\n3. 三种图类型渲染正常\n4. 折叠/聚合/连线回归正常",
+  "status": "done",
+  "acceptanceCriteria": "server+web 构建通过；无限画布四项行为验证通过；三种图类型正常",
+  "files": [
+    "packages/web",
+    "packages/server"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788153043078,
+  "updatedAt": 1788153843819
+}

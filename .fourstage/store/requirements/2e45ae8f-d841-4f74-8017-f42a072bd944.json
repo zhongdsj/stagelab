@@ -1,0 +1,12 @@
+{
+  "requirementId": "2e45ae8f-d841-4f74-8017-f42a072bd944",
+  "title": "MCP 优化：写操作只返回元数据（meta）",
+  "description": "## 分组说明\n\nMCP 写操作返回值精简，降低 LLM token 消耗。\n\n### 背景\n- create_diagram / update_diagram_elements 目前返回完整 Diagram 对象（nodes/edges/groups 全量）\n- 写操作内容 AI 已通过参数提交，全量回显属冗余回传\n- 大图一次返回 14~18KB，纯消耗上下文 token\n\n### 目标\n- 写操作只返回 meta 摘要（版本号、计数、变更 id 列表）\n- 详情按需用 get_diagram_partial 读取\n\n### 关键约束\n- 不改变 HTTP/前端数据流（前端走 HTTP 接口，不经过 MCP）\n- get_diagram_partial / get_diagram_meta / delete_diagram 行为不变\n\n### 包含任务\n- T31 MCP 写操作只返回 meta\n\n### 验收\n- create_diagram / update_diagram_elements 不再返回节点/连线/分组内容\n- server 构建通过",
+  "branchName": "feature/mcp-meta-response",
+  "status": "done",
+  "taskIds": [
+    "ace1ade1-bc56-4e3f-9f1e-6bda7c783583"
+  ],
+  "createdAt": 1788144133722,
+  "updatedAt": 1788145376834
+}

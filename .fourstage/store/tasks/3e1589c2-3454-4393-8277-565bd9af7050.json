@@ -1,0 +1,16 @@
+{
+  "taskId": "3e1589c2-3454-4393-8277-565bd9af7050",
+  "requirementId": "311621a6-ca26-4050-b682-ac3ac2bba4d5",
+  "title": "T02 数据模型与Zod Schema",
+  "description": "实现开发文档第六章全部数据模型类型定义与 Zod 校验 Schema。含 Project、RepoEntryMeta、Requirement（含 branchName/status/taskIds）、Diagram 容器、ArchitectureNode/ClassNode/FlowNode/Edge/Group（含双轴分区字段）、LayoutDiagram、ProjectIndex（两级索引）、DocumentFragment、任务/变更/Bug 记录。节点采用 discriminated union 按 type 校验。\n\n完成记录：types/schemas/index 全部实现，typecheck 与 web build 通过，冒烟验证（合法通过、跨类型被拒）通过。",
+  "status": "done",
+  "acceptanceCriteria": "所有类型编译通过前后端共享；Zod 按图类型校验合法通过、跨类型被拒（superRefine）；类图属性/方法结构化字段严格校验；业务层模型不含坐标字段；Requirement 模型校验（branchName 可选、status 枚举、taskIds 数组）。",
+  "files": [
+    "packages/shared/src/types.ts",
+    "packages/shared/src/schemas.ts",
+    "packages/shared/src/index.ts"
+  ],
+  "changeType": "新增",
+  "createdAt": 1788094285248,
+  "updatedAt": 1788145212281
+}

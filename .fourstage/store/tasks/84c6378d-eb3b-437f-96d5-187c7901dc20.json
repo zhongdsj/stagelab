@@ -1,0 +1,15 @@
+{
+  "taskId": "84c6378d-eb3b-437f-96d5-187c7901dc20",
+  "requirementId": "6c3990f0-4296-4f32-aad9-c23f3d53c2e8",
+  "title": "T19 任务文档去文档化",
+  "description": "将 task-doc 从文档库概念中移除——不再将任务文档作为「文档」展示；任务数据以结构化「需求 + 任务」实体承载（配合 T18 的描述 md）。\n\n决策记录（用户确认）：删除存储分片。\n\n完成记录：删除 .fourstage/store/documents/task-doc/ 全部分片与 meta 并移除空目录；index.json documentIndex 移除 task-doc 条目仅保留 dev-doc。",
+  "status": "done",
+  "acceptanceCriteria": "文档库不再展示「任务文档」；task-doc 分片与 meta 从磁盘删除、索引清理；任务数据通过需求/任务实体正常管理。",
+  "files": [
+    ".fourstage/store/index.json",
+    ".fourstage/store/documents/task-doc/"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788094354865,
+  "updatedAt": 1788145308279
+}

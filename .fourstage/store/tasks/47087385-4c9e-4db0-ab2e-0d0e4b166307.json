@@ -1,0 +1,14 @@
+{
+  "taskId": "47087385-4c9e-4db0-ab2e-0d0e4b166307",
+  "requirementId": "bfc97a97-8c75-41bb-8428-83bf6ad9efcf",
+  "title": "T29 服务端：布局路由取消折叠聚焦参数",
+  "description": "## 任务描述\n\n服务端布局路由适配前端本地折叠策略：\n\n- `http/routes/diagrams.ts`：前端不再传 focusModuleId，布局查询参数处理可移除（或保留兼容）\n- `layout/engine.ts`：确认无 focus 时返回全量布局；折叠分支保留为内部能力（不做删除，避免破坏 MCP 兼容）\n\n## 涉及文件\n- `packages/server/src/http/routes/diagrams.ts`（修改）\n- `packages/server/src/layout/engine.ts`（确认/最小改动）\n\n## 变更类型\n修改\n\n## 验收标准\n1. 无 focusModuleId 时布局返回全量节点/模块框/连线\n2. 服务端构建（tsc）通过\n3. 不破坏 MCP/HTTP 现有接口",
+  "status": "done",
+  "acceptanceCriteria": "GET /layout 无 focus 返回全量布局；服务端构建通过",
+  "files": [
+    "packages/server/src/http/routes/diagrams.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788143742575,
+  "updatedAt": 1788146398791
+}

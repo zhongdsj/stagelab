@@ -1,0 +1,14 @@
+{
+  "taskId": "b33402b1-f02d-46b8-9131-1030c1e025d6",
+  "requirementId": "23a5d5d0-4d16-42e7-a8da-614df27d783a",
+  "title": "T33 服务层：需求自动流转",
+  "description": "## 任务描述\n\n服务层需求状态自动流转：\n\n- `requirement.service.ts`：\n  - createRequirement 初始 status 改为 \"dev\"（原 active）\n  - updateTaskStatus 保存任务后触发检查：取任务所属需求（task.requirementId → 需求），若需求 status 为 \"dev\" 且该需求下所有任务均 \"done\"（且任务数 > 0）→ 自动 updateRequirement(status=\"test\")\n  - 存量数据兼容：读取需求时将旧 \"active\" 归一化为 \"dev\"（\"archived\" 移除）\n- MCP update_task_status 与 HTTP PUT tasks/:tid/status 均走 updateTaskStatus，自动生效\n\n## 涉及文件\n- `packages/server/src/services/requirement.service.ts`（修改）\n\n## 变更类型\n修改\n\n## 验收标准\n1. 创建需求初始状态为 dev\n2. 需求 dev 且所有任务 done → 自动改为 test\n3. 需求 test/done 时任务全 done 不触发修改\n4. done 终态人工设置后不被自动规则改回\n5. 存量 active 数据读取时显示为 dev",
+  "status": "done",
+  "acceptanceCriteria": "任务全 done + 需求 dev 自动改 test；其他状态不触发；done 终态不变",
+  "files": [
+    "packages/server/src/services/requirement.service.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788144495801,
+  "updatedAt": 1788145330979
+}

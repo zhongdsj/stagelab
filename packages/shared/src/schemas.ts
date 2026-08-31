@@ -13,7 +13,7 @@ import { z } from "zod";
 
 export const StageSchema = z.enum(["s1", "s2", "s3", "s4"]);
 export const DiagramTypeSchema = z.enum(["architecture", "class", "flow"]);
-export const RequirementStatusSchema = z.enum(["active", "done", "archived"]);
+export const RequirementStatusSchema = z.enum(["dev", "test", "done"]);
 export const TaskStatusSchema = z.enum(["pending", "in_progress", "done"]);
 
 /* ========== 6.1 Project 项目实体 ========== */
@@ -230,6 +230,7 @@ export const ProjectIndexSchema = z.object({
     z.object({
       docId: z.string().min(1),
       title: z.string().min(1),
+      docType: z.string().optional(),
       summary: z.string(),
       fragmentIds: z.array(z.string())
     })
@@ -270,6 +271,17 @@ export const DocumentFragmentSchema = z.object({
   order: z.number().int().nonnegative(),
   title: z.string(),
   content: z.string()
+});
+
+/* ========== 6.6.1 DocumentMeta 文档元信息 ========== */
+
+export const DocumentMetaSchema = z.object({
+  docId: z.string().min(1),
+  title: z.string().min(1),
+  docType: z.string().optional(), // 文档类型（自由文本，非枚举）
+  summary: z.string().optional(),
+  createdAt: z.number().int().nonnegative(),
+  updatedAt: z.number().int().nonnegative()
 });
 
 /* ========== 阶段2任务 ========== */

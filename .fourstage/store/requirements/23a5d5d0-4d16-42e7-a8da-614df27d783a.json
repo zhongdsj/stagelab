@@ -1,0 +1,15 @@
+{
+  "requirementId": "23a5d5d0-4d16-42e7-a8da-614df27d783a",
+  "title": "需求状态三态化与自动流转",
+  "description": "## 分组说明\n\n需求状态三态化与自动流转。\n\n### 需求\n1. 需求状态由「进行中(active)」改为三态：开发(dev)/测试(test)/完成(done)，前端可修改\n2. 自动流转：需求下所有任务均「已完成(done)」且需求为「开发(dev)」时 → 自动改为「测试(test)」\n3. done 为终态：人工改为「完成」后，再次刷新状态不再更改\n\n### 现状\n- RequirementStatus = \"active\" | \"done\" | \"archived\"（shared/types.ts L22、schemas.ts L16）\n- 创建需求初始 status: active（requirement.service.ts）\n- 前端映射 { active: 进行中, done: 已完成, archived: 已归档 }（RequirementTasks.vue）\n- 修改需求对话框无状态字段（仅 title/branchName/description）\n\n### 设计\n- 枚举改为 dev/test/done；存量 active 读取时归一化为 dev（archived 移除）\n- 自动流转触发点：updateTaskStatus 服务函数（MCP update_task_status 与 HTTP PUT tasks/:tid/status 均走此函数）\n- 前端修改对话框增加状态下拉\n\n### 包含任务\n- T32 共享层：需求状态枚举改三态\n- T33 服务层：需求自动流转\n- T34 前端：需求状态三态展示与修改\n- T35 构建验证与联调\n\n### 关键约束\n- done 为终态，自动规则仅在 dev 时触发\n- 空任务需求不触发自动流转\n- HTTP 校验常量与 MCP zod schema 同步更新",
+  "branchName": "feature/requirement-status",
+  "status": "done",
+  "taskIds": [
+    "73d0a3d7-b482-43b2-b39d-8ab9020f5d10",
+    "b33402b1-f02d-46b8-9131-1030c1e025d6",
+    "c3c5a4b6-dace-4088-bf27-3ef1dbc6b904",
+    "db1f797f-2f1a-4aa8-8020-09d77b15a849"
+  ],
+  "createdAt": 1788144487834,
+  "updatedAt": 1788145373843
+}

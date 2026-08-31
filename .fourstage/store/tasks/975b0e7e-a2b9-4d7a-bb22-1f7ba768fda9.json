@@ -1,0 +1,17 @@
+{
+  "taskId": "975b0e7e-a2b9-4d7a-bb22-1f7ba768fda9",
+  "requirementId": "6c3990f0-4296-4f32-aad9-c23f3d53c2e8",
+  "title": "T21 文档摘要展示与修改",
+  "description": "前端补齐文档摘要（summary）的展示与修改：只读视图展示摘要，编辑视图可修改摘要。后端 readDocumentFull 从 meta 返回 summary；renameDocument 支持 summary 修改。\n\n完成记录：readDocumentFull 返回 summary；renameDocument 支持 summary、PUT 路由透传；FullDocument 接口加 summary、renameDocument 加 summary 参数；DocumentFragments 只读视图摘要条 + 编辑视图标题/摘要输入框，保存先更新 meta 再更新正文。",
+  "status": "done",
+  "acceptanceCriteria": "文档只读视图展示摘要；编辑文档可修改标题/摘要；typecheck + web build 通过。",
+  "files": [
+    "packages/server/src/services/document.service.ts",
+    "packages/server/src/http/routes/documents.ts",
+    "packages/web/src/api/documents.ts",
+    "packages/web/src/components/document/DocumentFragments.vue"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788094362985,
+  "updatedAt": 1788145270004
+}

@@ -1,0 +1,14 @@
+{
+  "taskId": "0a96f292-b8cb-446c-a585-b6d727007fe1",
+  "requirementId": "36c53c3a-5666-4ed4-942b-d0a148c4d306",
+  "title": "T25 前端：构建验证与联调",
+  "description": "## 任务描述\n\n全量构建与端到端验证「图库改造」链路：\n\n- 执行 `vue-tsc -b && vite build` 全量构建通过\n- 浏览器验证：详情页点击图 tab → 跳转图页面 → 左右结构渲染 → 切换 tab → 返回项目\n- 验证类图/流程图/架构图三种类型在新页面均正常渲染\n\n## 涉及文件\n- `packages/web`（构建验证，无源码改动）\n\n## 变更类型\n修改（验证）\n\n## 验收标准\n1. `vue-tsc -b && vite build` 通过，无类型/构建错误\n2. 端到端链路（跳转、切换、返回）全部正常\n3. 三种图类型（架构/类/流程）在新页面均正常渲染",
+  "status": "done",
+  "acceptanceCriteria": "构建通过；跳转/切换/返回链路正常；三种图类型渲染正常",
+  "files": [
+    "packages/web"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788139855938,
+  "updatedAt": 1788142478154
+}

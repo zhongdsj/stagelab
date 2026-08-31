@@ -1,0 +1,14 @@
+{
+  "taskId": "747e73c8-c514-442f-8374-087e7ffa7665",
+  "requirementId": "bfc97a97-8c75-41bb-8428-83bf6ad9efcf",
+  "title": "T26 前端：图页面左侧列表改为抽屉",
+  "description": "## 任务描述\n\n图查看页面左侧图列表改为抽屉：\n\n- `DiagramPageView.vue` 左侧固定 sidebar 改为可收起/展开的抽屉\n- 默认收起；点击「图列表」按钮滑出抽屉（含返回按钮 + 图 tab 列表）\n- 选中图跳转后抽屉自动收起；点击遮罩/返回按钮收起\n\n## 涉及文件\n- `packages/web/src/views/DiagramPageView.vue`（修改）\n\n## 变更类型\n修改\n\n## 验收标准\n1. 抽屉可正常收起/展开，不影响右侧图渲染\n2. 抽屉内图 tab 点击跳转正常\n3. 返回按钮可用",
+  "status": "done",
+  "acceptanceCriteria": "抽屉可收起/展开；选中图跳转正常；返回可用",
+  "files": [
+    "packages/web/src/views/DiagramPageView.vue"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788143733456,
+  "updatedAt": 1788146396623
+}

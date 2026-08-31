@@ -1,0 +1,17 @@
+{
+  "taskId": "1a64e8cf-c9d1-464a-9e2f-3fe55c492e99",
+  "requirementId": "6c85f4f9-8ea2-4281-83c3-954dff6b80ee",
+  "title": "T05 存储层：实体仓储",
+  "description": "实现各实体读写仓储：meta（Project）、index、document 分片、diagram、requirement、task、changeRecord、bugRecord。所有读取走 mtime 检测，所有写入走 T04 安全写入，写后触发索引联动更新。\n\n完成记录：base/index/factory/index-builder 实现，冒烟验证（CRUD、taskIds 联动、索引自动重建、taskCount 归零）通过。",
+  "status": "done",
+  "acceptanceCriteria": "各实体 CRUD 正常读写走 T04 引擎；实体写入后 index.json 自动同步（含 requirementIndex/taskIndex 两级）；文档分片单文件 ≤2000 字；requirement 仓储支持 taskIds 增删联动。",
+  "files": [
+    "packages/server/src/storage/repositories/base.ts",
+    "packages/server/src/storage/repositories/index.ts",
+    "packages/server/src/storage/repositories/factory.ts",
+    "packages/server/src/storage/index-builder.ts"
+  ],
+  "changeType": "新增",
+  "createdAt": 1788094297113,
+  "updatedAt": 1788145274900
+}

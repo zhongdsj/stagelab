@@ -1,0 +1,18 @@
+{
+  "taskId": "f619f86f-6932-416e-8d5f-63ae2d777ab7",
+  "requirementId": "6c3990f0-4296-4f32-aad9-c23f3d53c2e8",
+  "title": "T14 文档元信息支持 docType",
+  "description": "DocumentMeta 增加 docType 自由文本字段；ProjectIndex.documentIndex 透传 docType；文档创建/重命名接口支持 docType 写入；MCP create_document 增加 docType 参数。\n\n完成记录：types.ts 增加 docType；document.service createDocument/renameDocument 支持 docType；HTTP POST/PUT 透传；index-builder 输出 docType；MCP create_document 增加 docType。",
+  "status": "done",
+  "acceptanceCriteria": "DocumentMeta 及索引含 docType 字段；HTTP/MCP 创建文档可携带 docType；重命名文档可修改 docType。",
+  "files": [
+    "packages/shared/src/types.ts",
+    "packages/server/src/services/document.service.ts",
+    "packages/server/src/http/routes/documents.ts",
+    "packages/server/src/storage/index-builder.ts",
+    "packages/server/src/mcp/tools/document.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788094335371,
+  "updatedAt": 1788145261752
+}

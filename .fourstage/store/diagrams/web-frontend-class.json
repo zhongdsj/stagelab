@@ -1,0 +1,720 @@
+{
+  "diagramId": "web-frontend-class",
+  "type": "class",
+  "metadata": {
+    "title": "Web 前端 - 类图",
+    "version": 4,
+    "description": "基于 packages/web 源码：Vue3 SPA 的视图/组件/API 三层结构；后端 HTTP API 层、业务服务层、布局引擎、本地存储等外部模块统一用 BackendService 占位表示"
+  },
+  "nodes": [
+    {
+      "nodeId": "App",
+      "label": "App",
+      "kind": "class",
+      "methods": [
+        {
+          "name": "goHome",
+          "returnType": "void"
+        }
+      ],
+      "description": "应用外壳：品牌区 + 导航 + router-view"
+    },
+    {
+      "nodeId": "Router",
+      "label": "Router",
+      "kind": "interface",
+      "methods": [
+        {
+          "name": "createRouter",
+          "returnType": "Router"
+        },
+        {
+          "name": "createWebHistory",
+          "returnType": "WebHistory"
+        }
+      ],
+      "description": "路由配置：/ 项目总览、/projects/:id 项目详情"
+    },
+    {
+      "nodeId": "ProjectListView",
+      "label": "ProjectListView",
+      "kind": "class",
+      "methods": [
+        {
+          "name": "load",
+          "returnType": "void"
+        },
+        {
+          "name": "onCreate",
+          "returnType": "void"
+        },
+        {
+          "name": "openProject",
+          "params": [
+            {
+              "name": "id",
+              "type": "string"
+            }
+          ],
+          "returnType": "void"
+        },
+        {
+          "name": "onRename",
+          "returnType": "void"
+        },
+        {
+          "name": "onDeleteProject",
+          "params": [
+            {
+              "name": "p",
+              "type": "Project"
+            }
+          ],
+          "returnType": "void"
+        }
+      ],
+      "description": "项目总览视图：列表 + 新建/重命名/删除"
+    },
+    {
+      "nodeId": "ProjectDetailView",
+      "label": "ProjectDetailView",
+      "kind": "class",
+      "methods": [
+        {
+          "name": "load",
+          "returnType": "void"
+        },
+        {
+          "name": "onSwitchStage",
+          "params": [
+            {
+              "name": "stage",
+              "type": "Stage"
+            }
+          ],
+          "returnType": "void"
+        },
+        {
+          "name": "goBack",
+          "returnType": "void"
+        }
+      ],
+      "description": "项目详情视图：四阶段导航 + 按阶段渲染内容"
+    },
+    {
+      "nodeId": "StageNav",
+      "label": "StageNav",
+      "kind": "class",
+      "attributes": [
+        {
+          "name": "stages",
+          "type": "Stage[]"
+        }
+      ],
+      "methods": [
+        {
+          "name": "stageIndex",
+          "returnType": "number"
+        },
+        {
+          "name": "onSwitch",
+          "params": [
+            {
+              "name": "stage",
+              "type": "Stage"
+            }
+          ],
+          "returnType": "void"
+        }
+      ],
+      "description": "四阶段流程导航组件（s1-s4，可点击切换）"
+    },
+    {
+      "nodeId": "DocumentLibrary",
+      "label": "DocumentLibrary",
+      "kind": "class",
+      "methods": [
+        {
+          "name": "load",
+          "returnType": "void"
+        },
+        {
+          "name": "onCreate",
+          "returnType": "void"
+        },
+        {
+          "name": "onRename",
+          "returnType": "void"
+        },
+        {
+          "name": "onDelete",
+          "returnType": "void"
+        }
+      ],
+      "description": "文档库：文档 tab 列表 + 新建/重命名/删除"
+    },
+    {
+      "nodeId": "DocumentFragments",
+      "label": "DocumentFragments",
+      "kind": "class",
+      "methods": [
+        {
+          "name": "load",
+          "returnType": "void"
+        },
+        {
+          "name": "startEdit",
+          "returnType": "void"
+        },
+        {
+          "name": "save",
+          "returnType": "void"
+        }
+      ],
+      "description": "文档内容：只读 markdown 渲染 + 全量编辑（标题/摘要/正文）"
+    },
+    {
+      "nodeId": "DiagramLibrary",
+      "label": "DiagramLibrary",
+      "kind": "class",
+      "methods": [
+        {
+          "name": "load",
+          "returnType": "void"
+        },
+        {
+          "name": "typeLabel",
+          "params": [
+            {
+              "name": "type",
+              "type": "string"
+            }
+          ],
+          "returnType": "string"
+        }
+      ],
+      "description": "图库：图 tab 列表（架构图/类图/流程图）"
+    },
+    {
+      "nodeId": "DiagramView",
+      "label": "DiagramView",
+      "kind": "class",
+      "methods": [
+        {
+          "name": "load",
+          "returnType": "void"
+        },
+        {
+          "name": "setFocus",
+          "params": [
+            {
+              "name": "moduleId",
+              "type": "string | null"
+            }
+          ],
+          "returnType": "void"
+        }
+      ],
+      "description": "图视图：加载语义模型 + 实时布局，模块折叠/展开"
+    },
+    {
+      "nodeId": "DiagramSvg",
+      "label": "DiagramSvg",
+      "kind": "class",
+      "methods": [
+        {
+          "name": "nodeLabel",
+          "returnType": "string"
+        },
+        {
+          "name": "nodeShape",
+          "returnType": "string"
+        },
+        {
+          "name": "nodeKindClass",
+          "returnType": "string"
+        },
+        {
+          "name": "classBodyLines",
+          "returnType": "string[]"
+        },
+        {
+          "name": "onToggleModule",
+          "returnType": "void"
+        }
+      ],
+      "description": "SVG 渲染器：按图类型区分节点/连线/分组样式"
+    },
+    {
+      "nodeId": "RequirementTasks",
+      "label": "RequirementTasks",
+      "kind": "class",
+      "methods": [
+        {
+          "name": "load",
+          "returnType": "void"
+        },
+        {
+          "name": "toggle",
+          "params": [
+            {
+              "name": "requirementId",
+              "type": "string"
+            }
+          ],
+          "returnType": "void"
+        },
+        {
+          "name": "onCreateRequirement",
+          "returnType": "void"
+        },
+        {
+          "name": "onCreateTask",
+          "returnType": "void"
+        },
+        {
+          "name": "onStatusChange",
+          "returnType": "void"
+        },
+        {
+          "name": "onDeleteTask",
+          "returnType": "void"
+        },
+        {
+          "name": "renderMd",
+          "params": [
+            {
+              "name": "src",
+              "type": "string"
+            }
+          ],
+          "returnType": "string"
+        }
+      ],
+      "description": "需求清单：按需求分组任务 + 状态追踪（marked+DOMPurify）"
+    },
+    {
+      "nodeId": "ApiClient",
+      "label": "ApiClient",
+      "kind": "interface",
+      "methods": [
+        {
+          "name": "get",
+          "params": [
+            {
+              "name": "path",
+              "type": "string"
+            }
+          ],
+          "returnType": "Promise<T>"
+        },
+        {
+          "name": "post",
+          "params": [
+            {
+              "name": "path",
+              "type": "string"
+            },
+            {
+              "name": "data",
+              "type": "unknown"
+            }
+          ],
+          "returnType": "Promise<T>"
+        },
+        {
+          "name": "put",
+          "params": [
+            {
+              "name": "path",
+              "type": "string"
+            },
+            {
+              "name": "data",
+              "type": "unknown"
+            }
+          ],
+          "returnType": "Promise<T>"
+        },
+        {
+          "name": "del",
+          "params": [
+            {
+              "name": "path",
+              "type": "string"
+            }
+          ],
+          "returnType": "Promise<T>"
+        }
+      ],
+      "description": "fetch 统一封装：JSON 序列化、204 处理、错误透传为 ApiError"
+    },
+    {
+      "nodeId": "ApiError",
+      "label": "ApiError",
+      "kind": "class",
+      "attributes": [
+        {
+          "name": "status",
+          "type": "number"
+        }
+      ],
+      "methods": [
+        {
+          "name": "constructor",
+          "params": [
+            {
+              "name": "status",
+              "type": "number"
+            },
+            {
+              "name": "message",
+              "type": "string"
+            }
+          ]
+        }
+      ],
+      "description": "请求失败异常（继承 Error，携带 HTTP 状态码）"
+    },
+    {
+      "nodeId": "ProjectsApi",
+      "label": "ProjectsApi",
+      "kind": "interface",
+      "methods": [
+        {
+          "name": "listProjects",
+          "returnType": "Promise<Project[]>"
+        },
+        {
+          "name": "createProject",
+          "returnType": "Promise<Project>"
+        },
+        {
+          "name": "getProject",
+          "returnType": "Promise<Project>"
+        },
+        {
+          "name": "renameProject",
+          "returnType": "Promise<Project>"
+        },
+        {
+          "name": "deleteProject",
+          "returnType": "Promise<void>"
+        },
+        {
+          "name": "switchStage",
+          "returnType": "Promise<Project>"
+        },
+        {
+          "name": "getProjectIndex",
+          "returnType": "Promise<ProjectIndexResult>"
+        }
+      ],
+      "description": "项目 API：/api/projects 相关路由"
+    },
+    {
+      "nodeId": "DocumentsApi",
+      "label": "DocumentsApi",
+      "kind": "interface",
+      "methods": [
+        {
+          "name": "listFragments",
+          "returnType": "Promise<FragmentMeta[]>"
+        },
+        {
+          "name": "getFragment",
+          "returnType": "Promise<DocumentFragment>"
+        },
+        {
+          "name": "updateFragment",
+          "returnType": "Promise<DocumentFragment[]>"
+        },
+        {
+          "name": "getFullDocument",
+          "returnType": "Promise<FullDocument>"
+        },
+        {
+          "name": "updateFullDocument",
+          "returnType": "Promise<DocumentFragment[]>"
+        },
+        {
+          "name": "createDocument",
+          "returnType": "Promise<DocumentFragment>"
+        },
+        {
+          "name": "renameDocument",
+          "returnType": "Promise<unknown>"
+        },
+        {
+          "name": "deleteDocument",
+          "returnType": "Promise<void>"
+        }
+      ],
+      "description": "文档 API：/api/projects/:id/documents 相关路由（分片+全文）"
+    },
+    {
+      "nodeId": "DiagramsApi",
+      "label": "DiagramsApi",
+      "kind": "interface",
+      "methods": [
+        {
+          "name": "getDiagram",
+          "returnType": "Promise<Diagram>"
+        },
+        {
+          "name": "getLayout",
+          "params": [
+            {
+              "name": "focusModuleId",
+              "type": "string"
+            }
+          ],
+          "returnType": "Promise<LayoutDiagram>"
+        }
+      ],
+      "description": "图 API：语义模型读取 + 实时布局计算（支持模块聚焦）"
+    },
+    {
+      "nodeId": "RequirementsApi",
+      "label": "RequirementsApi",
+      "kind": "interface",
+      "methods": [
+        {
+          "name": "listRequirements",
+          "returnType": "Promise<RequirementItem[]>"
+        },
+        {
+          "name": "createRequirement",
+          "returnType": "Promise<Requirement>"
+        },
+        {
+          "name": "updateRequirement",
+          "returnType": "Promise<Requirement>"
+        },
+        {
+          "name": "deleteRequirement",
+          "returnType": "Promise<void>"
+        },
+        {
+          "name": "listTasks",
+          "returnType": "Promise<TaskSummary[]>"
+        },
+        {
+          "name": "createTask",
+          "returnType": "Promise<Task>"
+        },
+        {
+          "name": "updateTaskStatus",
+          "returnType": "Promise<Task>"
+        },
+        {
+          "name": "updateTask",
+          "returnType": "Promise<Task>"
+        },
+        {
+          "name": "deleteTask",
+          "returnType": "Promise<void>"
+        }
+      ],
+      "description": "需求任务 API：/api/projects/:id/requirements 相关路由"
+    },
+    {
+      "nodeId": "BackendService",
+      "label": "BackendService (占位)",
+      "kind": "class",
+      "methods": [
+        {
+          "name": "handleRequest",
+          "params": [
+            {
+              "name": "req",
+              "type": "HTTP Request"
+            }
+          ],
+          "returnType": "JSON"
+        }
+      ],
+      "description": "外部模块统一占位：HTTP API 层 + 业务服务层 + 布局引擎 + 本地文件存储（不在 web 前端范围内）"
+    }
+  ],
+  "edges": [
+    {
+      "edgeId": "e-plv-api",
+      "from": "ProjectListView",
+      "to": "ProjectsApi",
+      "label": "使用"
+    },
+    {
+      "edgeId": "e-plv-err",
+      "from": "ProjectListView",
+      "to": "ApiError",
+      "label": "使用"
+    },
+    {
+      "edgeId": "e-pdv-api",
+      "from": "ProjectDetailView",
+      "to": "ProjectsApi",
+      "label": "使用"
+    },
+    {
+      "edgeId": "e-pdv-nav",
+      "from": "ProjectDetailView",
+      "to": "StageNav",
+      "label": "组合"
+    },
+    {
+      "edgeId": "e-pdv-doclib",
+      "from": "ProjectDetailView",
+      "to": "DocumentLibrary",
+      "label": "组合"
+    },
+    {
+      "edgeId": "e-pdv-diaglib",
+      "from": "ProjectDetailView",
+      "to": "DiagramLibrary",
+      "label": "组合"
+    },
+    {
+      "edgeId": "e-pdv-req",
+      "from": "ProjectDetailView",
+      "to": "RequirementTasks",
+      "label": "组合"
+    },
+    {
+      "edgeId": "e-doclib-frag",
+      "from": "DocumentLibrary",
+      "to": "DocumentFragments",
+      "label": "组合"
+    },
+    {
+      "edgeId": "e-doclib-api",
+      "from": "DocumentLibrary",
+      "to": "DocumentsApi",
+      "label": "使用"
+    },
+    {
+      "edgeId": "e-frag-api",
+      "from": "DocumentFragments",
+      "to": "DocumentsApi",
+      "label": "使用"
+    },
+    {
+      "edgeId": "e-diaglib-view",
+      "from": "DiagramLibrary",
+      "to": "DiagramView",
+      "label": "组合"
+    },
+    {
+      "edgeId": "e-view-svg",
+      "from": "DiagramView",
+      "to": "DiagramSvg",
+      "label": "组合"
+    },
+    {
+      "edgeId": "e-view-diagapi",
+      "from": "DiagramView",
+      "to": "DiagramsApi",
+      "label": "使用"
+    },
+    {
+      "edgeId": "e-req-reqapi",
+      "from": "RequirementTasks",
+      "to": "RequirementsApi",
+      "label": "使用"
+    },
+    {
+      "edgeId": "e-projapi-client",
+      "from": "ProjectsApi",
+      "to": "ApiClient",
+      "label": "使用"
+    },
+    {
+      "edgeId": "e-docapi-client",
+      "from": "DocumentsApi",
+      "to": "ApiClient",
+      "label": "使用"
+    },
+    {
+      "edgeId": "e-diagapi-client",
+      "from": "DiagramsApi",
+      "to": "ApiClient",
+      "label": "使用"
+    },
+    {
+      "edgeId": "e-reqapi-client",
+      "from": "RequirementsApi",
+      "to": "ApiClient",
+      "label": "使用"
+    },
+    {
+      "edgeId": "e-client-backend",
+      "from": "ApiClient",
+      "to": "BackendService",
+      "label": "HTTP 调用"
+    },
+    {
+      "edgeId": "e-router-plv",
+      "from": "Router",
+      "to": "ProjectListView",
+      "label": "注册"
+    },
+    {
+      "edgeId": "e-router-pdv",
+      "from": "Router",
+      "to": "ProjectDetailView",
+      "label": "注册"
+    }
+  ],
+  "groups": [
+    {
+      "groupId": "g-view",
+      "title": "视图层",
+      "axis": "vertical",
+      "nodeIds": [
+        "App",
+        "Router",
+        "ProjectListView",
+        "ProjectDetailView"
+      ],
+      "collapsible": true
+    },
+    {
+      "groupId": "g-comp",
+      "title": "组件层",
+      "axis": "vertical",
+      "nodeIds": [
+        "StageNav",
+        "DocumentLibrary",
+        "DocumentFragments",
+        "DiagramLibrary",
+        "DiagramView",
+        "DiagramSvg",
+        "RequirementTasks"
+      ],
+      "collapsible": true
+    },
+    {
+      "groupId": "g-api",
+      "title": "API 客户端层",
+      "axis": "vertical",
+      "nodeIds": [
+        "ApiClient",
+        "ApiError",
+        "ProjectsApi",
+        "DocumentsApi",
+        "DiagramsApi",
+        "RequirementsApi"
+      ],
+      "collapsible": true
+    },
+    {
+      "groupId": "g-external",
+      "title": "外部模块（占位）",
+      "axis": "vertical",
+      "nodeIds": [
+        "BackendService"
+      ],
+      "collapsible": true
+    }
+  ]
+}

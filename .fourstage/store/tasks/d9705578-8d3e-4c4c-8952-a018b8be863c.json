@@ -1,0 +1,15 @@
+{
+  "taskId": "d9705578-8d3e-4c4c-8952-a018b8be863c",
+  "requirementId": "bfc97a97-8c75-41bb-8428-83bf6ad9efcf",
+  "title": "T30 构建验证与联调",
+  "description": "## 任务描述\n\n全量构建与端到端验证：\n\n- 执行 server + web 全量构建（vue-tsc -b && vite build）\n- 浏览器验证四项需求：抽屉收起/展开、拖拽平移、滚轮缩放、点击单模块折叠（其他模块不变、画布大小不变）\n- 验证三种图类型（架构/类/流程）均正常\n\n## 涉及文件\n- `packages/web`、`packages/server`（构建验证）\n\n## 变更类型\n修改（验证）\n\n## 验收标准\n1. server + web 构建通过\n2. 四项需求端到端验证通过\n3. 三种图类型渲染正常",
+  "status": "done",
+  "acceptanceCriteria": "构建通过；抽屉/拖拽缩放/单模块折叠/大小不变四项需求端到端验证通过",
+  "files": [
+    "packages/web",
+    "packages/server"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788143744833,
+  "updatedAt": 1788153014611
+}

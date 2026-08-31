@@ -1,0 +1,14 @@
+{
+  "taskId": "3c8fb6a6-0633-4b23-8909-2a0e9c1f23a7",
+  "requirementId": "48b8d597-c399-4168-ab88-ee56777c2f45",
+  "title": "T40 节点悬停：气泡描述提示",
+  "description": "## 任务描述\n\n架构层节点鼠标移入气泡描述提示：\n\n- `DiagramSvg.vue` 节点 rect 增加 @mouseenter/@mouseleave 事件（仅 architecture 图类型）\n- 移入时读取节点 description 字段，在节点附近显示气泡（tooltip）\n- 移出时隐藏气泡\n- 气泡位置跟随节点（相机坐标换算到屏幕）\n- 无 description 时不显示气泡\n\n## 涉及文件\n- `packages/web/src/components/diagram/DiagramSvg.vue`（修改）\n\n## 变更类型\n修改\n\n## 验收标准\n1. 悬停有 description 的架构节点显示描述气泡\n2. 移出节点气泡消失\n3. 无 description 不显示",
+  "status": "pending",
+  "acceptanceCriteria": "悬停架构节点显示 description 气泡；移出消失",
+  "files": [
+    "packages/web/src/components/diagram/DiagramSvg.vue"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788155882789,
+  "updatedAt": 1788155882789
+}

@@ -13,7 +13,8 @@ import {
   TaskRepository,
   ChangeRecordRepository,
   BugRecordRepository,
-  DocumentFragmentRepository
+  DocumentFragmentRepository,
+  DocumentMetaRepository
 } from "./index.js";
 import { rebuildIndex, invalidateIndexCache } from "../index-builder.js";
 import type { RepoWorkspace } from "../workspace.js";
@@ -26,6 +27,7 @@ export interface Repositories {
   changeRecord: ChangeRecordRepository;
   bugRecord: BugRecordRepository;
   documentFragment: DocumentFragmentRepository;
+  documentMeta: DocumentMetaRepository;
   /** 手动触发一次索引重建 */
   rebuildIndex: (repoRoot: string) => Promise<void>;
 }
@@ -44,6 +46,7 @@ export function createRepositories(
   const changeRecord = new ChangeRecordRepository(workspace);
   const bugRecord = new BugRecordRepository(workspace);
   const documentFragment = new DocumentFragmentRepository(workspace);
+  const documentMeta = new DocumentMetaRepository(workspace);
 
   // 全局回调：按 repoRoot 重建对应仓库索引
   setEntityChangedHandler(async (repoRoot) => {
@@ -60,6 +63,7 @@ export function createRepositories(
     changeRecord,
     bugRecord,
     documentFragment,
+    documentMeta,
     rebuildIndex: async (repoRoot) => {
       if (repoRoot !== workspace.repoRoot) return;
       invalidateIndexCache(repoRoot);

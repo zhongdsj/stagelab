@@ -1,8 +1,374 @@
 {
   "projectId": "34a29cd8-790c-43c4-8ce9-e2c25573cfa0",
-  "version": 1787984904,
-  "documentIndex": [],
-  "diagramIndex": [],
-  "requirementIndex": [],
-  "taskIndex": []
+  "version": 1788157063,
+  "documentIndex": [
+    {
+      "docId": "dev-doc",
+      "title": "四阶段MCP项目管理工具 - 开发文档",
+      "summary": "# 四阶段MCP项目管理工具 - 开发文档\n\n**文档版本**：v1.1\n**阶段**：阶段1 - ",
+      "fragmentIds": [
+        "dev-doc-f0",
+        "dev-doc-f1",
+        "dev-doc-f2",
+        "dev-doc-f3",
+        "dev-doc-f4",
+        "dev-doc-f5",
+        "dev-doc-f6",
+        "dev-doc-f7",
+        "dev-doc-f8",
+        "dev-doc-f9"
+      ]
+    }
+  ],
+  "diagramIndex": [
+    {
+      "diagramId": "arch-system",
+      "title": "四阶段MCP项目管理工具 - 系统架构",
+      "type": "architecture",
+      "nodeCount": 7,
+      "edgeCount": 7
+    },
+    {
+      "diagramId": "web-frontend-class",
+      "title": "Web 前端 - 类图",
+      "type": "class",
+      "nodeCount": 18,
+      "edgeCount": 21
+    },
+    {
+      "diagramId": "web-frontend-flow",
+      "title": "Web 前端 - 核心交互流程图",
+      "type": "flow",
+      "nodeCount": 19,
+      "edgeCount": 33
+    }
+  ],
+  "requirementIndex": [
+    {
+      "requirementId": "23a5d5d0-4d16-42e7-a8da-614df27d783a",
+      "title": "需求状态三态化与自动流转",
+      "status": "done",
+      "branchName": "feature/requirement-status",
+      "taskCount": 4
+    },
+    {
+      "requirementId": "2e45ae8f-d841-4f74-8017-f42a072bd944",
+      "title": "MCP 优化：写操作只返回元数据（meta）",
+      "status": "done",
+      "branchName": "feature/mcp-meta-response",
+      "taskCount": 1
+    },
+    {
+      "requirementId": "311621a6-ca26-4050-b682-ac3ac2bba4d5",
+      "title": "基础：工程初始化/数据模型/存储基础设施",
+      "status": "done",
+      "taskCount": 4
+    },
+    {
+      "requirementId": "36c53c3a-5666-4ed4-942b-d0a148c4d306",
+      "title": "图库改造：独立图查看页面",
+      "status": "done",
+      "branchName": "feature/diagram-page",
+      "taskCount": 4
+    },
+    {
+      "requirementId": "48b8d597-c399-4168-ab88-ee56777c2f45",
+      "title": "图节点交互：点击联动与悬停提示",
+      "status": "dev",
+      "branchName": "feature/diagram-node-interaction",
+      "taskCount": 4
+    },
+    {
+      "requirementId": "65917ee2-c639-4b2f-9c39-74e5b13a76ec",
+      "title": "接口：MCP服务与HTTP API",
+      "status": "done",
+      "taskCount": 2
+    },
+    {
+      "requirementId": "6c3990f0-4296-4f32-aad9-c23f3d53c2e8",
+      "title": "增量迭代：文档库/任务模型/摘要优化",
+      "status": "done",
+      "taskCount": 8
+    },
+    {
+      "requirementId": "6c85f4f9-8ea2-4281-83c3-954dff6b80ee",
+      "title": "核心：实体仓储/索引/业务服务/布局引擎",
+      "status": "done",
+      "taskCount": 4
+    },
+    {
+      "requirementId": "71b8c0fe-3809-48f2-93b7-a26d50ec0967",
+      "title": "前端：工程框架/图表渲染/联调",
+      "status": "done",
+      "taskCount": 3
+    },
+    {
+      "requirementId": "af4b430a-b283-49ec-885b-680608580794",
+      "title": "图画布改造：Excalidraw 相机无限画布",
+      "status": "done",
+      "branchName": "feature/canvas-infinite",
+      "taskCount": 3
+    },
+    {
+      "requirementId": "bfc97a97-8c75-41bb-8428-83bf6ad9efcf",
+      "title": "图页面样式调整：抽屉/画布交互/折叠重构",
+      "status": "done",
+      "branchName": "feature/diagram-canvas",
+      "taskCount": 5
+    }
+  ],
+  "taskIndex": [
+    {
+      "taskId": "03ea269c-eaed-43ee-9417-54b3cd5ac339",
+      "title": "T16 文档全量 md 渲染与编辑",
+      "status": "done",
+      "requirementId": "6c3990f0-4296-4f32-aad9-c23f3d53c2e8"
+    },
+    {
+      "taskId": "0a96f292-b8cb-446c-a585-b6d727007fe1",
+      "title": "T25 前端：构建验证与联调",
+      "status": "done",
+      "requirementId": "36c53c3a-5666-4ed4-942b-d0a148c4d306"
+    },
+    {
+      "taskId": "1a64e8cf-c9d1-464a-9e2f-3fe55c492e99",
+      "title": "T05 存储层：实体仓储",
+      "status": "done",
+      "requirementId": "6c85f4f9-8ea2-4281-83c3-954dff6b80ee"
+    },
+    {
+      "taskId": "215e21b5-f874-4bbd-9c10-4b704c76d6d8",
+      "title": "T41 类图：节点点击高亮 + 连线高亮",
+      "status": "pending",
+      "requirementId": "48b8d597-c399-4168-ab88-ee56777c2f45"
+    },
+    {
+      "taskId": "22c78b75-778f-45de-9e89-a44106dba0a4",
+      "title": "T11 前端：工程与基础框架",
+      "status": "done",
+      "requirementId": "71b8c0fe-3809-48f2-93b7-a26d50ec0967"
+    },
+    {
+      "taskId": "23fe7395-895e-4b09-86b1-dbba9a1bbdfb",
+      "title": "T37 前端画布变换适配无限画布",
+      "status": "done",
+      "requirementId": "af4b430a-b283-49ec-885b-680608580794"
+    },
+    {
+      "taskId": "374ecab5-23d3-45bc-8cb1-9213d7e15246",
+      "title": "T03 存储层：仓库入口与目录",
+      "status": "done",
+      "requirementId": "311621a6-ca26-4050-b682-ac3ac2bba4d5"
+    },
+    {
+      "taskId": "3c8fb6a6-0633-4b23-8909-2a0e9c1f23a7",
+      "title": "T40 节点悬停：气泡描述提示",
+      "status": "pending",
+      "requirementId": "48b8d597-c399-4168-ab88-ee56777c2f45"
+    },
+    {
+      "taskId": "3e1589c2-3454-4393-8277-565bd9af7050",
+      "title": "T02 数据模型与Zod Schema",
+      "status": "done",
+      "requirementId": "311621a6-ca26-4050-b682-ac3ac2bba4d5"
+    },
+    {
+      "taskId": "400fbf64-bd65-4f0c-b14b-6b3213157133",
+      "title": "T39 架构层：节点点击关联图检测与气泡按钮",
+      "status": "in_progress",
+      "requirementId": "48b8d597-c399-4168-ab88-ee56777c2f45"
+    },
+    {
+      "taskId": "422c5764-dca7-4d2b-a153-7985e14439cc",
+      "title": "T18 需求/任务描述 md 输入与渲染",
+      "status": "done",
+      "requirementId": "6c3990f0-4296-4f32-aad9-c23f3d53c2e8"
+    },
+    {
+      "taskId": "47087385-4c9e-4db0-ab2e-0d0e4b166307",
+      "title": "T29 服务端：布局路由取消折叠聚焦参数",
+      "status": "done",
+      "requirementId": "bfc97a97-8c75-41bb-8428-83bf6ad9efcf"
+    },
+    {
+      "taskId": "4a80d797-e755-443a-94ed-c69054a91dd3",
+      "title": "T20 build 验证",
+      "status": "done",
+      "requirementId": "6c3990f0-4296-4f32-aad9-c23f3d53c2e8"
+    },
+    {
+      "taskId": "5a1512ea-89c7-46ea-b1d2-a213b934b699",
+      "title": "T09 MCP服务",
+      "status": "done",
+      "requirementId": "65917ee2-c639-4b2f-9c39-74e5b13a76ec"
+    },
+    {
+      "taskId": "5b94833a-241b-41db-ad73-66faa96369e8",
+      "title": "T08 布局引擎封装(Worker)",
+      "status": "done",
+      "requirementId": "6c85f4f9-8ea2-4281-83c3-954dff6b80ee"
+    },
+    {
+      "taskId": "6fa6473b-66d7-49cd-9155-4ad1b8d48c6b",
+      "title": "T04 存储层：文件IO安全引擎",
+      "status": "done",
+      "requirementId": "311621a6-ca26-4050-b682-ac3ac2bba4d5"
+    },
+    {
+      "taskId": "73d0a3d7-b482-43b2-b39d-8ab9020f5d10",
+      "title": "T32 共享层：需求状态枚举改三态",
+      "status": "done",
+      "requirementId": "23a5d5d0-4d16-42e7-a8da-614df27d783a"
+    },
+    {
+      "taskId": "747e73c8-c514-442f-8374-087e7ffa7665",
+      "title": "T26 前端：图页面左侧列表改为抽屉",
+      "status": "done",
+      "requirementId": "bfc97a97-8c75-41bb-8428-83bf6ad9efcf"
+    },
+    {
+      "taskId": "829d3356-a79c-4540-8082-a1ea99385950",
+      "title": "T10 HTTP API(Fastify)",
+      "status": "done",
+      "requirementId": "65917ee2-c639-4b2f-9c39-74e5b13a76ec"
+    },
+    {
+      "taskId": "84c6378d-eb3b-437f-96d5-187c7901dc20",
+      "title": "T19 任务文档去文档化",
+      "status": "done",
+      "requirementId": "6c3990f0-4296-4f32-aad9-c23f3d53c2e8"
+    },
+    {
+      "taskId": "9514ca87-8f37-4a1b-bbd9-dbdfa5f51143",
+      "title": "T06 索引服务",
+      "status": "done",
+      "requirementId": "6c85f4f9-8ea2-4281-83c3-954dff6b80ee"
+    },
+    {
+      "taskId": "975b0e7e-a2b9-4d7a-bb22-1f7ba768fda9",
+      "title": "T21 文档摘要展示与修改",
+      "status": "done",
+      "requirementId": "6c3990f0-4296-4f32-aad9-c23f3d53c2e8"
+    },
+    {
+      "taskId": "9c76c6d3-fa67-48bf-be05-25eeed57e77e",
+      "title": "T42 构建验证与联调",
+      "status": "pending",
+      "requirementId": "48b8d597-c399-4168-ab88-ee56777c2f45"
+    },
+    {
+      "taskId": "9e825f84-731c-4a55-a778-9de29f7c03bd",
+      "title": "T13 联调与测试",
+      "status": "done",
+      "requirementId": "71b8c0fe-3809-48f2-93b7-a26d50ec0967"
+    },
+    {
+      "taskId": "9eea0355-6b23-498b-b825-59a42abc2e06",
+      "title": "T12 前端：图表SVG渲染与交互",
+      "status": "done",
+      "requirementId": "71b8c0fe-3809-48f2-93b7-a26d50ec0967"
+    },
+    {
+      "taskId": "ace1ade1-bc56-4e3f-9f1e-6bda7c783583",
+      "title": "T31 MCP 写操作只返回 meta",
+      "status": "done",
+      "requirementId": "2e45ae8f-d841-4f74-8017-f42a072bd944"
+    },
+    {
+      "taskId": "b33402b1-f02d-46b8-9131-1030c1e025d6",
+      "title": "T33 服务层：需求自动流转",
+      "status": "done",
+      "requirementId": "23a5d5d0-4d16-42e7-a8da-614df27d783a"
+    },
+    {
+      "taskId": "bb506db5-b662-4ae1-8519-097ea20fc6c8",
+      "title": "T07 业务服务层",
+      "status": "done",
+      "requirementId": "6c85f4f9-8ea2-4281-83c3-954dff6b80ee"
+    },
+    {
+      "taskId": "c27087c7-c14d-404b-beaf-944da1a86aeb",
+      "title": "T24 前端：改造图库组件为跳转入口",
+      "status": "done",
+      "requirementId": "36c53c3a-5666-4ed4-942b-d0a148c4d306"
+    },
+    {
+      "taskId": "c3c5a4b6-dace-4088-bf27-3ef1dbc6b904",
+      "title": "T34 前端：需求状态三态展示与修改",
+      "status": "done",
+      "requirementId": "23a5d5d0-4d16-42e7-a8da-614df27d783a"
+    },
+    {
+      "taskId": "c6eac23e-a397-4c83-8e1e-bb4efc923651",
+      "title": "T17 需求/任务 description 字段链路打通",
+      "status": "done",
+      "requirementId": "6c3990f0-4296-4f32-aad9-c23f3d53c2e8"
+    },
+    {
+      "taskId": "d0964556-0517-4ddb-8942-377396e3089f",
+      "title": "T22 前端：新增图查看路由",
+      "status": "done",
+      "requirementId": "36c53c3a-5666-4ed4-942b-d0a148c4d306"
+    },
+    {
+      "taskId": "d2953025-f5f5-40cd-8490-8d3e912fdefe",
+      "title": "T23 前端：新增图查看页面（左右结构）",
+      "status": "done",
+      "requirementId": "36c53c3a-5666-4ed4-942b-d0a148c4d306"
+    },
+    {
+      "taskId": "d40a9292-ac0a-4488-8863-889dd4efdefc",
+      "title": "T27 前端：图画布拖拽平移与滚轮缩放",
+      "status": "done",
+      "requirementId": "bfc97a97-8c75-41bb-8428-83bf6ad9efcf"
+    },
+    {
+      "taskId": "d8a995fc-ef4d-414c-8830-f1a7fccc1cca",
+      "title": "T28 前端：折叠改单模块本地折叠",
+      "status": "done",
+      "requirementId": "bfc97a97-8c75-41bb-8428-83bf6ad9efcf"
+    },
+    {
+      "taskId": "d9705578-8d3e-4c4c-8952-a018b8be863c",
+      "title": "T30 构建验证与联调",
+      "status": "done",
+      "requirementId": "bfc97a97-8c75-41bb-8428-83bf6ad9efcf"
+    },
+    {
+      "taskId": "dadc67c9-960d-4d67-9d78-56255c556e44",
+      "title": "T15 文档库前端组件",
+      "status": "done",
+      "requirementId": "6c3990f0-4296-4f32-aad9-c23f3d53c2e8"
+    },
+    {
+      "taskId": "db1f797f-2f1a-4aa8-8020-09d77b15a849",
+      "title": "T35 构建验证与联调",
+      "status": "done",
+      "requirementId": "23a5d5d0-4d16-42e7-a8da-614df27d783a"
+    },
+    {
+      "taskId": "deef6501-e74d-4d5a-aaea-06fc794b6868",
+      "title": "T38 构建验证与联调",
+      "status": "done",
+      "requirementId": "af4b430a-b283-49ec-885b-680608580794"
+    },
+    {
+      "taskId": "f619f86f-6932-416e-8d5f-63ae2d777ab7",
+      "title": "T14 文档元信息支持 docType",
+      "status": "done",
+      "requirementId": "6c3990f0-4296-4f32-aad9-c23f3d53c2e8"
+    },
+    {
+      "taskId": "f9e277c4-af62-47c9-ab78-12886b27d9eb",
+      "title": "T01 工程初始化",
+      "status": "done",
+      "requirementId": "311621a6-ca26-4050-b682-ac3ac2bba4d5"
+    },
+    {
+      "taskId": "fb6a76a1-27ff-46d4-9625-44953beb2b8b",
+      "title": "T36 SVG 画布改无限坐标系",
+      "status": "done",
+      "requirementId": "af4b430a-b283-49ec-885b-680608580794"
+    }
+  ]
 }

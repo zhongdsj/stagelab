@@ -1,0 +1,15 @@
+{
+  "taskId": "829d3356-a79c-4540-8082-a1ea99385950",
+  "requirementId": "65917ee2-c639-4b2f-9c39-74e5b13a76ec",
+  "title": "T10 HTTP API(Fastify)",
+  "description": "基于 Fastify 实现开发文档第九章全部路由：项目列表/创建/详情/切阶段/索引、布局计算、文档分片列表/读取。委托业务服务层与布局引擎。\n\n完成记录：http/server + routes 全部实现，app.inject 内联 19 项、真实端口验证全部通过；CORS OPTIONS 预检 204。",
+  "status": "done",
+  "acceptanceCriteria": "全部接口按表实现、返回符合数据模型；layout 接口实时调用布局引擎返回带坐标结果（支持 focusModuleId 折叠）；文档分片按分片返回、无全量大文本；前端跨域配置可用（OPTIONS 预检 204 + 全响应 CORS 头）。",
+  "files": [
+    "packages/server/src/http/server.ts",
+    "packages/server/src/http/routes/*.ts"
+  ],
+  "changeType": "新增",
+  "createdAt": 1788094318133,
+  "updatedAt": 1788145257416
+}

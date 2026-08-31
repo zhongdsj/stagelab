@@ -1,0 +1,13 @@
+{
+  "requirementId": "71b8c0fe-3809-48f2-93b7-a26d50ec0967",
+  "title": "前端：工程框架/图表渲染/联调",
+  "description": "## 分组说明\n\nVue3 + Vite 前端与端到端联调。\n\n### 包含任务\n- T11 前端：工程与基础框架\n- T12 前端：图表SVG渲染与交互\n- T13 联调与测试\n\n### 关键约束\n- 零Mermaid：全链路不出现、不解析、不存储 Mermaid 文本\n- 图表用原生 SVG（无第三方图表库）\n- 折叠/展开为会话态，不持久化",
+  "status": "done",
+  "taskIds": [
+    "22c78b75-778f-45de-9e89-a44106dba0a4",
+    "9eea0355-6b23-498b-b825-59a42abc2e06",
+    "9e825f84-731c-4a55-a778-9de29f7c03bd"
+  ],
+  "createdAt": 1788094208411,
+  "updatedAt": 1788145354052
+}

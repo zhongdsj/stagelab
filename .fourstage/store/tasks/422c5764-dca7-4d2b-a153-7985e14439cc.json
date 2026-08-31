@@ -1,0 +1,15 @@
+{
+  "taskId": "422c5764-dca7-4d2b-a153-7985e14439cc",
+  "requirementId": "6c3990f0-4296-4f32-aad9-c23f3d53c2e8",
+  "title": "T18 需求/任务描述 md 输入与渲染",
+  "description": "RequirementTasks.vue 中需求与任务增加「描述（md）」输入与渲染：需求创建/修改表单增加 description textarea、需求卡片展开区渲染需求描述（md）；任务创建/修改表单增加 description textarea、任务行渲染任务描述（md）。采用 marked + DOMPurify 渲染（复用 T16 方案）。\n\n完成记录：需求/任务创建修改表单增加 description textarea 并透传；需求展开区与任务行渲染 md；新增 md-body 渲染样式与表单布局样式。",
+  "status": "done",
+  "acceptanceCriteria": "需求创建/修改可填写并保存 md 描述；任务创建/修改可填写并保存 md 描述；需求/任务描述正确渲染为 Markdown 且 XSS 防护生效。",
+  "files": [
+    "packages/web/src/components/requirement/RequirementTasks.vue",
+    "packages/web/src/api/requirements.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788094350670,
+  "updatedAt": 1788145300900
+}

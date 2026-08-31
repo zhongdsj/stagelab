@@ -1,0 +1,15 @@
+{
+  "taskId": "03ea269c-eaed-43ee-9417-54b3cd5ac339",
+  "requirementId": "6c3990f0-4296-4f32-aad9-c23f3d53c2e8",
+  "title": "T16 文档全量 md 渲染与编辑",
+  "description": "DocumentFragments.vue 支持文档全文 Markdown 渲染（marked 解析 + DOMPurify 消毒防 XSS）与全量编辑保存（服务端从 order 0 覆盖，超长自动再分片 + 清理孤儿分片）。\n\n完成记录：引入 marked + dompurify；只读态 v-html 渲染 md、编辑态 textarea 全量编辑；保存调用 updateFullDocument（PUT /full 覆盖全文）。",
+  "status": "done",
+  "acceptanceCriteria": "Markdown 正确渲染（标题/列表/代码块/表格等）；XSS 防护生效（DOMPurify 消毒）；编辑保存后重新加载最新内容。",
+  "files": [
+    "packages/web/src/components/document/DocumentFragments.vue",
+    "packages/web/src/api/documents.ts"
+  ],
+  "changeType": "新增",
+  "createdAt": 1788094342796,
+  "updatedAt": 1788145264164
+}

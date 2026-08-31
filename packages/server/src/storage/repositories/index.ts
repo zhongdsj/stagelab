@@ -9,6 +9,7 @@
 import {
   EntityRepository,
   setEntityChangedHandler,
+  notifyChanged,
   type EntityChangedHandler
 } from "./base.js";
 import {
@@ -18,9 +19,23 @@ import {
   ChangeRecordSchema,
   BugRecordSchema,
   DiagramSchema,
-  DocumentFragmentSchema
+  DocumentFragmentSchema,
+  DocumentMetaSchema
 } from "@fourstage/shared";
-import { entityPath } from "../paths.js";
+import fs from "node:fs";
+import {
+  entityPath,
+  storeSubdir,
+  documentDir,
+  documentFragmentPath,
+  documentMetaPath
+} from "../paths.js";
+import {
+  readJsonFile,
+  writeJsonFile,
+  FileNotFoundError,
+  invalidateCache
+} from "../io.js";
 import type { RepoWorkspace } from "../workspace.js";
 import type {
   Project,
@@ -29,7 +44,8 @@ import type {
   ChangeRecord,
   BugRecord,
   Diagram,
-  DocumentFragment
+  DocumentFragment,
+  DocumentMeta
 } from "@fourstage/shared";
 
 /** Project 仓储（meta.json 单文件） */
@@ -131,26 +147,146 @@ export class BugRecordRepository extends EntityRepository<BugRecord> {
   }
 }
 
-/** DocumentFragment 文档分片仓储 */
+/**
+ * DocumentFragment 文档分片仓储
+ *
+ * 存储形态：store/documents/{docId}/{fragmentId}.json（按文档子目录组织，观感友好）
+ * fragmentId 全局唯一，格式固定为 {docId}-f{order}，由正则贪婪解析所属 docId。
+ */
 export class DocumentFragmentRepository extends EntityRepository<DocumentFragment> {
   constructor(workspace: RepoWorkspace) {
     super(workspace, {
-      filePath: (repoRoot, id) => entityPath.document(repoRoot, id),
+      // 占位路径（get/save 等已 override，按 docId 目录定位）
+      filePath: (repoRoot, id) => documentFragmentPath(repoRoot, "unknown", id),
       schema: DocumentFragmentSchema,
       idField: "fragmentId"
     });
   }
 
-  /** 按文档列出全部分片 */
-  async listByDoc(docId: string): Promise<DocumentFragment[]> {
-    const all = await this.getAll("documents");
-    return all
-      .filter((f) => f.docId === docId)
-      .sort((a, b) => a.order - b.order);
+  /** 从 fragmentId 解析所属 docId（贪婪匹配最长前缀，兼容 docId 内含 "-f数字"） */
+  private docIdOf(fragmentId: string): string {
+    const m = /^(.*)-f\d+$/.exec(fragmentId);
+    if (!m) {
+      throw new Error(`分片 ID 格式非法: ${fragmentId}（应为 {docId}-f{order}）`);
+    }
+    return m[1];
   }
 
+  /** 确保文档目录存在 */
+  private async ensureDir(docId: string): Promise<void> {
+    await fs.promises.mkdir(documentDir(this.repoRoot, docId), {
+      recursive: true
+    });
+  }
+
+  override async get(fragmentId: string): Promise<DocumentFragment> {
+    const docId = this.docIdOf(fragmentId);
+    const fp = documentFragmentPath(this.repoRoot, docId, fragmentId);
+    const raw = await readJsonFile<unknown>(fp);
+    const parsed = this.schema.safeParse(raw);
+    if (!parsed.success) {
+      throw new Error(
+        `实体数据校验失败(${fp}): ${parsed.error.issues
+          .map((i) => `${i.path.join(".")}: ${i.message}`)
+          .join("; ")}`
+      );
+    }
+    return parsed.data;
+  }
+
+  override async exists(fragmentId: string): Promise<boolean> {
+    const docId = this.docIdOf(fragmentId);
+    return fs.existsSync(documentFragmentPath(this.repoRoot, docId, fragmentId));
+  }
+
+  override async save(
+    entity: DocumentFragment,
+    baseMtime?: number
+  ): Promise<void> {
+    await this.ensureDir(entity.docId);
+    const fp = documentFragmentPath(
+      this.repoRoot,
+      entity.docId,
+      entity.fragmentId
+    );
+    await writeJsonFile(fp, entity, { baseMtime });
+    await notifyChanged(this.repoRoot);
+  }
+
+  override async delete(fragmentId: string): Promise<void> {
+    const docId = this.docIdOf(fragmentId);
+    const fp = documentFragmentPath(this.repoRoot, docId, fragmentId);
+    if (!fs.existsSync(fp)) {
+      throw new FileNotFoundError(fp);
+    }
+    await fs.promises.unlink(fp);
+    invalidateCache(fp);
+    await notifyChanged(this.repoRoot);
+  }
+
+  /** 列出全部文档的 docId 集合 */
+  async listDocIds(): Promise<string[]> {
+    const dir = storeSubdir(this.repoRoot, "documents");
+    if (!fs.existsSync(dir)) return [];
+    const entries = await fs.promises.readdir(dir, { withFileTypes: true });
+    return entries.filter((e) => e.isDirectory()).map((e) => e.name);
+  }
+
+  /** 按文档列出全部分片（排除 meta.json，按 order 排序） */
+  async listByDoc(docId: string): Promise<DocumentFragment[]> {
+    const dir = documentDir(this.repoRoot, docId);
+    if (!fs.existsSync(dir)) return [];
+    const files = await fs.promises.readdir(dir);
+    const result: DocumentFragment[] = [];
+    for (const f of files) {
+      if (!f.endsWith(".json") || f === "meta.json") continue;
+      try {
+        result.push(await this.get(f.replace(/\.json$/, "")));
+      } catch {
+        // 单分片损坏跳过（索引重建容忍）
+      }
+    }
+    return result.sort((a, b) => a.order - b.order);
+  }
+
+  /** 列出全部分片（跨全部文档） */
   async list(): Promise<DocumentFragment[]> {
-    return this.getAll("documents");
+    const ids = await this.listDocIds();
+    const result: DocumentFragment[] = [];
+    for (const docId of ids) {
+      result.push(...(await this.listByDoc(docId)));
+    }
+    return result;
+  }
+}
+
+/** DocumentMeta 文档元信息仓储（store/documents/{docId}/meta.json，标题独立于分片） */
+export class DocumentMetaRepository extends EntityRepository<DocumentMeta> {
+  constructor(workspace: RepoWorkspace) {
+    super(workspace, {
+      filePath: (repoRoot, docId) => documentMetaPath(repoRoot, docId),
+      schema: DocumentMetaSchema,
+      idField: "docId"
+    });
+  }
+
+  /** 列出全部文档元信息 */
+  async list(): Promise<DocumentMeta[]> {
+    const docsDir = storeSubdir(this.repoRoot, "documents");
+    if (!fs.existsSync(docsDir)) return [];
+    const entries = await fs.promises.readdir(docsDir, { withFileTypes: true });
+    const result: DocumentMeta[] = [];
+    for (const e of entries) {
+      if (!e.isDirectory()) continue;
+      const mp = documentMetaPath(this.repoRoot, e.name);
+      if (!fs.existsSync(mp)) continue;
+      try {
+        result.push(await this.get(e.name));
+      } catch {
+        // 单 meta 损坏跳过
+      }
+    }
+    return result;
   }
 }
 

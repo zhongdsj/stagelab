@@ -626,10 +626,60 @@ export async function computeLayout(
     });
   }
 
+  // 画布尺寸：取全部元素（节点/连线路径/分组框）的实际包围盒并集，
+  // 避免绕行连线/自环等超出网格尺寸导致边缘渲染不完整。
+  const EDGE_MARGIN = 16; // 四周留白，防止边框/箭头贴边被裁
+  let minX = Infinity;
+  let minY = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+  const span = (x: number, y: number) => {
+    if (x < minX) minX = x;
+    if (y < minY) minY = y;
+    if (x > maxX) maxX = x;
+    if (y > maxY) maxY = y;
+  };
+  for (const n of nodes) {
+    span(n.x, n.y);
+    span(n.x + n.width, n.y + n.height);
+  }
+  for (const e of edges) {
+    for (const p of e.points) span(p.x, p.y);
+  }
+  for (const g of groupBoxes) {
+    span(g.x, g.y);
+    span(g.x + g.width, g.y + g.height);
+  }
+  if (!Number.isFinite(minX)) {
+    minX = 0;
+    minY = 0;
+    maxX = totalW;
+    maxY = totalH;
+  }
+  // 整体平移到非负起点（绕行通道等可能存在负坐标），保证 SVG viewBox 从 0 开始完整覆盖
+  const dx = minX;
+  const dy = minY;
+  for (const n of nodes) {
+    n.x -= dx;
+    n.y -= dy;
+  }
+  for (const e of edges) {
+    for (const p of e.points) {
+      p.x -= dx;
+      p.y -= dy;
+    }
+  }
+  for (const g of groupBoxes) {
+    g.x -= dx;
+    g.y -= dy;
+  }
+  const canvasWidth = Math.ceil(maxX - minX + EDGE_MARGIN * 2);
+  const canvasHeight = Math.ceil(maxY - minY + EDGE_MARGIN * 2);
+
   return {
     diagramId: diagram.diagramId,
-    width: Math.ceil(totalW),
-    height: Math.ceil(totalH),
+    width: Math.max(1, canvasWidth),
+    height: Math.max(1, canvasHeight),
     nodes,
     edges,
     groups: groupBoxes

@@ -1,0 +1,12 @@
+{
+  "requirementId": "65917ee2-c639-4b2f-9c39-74e5b13a76ec",
+  "title": "接口：MCP服务与HTTP API",
+  "description": "## 分组说明\n\n对外接口层：MCP（stdio）与 HTTP（Fastify）。\n\n### 包含任务\n- T09 MCP服务\n- T10 HTTP API(Fastify)\n\n### 关键约束\n- MCP 工具：项目管理7 + 文档4 + 需求任务7 + 图元5 + 索引2\n- MCP 不提供删除操作、不提供全量拉取大对象\n- HTTP 错误统一映射（404/422/409/400/500）\n- CORS：OPTIONS 预检 204 + 全响应 CORS 头",
+  "status": "done",
+  "taskIds": [
+    "5a1512ea-89c7-46ea-b1d2-a213b934b699",
+    "829d3356-a79c-4540-8082-a1ea99385950"
+  ],
+  "createdAt": 1788094207312,
+  "updatedAt": 1788145251359
+}

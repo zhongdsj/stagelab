@@ -1,0 +1,14 @@
+{
+  "taskId": "9e825f84-731c-4a55-a778-9de29f7c03bd",
+  "requirementId": "71b8c0fe-3809-48f2-93b7-a26d50ec0967",
+  "title": "T13 联调与测试",
+  "description": "端到端联调与集成测试：MCP↔服务↔存储全链路；前端↔HTTP↔布局引擎；Git 场景模拟（切换分支后 mtime 生效读新数据、冲突文件返回格式损坏提示）。",
+  "status": "done",
+  "acceptanceCriteria": "MCP 工具全链路调用正确；前端图表渲染与 HTTP/布局链路打通；Git 切换分支场景读取自动加载新分支数据；冲突文件场景返回「数据文件格式损坏，请手动解决 git 冲突后继续」。",
+  "files": [
+    "tests/*"
+  ],
+  "changeType": "新增",
+  "createdAt": 1788094331114,
+  "updatedAt": 1788145284070
+}

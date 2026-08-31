@@ -1,0 +1,18 @@
+{
+  "taskId": "bb506db5-b662-4ae1-8519-097ea20fc6c8",
+  "requirementId": "6c85f4f9-8ea2-4281-83c3-954dff6b80ee",
+  "title": "T07 业务服务层",
+  "description": "实现五大业务服务：项目管理、文档分片、图元CRUD、需求与任务、仓库工作区。图元局部 patch 支持 addNode/updateNode/removeNode/addEdge/updateEdge/removeEdge/addGroup/updateGroup/removeGroup 九种操作。文档自动分片（超 2000 字拆分）。\n\n完成记录：五大服务全部实现，冒烟验证 16 项全部通过；修复 ProjectSchema 初始 docId/taskDocId 空串、DiagramSchema 特征字段放宽。",
+  "status": "done",
+  "acceptanceCriteria": "各服务方法语义对齐开发文档第八章；图元局部更新支持单节点/连线/分组 patch 不重传整图；MCP 层永不返回布局坐标；需求服务支持状态生命周期（active/done/archived）与分支名更新。",
+  "files": [
+    "packages/server/src/services/project.service.ts",
+    "packages/server/src/services/document.service.ts",
+    "packages/server/src/services/diagram.service.ts",
+    "packages/server/src/services/requirement.service.ts",
+    "packages/server/src/services/workspace.service.ts"
+  ],
+  "changeType": "新增",
+  "createdAt": 1788094305360,
+  "updatedAt": 1788145277053
+}

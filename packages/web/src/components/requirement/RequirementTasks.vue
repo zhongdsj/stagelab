@@ -8,10 +8,18 @@
     </div>
 
     <!-- 创建需求表单 -->
-    <form v-if="showCreateReq" class="inline-form" @submit.prevent="onCreateRequirement">
-      <input v-model="reqForm.title" class="input" placeholder="需求标题（必填）" maxlength="80" />
-      <input v-model="reqForm.branchName" class="input" placeholder="Git 分支名（可选）" maxlength="80" />
-      <button class="btn btn-sm btn-primary" type="submit" :disabled="creatingReq">创建</button>
+    <form v-if="showCreateReq" class="inline-form col" @submit.prevent="onCreateRequirement">
+      <div class="form-row">
+        <input v-model="reqForm.title" class="input" placeholder="需求标题（必填）" maxlength="80" />
+        <input v-model="reqForm.branchName" class="input" placeholder="Git 分支名（可选）" maxlength="80" />
+        <button class="btn btn-sm btn-primary" type="submit" :disabled="creatingReq">创建</button>
+      </div>
+      <textarea
+        v-model="reqForm.description"
+        class="input ta"
+        rows="3"
+        placeholder="需求描述（markdown，可选）"
+      ></textarea>
     </form>
 
     <p v-if="loading" class="hint">加载中…</p>
@@ -35,31 +43,56 @@
         </div>
 
         <!-- 修改需求表单 -->
-        <form v-if="editingReqId === req.requirementId" class="inline-form" @submit.prevent="onSaveReq">
-          <input v-model="editReqForm.title" class="input" placeholder="需求标题（必填）" maxlength="80" />
-          <input v-model="editReqForm.branchName" class="input" placeholder="Git 分支名（可选）" maxlength="80" />
-          <button class="btn btn-sm btn-primary" type="submit" :disabled="savingReq">保存</button>
-          <button class="btn btn-sm" type="button" @click="editingReqId = null">取消</button>
+        <form v-if="editingReqId === req.requirementId" class="inline-form col" @submit.prevent="onSaveReq">
+          <div class="form-row">
+            <input v-model="editReqForm.title" class="input" placeholder="需求标题（必填）" maxlength="80" />
+            <input v-model="editReqForm.branchName" class="input" placeholder="Git 分支名（可选）" maxlength="80" />
+            <!-- T34：需求状态三态（开发/测试/完成），前端可修改 -->
+            <select v-model="editReqForm.status" class="input select">
+              <option value="dev">开发</option>
+              <option value="test">测试</option>
+              <option value="done">完成</option>
+            </select>
+            <button class="btn btn-sm btn-primary" type="submit" :disabled="savingReq">保存</button>
+            <button class="btn btn-sm" type="button" @click="editingReqId = null">取消</button>
+          </div>
+          <textarea
+            v-model="editReqForm.description"
+            class="input ta"
+            rows="3"
+            placeholder="需求描述（markdown，可选）"
+          ></textarea>
         </form>
+
+        <!-- 需求描述（md 渲染） -->
+        <div v-if="req.description && !editingReqId && expanded.has(req.requirementId)" class="md-body req-desc" v-html="renderMd(req.description)"></div>
 
         <!-- 任务分组列表 -->
         <div v-if="expanded.has(req.requirementId)" class="task-list">
-          <div v-for="t in taskMap[req.requirementId] ?? []" :key="t.taskId" class="task-row">
+          <div v-for="t in taskMap[req.requirementId] ?? []" :key="t.taskId" class="task-item">
             <!-- 任务编辑态 -->
-            <template v-if="editingTaskId === t.taskId">
-              <input v-model="editTaskForm.title" class="input" placeholder="任务标题（必填）" maxlength="80" />
-              <select v-model="editTaskForm.changeType" class="input select">
-                <option value="新增">新增</option>
-                <option value="修改">修改</option>
-                <option value="删除">删除</option>
-              </select>
-              <button class="btn btn-sm btn-primary" type="button" :disabled="savingTask" @click="onSaveTask(req.requirementId, t.taskId)">
-                保存
-              </button>
-              <button class="btn btn-sm" type="button" @click="editingTaskId = null">取消</button>
-            </template>
+            <div v-if="editingTaskId === t.taskId" class="task-row col">
+              <div class="form-row">
+                <input v-model="editTaskForm.title" class="input" placeholder="任务标题（必填）" maxlength="80" />
+                <select v-model="editTaskForm.changeType" class="input select">
+                  <option value="新增">新增</option>
+                  <option value="修改">修改</option>
+                  <option value="删除">删除</option>
+                </select>
+                <button class="btn btn-sm btn-primary" type="button" :disabled="savingTask" @click="onSaveTask(req.requirementId, t.taskId)">
+                  保存
+                </button>
+                <button class="btn btn-sm" type="button" @click="editingTaskId = null">取消</button>
+              </div>
+              <textarea
+                v-model="editTaskForm.description"
+                class="input ta"
+                rows="3"
+                placeholder="任务描述（markdown，可选）"
+              ></textarea>
+            </div>
             <!-- 任务展示态 -->
-            <template v-else>
+            <div v-else class="task-row">
               <span class="task-name">{{ t.title }}</span>
               <select
                 class="task-status"
@@ -75,20 +108,30 @@
                 <button class="btn btn-sm" type="button" @click="openEditTask(t)">修改</button>
                 <button class="btn btn-sm btn-danger" type="button" @click="onDeleteTask(req.requirementId, t)">删除</button>
               </span>
-            </template>
+            </div>
+            <!-- 任务描述（md 渲染） -->
+            <div v-if="t.description && editingTaskId !== t.taskId" class="md-body task-desc" v-html="renderMd(t.description)"></div>
           </div>
 
           <!-- 创建任务 -->
-          <div v-if="showCreateTask === req.requirementId" class="inline-form task-form">
-            <input v-model="taskForm.title" class="input" placeholder="任务标题（必填）" maxlength="80" />
-            <select v-model="taskForm.changeType" class="input select">
-              <option value="新增">新增</option>
-              <option value="修改">修改</option>
-              <option value="删除">删除</option>
-            </select>
-            <button class="btn btn-sm btn-primary" type="button" :disabled="creatingTask" @click="onCreateTask(req.requirementId)">
-              添加
-            </button>
+          <div v-if="showCreateTask === req.requirementId" class="inline-form col task-form">
+            <div class="form-row">
+              <input v-model="taskForm.title" class="input" placeholder="任务标题（必填）" maxlength="80" />
+              <select v-model="taskForm.changeType" class="input select">
+                <option value="新增">新增</option>
+                <option value="修改">修改</option>
+                <option value="删除">删除</option>
+              </select>
+              <button class="btn btn-sm btn-primary" type="button" :disabled="creatingTask" @click="onCreateTask(req.requirementId)">
+                添加
+              </button>
+            </div>
+            <textarea
+              v-model="taskForm.description"
+              class="input ta"
+              rows="3"
+              placeholder="任务描述（markdown，可选）"
+            ></textarea>
           </div>
           <button v-else class="btn btn-sm add-task" type="button" @click="openCreateTask(req.requirementId)">
             + 添加任务
@@ -101,6 +144,8 @@
 
 <script setup lang="ts">
 import { onMounted, reactive, ref } from "vue";
+import { marked } from "marked";
+import DOMPurify from "dompurify";
 import {
   listRequirements,
   createRequirement,
@@ -114,9 +159,14 @@ import {
   ApiError
 } from "../../api/index";
 import type { RequirementItem, TaskSummary } from "../../api/requirements";
-import type { TaskStatus } from "@fourstage/shared";
+import type { RequirementStatus, TaskStatus } from "@fourstage/shared";
 
 const props = defineProps<{ projectId: string }>();
+
+/** Markdown 渲染（marked 解析 + DOMPurify 消毒防 XSS） */
+function renderMd(src: string): string {
+  return DOMPurify.sanitize(marked.parse(src) as string);
+}
 
 const loading = ref(false);
 const error = ref("");
@@ -127,26 +177,27 @@ const taskMap = ref<Record<string, TaskSummary[]>>({});
 
 const showCreateReq = ref(false);
 const creatingReq = ref(false);
-const reqForm = reactive({ title: "", branchName: "" });
+const reqForm = reactive({ title: "", branchName: "", description: "" });
 
 // 修改需求状态
 const editingReqId = ref<string | null>(null);
 const savingReq = ref(false);
-const editReqForm = reactive({ title: "", branchName: "" });
+const editReqForm = reactive({ title: "", branchName: "", description: "", status: "dev" as RequirementStatus });
 
 const showCreateTask = ref<string | null>(null);
 const creatingTask = ref(false);
-const taskForm = reactive({ title: "", changeType: "新增" as "新增" | "修改" | "删除" });
+const taskForm = reactive({ title: "", changeType: "新增" as "新增" | "修改" | "删除", description: "" });
 
 // 修改任务状态
 const editingTaskId = ref<string | null>(null);
 const savingTask = ref(false);
-const editTaskForm = reactive({ title: "", changeType: "新增" as "新增" | "修改" | "删除" });
+const editTaskForm = reactive({ title: "", changeType: "新增" as "新增" | "修改" | "删除", description: "" });
 
+// T34：需求状态三态（开发/测试/完成）
 const STATUS_LABELS: Record<string, string> = {
-  active: "进行中",
-  done: "已完成",
-  archived: "已归档"
+  dev: "开发",
+  test: "测试",
+  done: "完成"
 };
 const statusLabel = (s: string) => STATUS_LABELS[s] ?? s;
 
@@ -186,9 +237,13 @@ async function onCreateRequirement() {
   creatingReq.value = true;
   error.value = "";
   try {
-    await createRequirement(props.projectId, title, { branchName: reqForm.branchName.trim() || undefined });
+    await createRequirement(props.projectId, title, {
+      description: reqForm.description.trim() || undefined,
+      branchName: reqForm.branchName.trim() || undefined
+    });
     reqForm.title = "";
     reqForm.branchName = "";
+    reqForm.description = "";
     showCreateReq.value = false;
     await load();
   } catch (e) {
@@ -200,6 +255,7 @@ async function onCreateRequirement() {
 
 function openCreateTask(requirementId: string) {
   taskForm.title = "";
+  taskForm.description = "";
   showCreateTask.value = requirementId;
 }
 
@@ -208,6 +264,8 @@ function openEditReq(req: RequirementItem) {
   editingReqId.value = req.requirementId;
   editReqForm.title = req.title;
   editReqForm.branchName = req.branchName ?? "";
+  editReqForm.description = req.description ?? "";
+  editReqForm.status = req.status;
 }
 
 /** 保存需求修改 */
@@ -224,7 +282,9 @@ async function onSaveReq() {
   try {
     await updateRequirement(props.projectId, rid, {
       title,
-      branchName: editReqForm.branchName.trim() || undefined
+      description: editReqForm.description.trim() || undefined,
+      branchName: editReqForm.branchName.trim() || undefined,
+      status: editReqForm.status
     });
     editingReqId.value = null;
     await load();
@@ -263,11 +323,12 @@ async function onCreateTask(requirementId: string) {
     await createTask(props.projectId, requirementId, {
       title,
       changeType: taskForm.changeType,
-      description: "",
+      description: taskForm.description.trim() || "",
       acceptanceCriteria: "",
       files: []
     });
     taskForm.title = "";
+    taskForm.description = "";
     showCreateTask.value = null;
     taskMap.value[requirementId] = await listTasks(props.projectId, requirementId);
     await load(); // 刷新需求任务计数
@@ -294,6 +355,7 @@ function openEditTask(t: TaskSummary) {
   editingTaskId.value = t.taskId;
   editTaskForm.title = t.title;
   editTaskForm.changeType = t.changeType;
+  editTaskForm.description = t.description ?? "";
 }
 
 /** 保存任务修改 */
@@ -308,7 +370,8 @@ async function onSaveTask(requirementId: string, taskId: string) {
   try {
     await updateTask(props.projectId, taskId, {
       title,
-      changeType: editTaskForm.changeType
+      changeType: editTaskForm.changeType,
+      description: editTaskForm.description.trim() || ""
     });
     editingTaskId.value = null;
     taskMap.value[requirementId] = await listTasks(props.projectId, requirementId);
@@ -404,6 +467,12 @@ onMounted(load);
 .input:focus {
   border-color: #409eff;
 }
+.ta {
+  width: 100%;
+  resize: vertical;
+  line-height: 1.6;
+  font-family: inherit;
+}
 .select {
   flex: 0 0 auto;
   width: auto;
@@ -412,6 +481,15 @@ onMounted(load);
   display: flex;
   gap: 8px;
   margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.inline-form.col {
+  flex-direction: column;
+  align-items: stretch;
+}
+.form-row {
+  display: flex;
+  gap: 8px;
   flex-wrap: wrap;
 }
 .req-list {
@@ -470,17 +548,17 @@ onMounted(load);
   gap: 6px;
   flex-shrink: 0;
 }
-.req-active {
+.req-dev {
   background: #ecf5ff;
   color: #409eff;
+}
+.req-test {
+  background: #fdf6ec;
+  color: #e6a23c;
 }
 .req-done {
   background: #f0f9eb;
   color: #67c23a;
-}
-.req-archived {
-  background: #f4f4f5;
-  color: #909399;
 }
 .task-list {
   padding: 8px 12px 12px;
@@ -489,14 +567,21 @@ onMounted(load);
   flex-direction: column;
   gap: 6px;
 }
+.task-item {
+  border: 1px solid #f0f2f5;
+  border-radius: 6px;
+  background: #fff;
+}
 .task-row {
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 6px 8px;
   border-radius: 4px;
-  background: #fff;
-  border: 1px solid #f0f2f5;
+}
+.task-row.col {
+  flex-direction: column;
+  align-items: stretch;
 }
 .task-name {
   flex: 1;
@@ -531,5 +616,111 @@ onMounted(load);
 }
 .hint.error {
   color: #f56c6c;
+}
+/* 需求/任务描述 md 渲染 */
+.req-desc {
+  padding: 8px 12px;
+  border-bottom: 1px solid #ebeef5;
+}
+.task-desc {
+  padding: 0 8px 8px;
+}
+.md-body {
+  font-size: 13px;
+  line-height: 1.7;
+  color: #606266;
+  word-break: break-word;
+}
+.md-body :deep(h1),
+.md-body :deep(h2),
+.md-body :deep(h3),
+.md-body :deep(h4),
+.md-body :deep(h5),
+.md-body :deep(h6) {
+  margin: 0.8em 0 0.4em;
+  font-weight: 600;
+  color: #1f2329;
+  line-height: 1.4;
+}
+.md-body :deep(h1) {
+  font-size: 18px;
+}
+.md-body :deep(h2) {
+  font-size: 16px;
+}
+.md-body :deep(h3) {
+  font-size: 15px;
+}
+.md-body :deep(h4) {
+  font-size: 14px;
+}
+.md-body :deep(p) {
+  margin: 0.5em 0;
+}
+.md-body :deep(ul),
+.md-body :deep(ol) {
+  margin: 0.5em 0;
+  padding-left: 1.5em;
+}
+.md-body :deep(li) {
+  margin: 0.2em 0;
+}
+.md-body :deep(strong) {
+  font-weight: 600;
+}
+.md-body :deep(a) {
+  color: #409eff;
+  text-decoration: none;
+}
+.md-body :deep(blockquote) {
+  margin: 0.6em 0;
+  padding: 0.2em 0.8em;
+  border-left: 4px solid #dcdfe6;
+  color: #909399;
+  background: #f8f9fa;
+}
+.md-body :deep(code) {
+  padding: 0.15em 0.4em;
+  font-size: 12px;
+  font-family: Consolas, Monaco, monospace;
+  background: #f0f2f5;
+  border-radius: 4px;
+  color: #c7254e;
+}
+.md-body :deep(pre) {
+  margin: 0.6em 0;
+  padding: 10px 12px;
+  background: #282c34;
+  border-radius: 6px;
+  overflow: auto;
+}
+.md-body :deep(pre code) {
+  padding: 0;
+  background: transparent;
+  color: #abb2bf;
+}
+.md-body :deep(table) {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.6em 0;
+  font-size: 12px;
+}
+.md-body :deep(th),
+.md-body :deep(td) {
+  border: 1px solid #dcdfe6;
+  padding: 4px 8px;
+  text-align: left;
+}
+.md-body :deep(th) {
+  background: #f5f7fa;
+  font-weight: 600;
+}
+.md-body :deep(hr) {
+  border: none;
+  border-top: 1px solid #e4e7ed;
+  margin: 0.8em 0;
+}
+.md-body :deep(img) {
+  max-width: 100%;
 }
 </style>

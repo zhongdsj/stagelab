@@ -21,12 +21,13 @@ import {
   updateTask,
   updateTaskStatus,
   deleteTask,
-  listTasksByRequirement
+  listTasksByRequirement,
+  syncRequirementIds
 } from "../../services/requirement.service.js";
 import { HttpError, requireWorkspaceByProjectId } from "./_util.js";
 
-/** 需求状态白名单（与 shared RequirementStatusSchema 一致） */
-const REQUIREMENT_STATUS = ["active", "done", "archived"] as const;
+/** 需求状态白名单（与 shared RequirementStatusSchema 一致：开发/测试/完成） */
+const REQUIREMENT_STATUS = ["dev", "test", "done"] as const;
 /** 任务状态白名单（与 shared TaskStatusSchema 一致） */
 const TASK_STATUS = ["pending", "in_progress", "done"] as const;
 /** 变更类型白名单 */
@@ -38,6 +39,8 @@ export function registerRequirementRoutes(app: FastifyInstance): void {
   app.get("/api/projects/:id/requirements", async (request) => {
     const { id } = request.params as { id: string };
     const ws = requireWorkspaceByProjectId(id);
+    // 确保项目 stage2.requirementIds 与磁盘需求保持一致（修复历史数据 + 兜底自动关联）
+    await syncRequirementIds(ws);
     return listRequirements(ws);
   });
 
@@ -69,7 +72,7 @@ export function registerRequirementRoutes(app: FastifyInstance): void {
       status?: string;
     };
     if (body.status !== undefined && !(REQUIREMENT_STATUS as readonly string[]).includes(body.status)) {
-      throw new HttpError(400, "status 必须是 active/done/archived");
+      throw new HttpError(400, "status 必须是 dev/test/done");
     }
     const ws = requireWorkspaceByProjectId(id);
     return updateRequirement(ws, rid, {

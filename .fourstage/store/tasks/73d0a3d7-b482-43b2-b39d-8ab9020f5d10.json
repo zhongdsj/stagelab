@@ -1,0 +1,15 @@
+{
+  "taskId": "73d0a3d7-b482-43b2-b39d-8ab9020f5d10",
+  "requirementId": "23a5d5d0-4d16-42e7-a8da-614df27d783a",
+  "title": "T32 共享层：需求状态枚举改三态",
+  "description": "## 任务描述\n\n共享层需求状态枚举改为三态：\n\n- `shared/src/types.ts` L22：`RequirementStatus = \"dev\" | \"test\" | \"done\"`（开发/测试/完成）\n- `shared/src/schemas.ts` L16：`RequirementStatusSchema = z.enum([\"dev\", \"test\", \"done\"])`\n- MCP 层 `mcp/tools/requirement.ts` 复用该 schema，自动联动生效\n\n## 涉及文件\n- `packages/shared/src/types.ts`（修改）\n- `packages/shared/src/schemas.ts`（修改）\n\n## 变更类型\n修改\n\n## 验收标准\n1. RequirementStatus 类型为 dev/test/done\n2. RequirementStatusSchema 校验枚举为 dev/test/done\n3. shared 层构建通过",
+  "status": "done",
+  "acceptanceCriteria": "类型与 zod 校验枚举更新为 dev/test/done",
+  "files": [
+    "packages/shared/src/types.ts",
+    "packages/shared/src/schemas.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788144492593,
+  "updatedAt": 1788145328465
+}

@@ -1,0 +1,15 @@
+{
+  "taskId": "ace1ade1-bc56-4e3f-9f1e-6bda7c783583",
+  "requirementId": "2e45ae8f-d841-4f74-8017-f42a072bd944",
+  "title": "T31 MCP 写操作只返回 meta",
+  "description": "## 任务描述\n\n将 MCP 写操作返回值改为 meta 摘要：\n\n- `mcp/tools/diagram.ts`：\n  - `create_diagram` 返回 `{ diagramId, type, title, version, nodeCount, edgeCount, groupCount }`（新建时空计数）\n  - `update_diagram_elements` 返回 `{ diagramId, version, nodeCount, edgeCount, groupCount, upsertedIds/removedIds }`（只含变更的 id 列表，不返回节点/连线/分组内容）\n- `services/diagram.service.ts`：提供/复用 meta 摘要提取，供 MCP 层使用\n- 保持 `get_diagram_partial` / `get_diagram_meta` / `delete_diagram` 行为不变\n\n## 涉及文件\n- `packages/server/src/mcp/tools/diagram.ts`（修改）\n- `packages/server/src/services/diagram.service.ts`（修改，摘要提取）\n\n## 变更类型\n修改\n\n## 验收标准\n1. create_diagram 返回 meta，不含节点/连线/分组内容\n2. update_diagram_elements 返回 meta + 变更 id，不含内容\n3. get_diagram_partial 仍可读取节点/连线/分组详情\n4. server tsc 构建通过；HTTP/前端不受影响",
+  "status": "done",
+  "acceptanceCriteria": "写操作只返回 meta 摘要；get_diagram_partial 不变；server 构建通过",
+  "files": [
+    "packages/server/src/mcp/tools/diagram.ts",
+    "packages/server/src/services/diagram.service.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788144141191,
+  "updatedAt": 1788145321804
+}

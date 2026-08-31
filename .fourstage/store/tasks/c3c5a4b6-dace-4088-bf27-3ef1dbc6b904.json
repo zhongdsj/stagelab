@@ -1,0 +1,14 @@
+{
+  "taskId": "c3c5a4b6-dace-4088-bf27-3ef1dbc6b904",
+  "requirementId": "23a5d5d0-4d16-42e7-a8da-614df27d783a",
+  "title": "T34 前端：需求状态三态展示与修改",
+  "description": "## 任务描述\n\n前端需求状态三态展示与修改：\n\n- `RequirementTasks.vue`：\n  - STATUS_LABELS 改为 { dev: 开发, test: 测试, done: 完成 }\n  - CSS 状态类：req-active/req-archived → req-dev/req-test（颜色区分：开发蓝/测试橙/完成绿）\n  - 修改需求对话框增加状态下拉（dev/test/done），openEditReq 回填当前状态，onSaveReq 调用 updateRequirement 传 status\n\n## 涉及文件\n- `packages/web/src/components/requirement/RequirementTasks.vue`（修改）\n\n## 变更类型\n修改\n\n## 验收标准\n1. 需求卡片状态显示为 开发/测试/完成\n2. 修改对话框可下拉选择状态并保存成功\n3. 刷新后状态保持（含服务端自动流转结果）",
+  "status": "done",
+  "acceptanceCriteria": "状态显示开发/测试/完成；修改对话框可改状态并保存；刷新保持",
+  "files": [
+    "packages/web/src/components/requirement/RequirementTasks.vue"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788144498089,
+  "updatedAt": 1788145332778
+}

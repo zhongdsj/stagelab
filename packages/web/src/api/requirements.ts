@@ -8,6 +8,7 @@ import { http } from "./client.js";
 export interface RequirementItem {
   requirementId: string;
   title: string;
+  description?: string;
   status: RequirementStatus;
   branchName?: string;
   taskCount: number;
@@ -17,6 +18,7 @@ export interface RequirementItem {
 export interface TaskSummary {
   taskId: string;
   title: string;
+  description?: string;
   status: TaskStatus;
   changeType: "新增" | "修改" | "删除";
 }

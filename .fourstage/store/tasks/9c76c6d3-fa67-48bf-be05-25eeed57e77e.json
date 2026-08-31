@@ -1,0 +1,15 @@
+{
+  "taskId": "9c76c6d3-fa67-48bf-be05-25eeed57e77e",
+  "requirementId": "48b8d597-c399-4168-ab88-ee56777c2f45",
+  "title": "T42 构建验证与联调",
+  "description": "## 任务描述\n\n全量构建与端到端验证：\n\n- 执行 server + web 全量构建（vue-tsc -b && vite build）\n- 浏览器验证：\n  1. 架构节点点击弹出关联图气泡（有/无分支）\n  2. 架构节点悬停显示描述气泡\n  3. 类图节点点击高亮 + 连线高亮\n  4. 流程图不受影响\n- 回归：折叠/拖拽/缩放/无限画布正常\n\n## 涉及文件\n- `packages/web`、`packages/server`（构建验证）\n\n## 变更类型\n修改（验证）\n\n## 验收标准\n1. server + web 构建通过\n2. 三类交互端到端验证通过\n3. 流程图不受影响\n4. 画布基础交互回归正常",
+  "status": "pending",
+  "acceptanceCriteria": "server+web 构建通过；三类交互验证通过；架构/类图正常",
+  "files": [
+    "packages/web",
+    "packages/server"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788155904362,
+  "updatedAt": 1788155904362
+}
