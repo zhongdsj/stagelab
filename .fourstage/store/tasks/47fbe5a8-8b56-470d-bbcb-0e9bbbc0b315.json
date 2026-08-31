@@ -1,0 +1,14 @@
+{
+  "taskId": "47fbe5a8-8b56-470d-bbcb-0e9bbbc0b315",
+  "requirementId": "de14234b-8eae-4371-ab0d-d3c6696a6c37",
+  "title": "T48 前端：连线标签按弧长取中点",
+  "description": "## 任务描述\n\nDiagramSvg.vue 连线标签定位改为按弧长取中点：\n- 重写 edgeMid：遍历折线 points 累计各段长度，取总长 50% 处坐标（线性插值到所在段）\n- 兼容正交折线、绕行折线、自环等任意点数\n- 标签 y 仍做 -6 偏移避让连线\n\n## 涉及文件\n- packages/web/src/components/diagram/DiagramSvg.vue（修改）\n\n## 变更类型\n修改\n\n## 验收标准\n1. 长直段连线标签稳定位于连线中部\n2. 正交/绕行/自环折线标签位置合理\n3. 空连线（points<2）不报错",
+  "status": "pending",
+  "acceptanceCriteria": "edgeMid 按弧长取中点，标签落在连线中部",
+  "files": [
+    "packages/web/src/components/diagram/DiagramSvg.vue"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788168491530,
+  "updatedAt": 1788168491530
+}

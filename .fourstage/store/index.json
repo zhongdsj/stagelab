@@ -1,6 +1,6 @@
 {
   "projectId": "34a29cd8-790c-43c4-8ce9-e2c25573cfa0",
-  "version": 1788168078,
+  "version": 1788170322,
   "documentIndex": [
     {
       "docId": "dev-doc",
@@ -44,6 +44,13 @@
     }
   ],
   "requirementIndex": [
+    {
+      "requirementId": "0f047e44-d20a-4737-9d99-0dea6eb7b6ea",
+      "title": "前端体验增强：需求清单排序与详情页Tab布局",
+      "status": "done",
+      "branchName": "feature/frontend-ux",
+      "taskCount": 2
+    },
     {
       "requirementId": "23a5d5d0-4d16-42e7-a8da-614df27d783a",
       "title": "需求状态三态化与自动流转",
@@ -117,11 +124,25 @@
       "taskCount": 3
     },
     {
+      "requirementId": "bbe72970-1124-4675-ab51-1500a8d4aeb5",
+      "title": "需求清单分组折叠与统计状态细分",
+      "status": "done",
+      "branchName": "feature/req-group-collapse",
+      "taskCount": 2
+    },
+    {
       "requirementId": "bfc97a97-8c75-41bb-8428-83bf6ad9efcf",
       "title": "图页面样式调整：抽屉/画布交互/折叠重构",
       "status": "done",
       "branchName": "feature/diagram-canvas",
       "taskCount": 5
+    },
+    {
+      "requirementId": "de14234b-8eae-4371-ab0d-d3c6696a6c37",
+      "title": "连线优化：标签居中、减少重叠与点击高亮",
+      "status": "dev",
+      "branchName": "feature/edge-interaction",
+      "taskCount": 4
     }
   ],
   "taskIndex": [
@@ -132,10 +153,22 @@
       "requirementId": "6c3990f0-4296-4f32-aad9-c23f3d53c2e8"
     },
     {
+      "taskId": "04300169-99a0-4ee9-a43e-de6a9c11d11a",
+      "title": "T49 前端：连线点击高亮（仅类图）",
+      "status": "pending",
+      "requirementId": "de14234b-8eae-4371-ab0d-d3c6696a6c37"
+    },
+    {
       "taskId": "0a96f292-b8cb-446c-a585-b6d727007fe1",
       "title": "T25 前端：构建验证与联调",
       "status": "done",
       "requirementId": "36c53c3a-5666-4ed4-942b-d0a148c4d306"
+    },
+    {
+      "taskId": "0fb113ac-302e-418e-a9a8-6b68becb2b06",
+      "title": "T54 详情页统计按状态细分",
+      "status": "done",
+      "requirementId": "bbe72970-1124-4675-ab51-1500a8d4aeb5"
     },
     {
       "taskId": "1a64e8cf-c9d1-464a-9e2f-3fe55c492e99",
@@ -192,6 +225,12 @@
       "requirementId": "48b8d597-c399-4168-ab88-ee56777c2f45"
     },
     {
+      "taskId": "41425112-2312-4644-8826-55901af39eac",
+      "title": "T50 构建验证与联调",
+      "status": "pending",
+      "requirementId": "de14234b-8eae-4371-ab0d-d3c6696a6c37"
+    },
+    {
       "taskId": "422c5764-dca7-4d2b-a153-7985e14439cc",
       "title": "T18 需求/任务描述 md 输入与渲染",
       "status": "done",
@@ -202,6 +241,12 @@
       "title": "T29 服务端：布局路由取消折叠聚焦参数",
       "status": "done",
       "requirementId": "bfc97a97-8c75-41bb-8428-83bf6ad9efcf"
+    },
+    {
+      "taskId": "47fbe5a8-8b56-470d-bbcb-0e9bbbc0b315",
+      "title": "T48 前端：连线标签按弧长取中点",
+      "status": "pending",
+      "requirementId": "de14234b-8eae-4371-ab0d-d3c6696a6c37"
     },
     {
       "taskId": "4a80d797-e755-443a-94ed-c69054a91dd3",
@@ -270,6 +315,12 @@
       "requirementId": "6c3990f0-4296-4f32-aad9-c23f3d53c2e8"
     },
     {
+      "taskId": "9a557b79-1ca9-47d4-ad79-2b7ba7c23cfa",
+      "title": "T52 详情页：内容区改为文档库/需求/图库 Tab 切换",
+      "status": "done",
+      "requirementId": "0f047e44-d20a-4737-9d99-0dea6eb7b6ea"
+    },
+    {
       "taskId": "9c76c6d3-fa67-48bf-be05-25eeed57e77e",
       "title": "T42 构建验证与联调",
       "status": "done",
@@ -298,6 +349,12 @@
       "title": "T33 服务层：需求自动流转",
       "status": "done",
       "requirementId": "23a5d5d0-4d16-42e7-a8da-614df27d783a"
+    },
+    {
+      "taskId": "b6b4e420-a238-4031-9131-499b22587b52",
+      "title": "T51 需求清单：更新时间展示、排序与任务变更同步",
+      "status": "done",
+      "requirementId": "0f047e44-d20a-4737-9d99-0dea6eb7b6ea"
     },
     {
       "taskId": "bb506db5-b662-4ae1-8519-097ea20fc6c8",
@@ -342,6 +399,12 @@
       "requirementId": "bfc97a97-8c75-41bb-8428-83bf6ad9efcf"
     },
     {
+      "taskId": "d4719336-1a61-45f8-845c-2143d14cf2f3",
+      "title": "T53 需求清单按状态分组折叠",
+      "status": "done",
+      "requirementId": "bbe72970-1124-4675-ab51-1500a8d4aeb5"
+    },
+    {
       "taskId": "d8a995fc-ef4d-414c-8830-f1a7fccc1cca",
       "title": "T28 前端：折叠改单模块本地折叠",
       "status": "done",
@@ -370,6 +433,12 @@
       "title": "T38 构建验证与联调",
       "status": "done",
       "requirementId": "af4b430a-b283-49ec-885b-680608580794"
+    },
+    {
+      "taskId": "df6c5ea5-f338-47b4-a046-4b8361272e2b",
+      "title": "T47 布局间距上调：减少连线重叠",
+      "status": "pending",
+      "requirementId": "de14234b-8eae-4371-ab0d-d3c6696a6c37"
     },
     {
       "taskId": "eb14ad41-f7ca-426c-9979-d5c5bc81632b",

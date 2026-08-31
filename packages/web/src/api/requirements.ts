@@ -12,6 +12,8 @@ export interface RequirementItem {
   status: RequirementStatus;
   branchName?: string;
   taskCount: number;
+  /** 更新时间（T51：任务变更同步刷新，用于按活跃度排序） */
+  updatedAt: number;
 }
 
 /** 任务摘要（需求下任务列表） */

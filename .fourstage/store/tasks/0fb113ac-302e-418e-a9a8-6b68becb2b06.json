@@ -1,0 +1,14 @@
+{
+  "taskId": "0fb113ac-302e-418e-a9a8-6b68becb2b06",
+  "requirementId": "bbe72970-1124-4675-ab51-1500a8d4aeb5",
+  "title": "T54 详情页统计按状态细分",
+  "description": "## 任务描述\n\n详情页统计按状态细分（ProjectDetailView.vue）：\n- 需求 stat-item 增加细分行：开发 x · 测试 y · 完成 z\n- 任务 stat-item 增加细分行：待处理 x · 进行中 y · 已完成 z\n- 基于 ProjectIndex 数据（requirements[].status / tasks[].status）computed 统计\n- 保持总数展示不变，细分展示于现有容器内\n\n## 涉及文件\n- packages/web/src/views/ProjectDetailView.vue（修改）\n\n## 变更类型\n新增\n\n## 验收标准\n1. 需求项显示三态数量\n2. 任务项显示三态数量\n3. 总数不变，细分随索引数据刷新",
+  "status": "done",
+  "acceptanceCriteria": "需求/任务统计按状态细分展示于 stat-item 内",
+  "files": [
+    "packages/web/src/views/ProjectDetailView.vue"
+  ],
+  "changeType": "新增",
+  "createdAt": 1788170282081,
+  "updatedAt": 1788170289465
+}

@@ -1,0 +1,13 @@
+{
+  "requirementId": "bbe72970-1124-4675-ab51-1500a8d4aeb5",
+  "title": "需求清单分组折叠与统计状态细分",
+  "description": "## 背景\n\n需求清单与统计两个前端体验优化：\n\n1. 需求列表按平铺展示，完成态需求占位大、干扰关注活跃需求；希望三态需求分别折叠\n2. 详情页统计（需求/任务数量）仅总数字，希望按状态细分，直观看到各状态分布\n\n## 需求\n\n1. **需求按状态分组折叠**：需求清单按「开发/测试/完成」分组，各组可独立折叠/展开；「完成」组默认折叠（已完成需求大部分时间无需看明细）\n2. **统计按状态细分**：详情页 stat-grid 中需求项细分（开发 x · 测试 y · 完成 z），任务项细分（待处理 x · 进行中 y · 已完成 z），展示于现有容器内\n\n## 约束\n- 纯前端会话态：分组折叠不持久化，刷新重置（完成组默认折叠）\n- 统计基于既有 ProjectIndex 数据（requirementIndex.status / taskIndex.status），无需后端改动\n- 保持既有排序（T51：组内按更新时间倒序）\n\n## 关联\n- RequirementTasks.vue（需求分组折叠）\n- ProjectDetailView.vue（stat-grid 统计细分）\n- ProjectIndex 含需求/任务状态字段",
+  "branchName": "feature/req-group-collapse",
+  "status": "done",
+  "taskIds": [
+    "d4719336-1a61-45f8-845c-2143d14cf2f3",
+    "0fb113ac-302e-418e-a9a8-6b68becb2b06"
+  ],
+  "createdAt": 1788170268745,
+  "updatedAt": 1788170322075
+}

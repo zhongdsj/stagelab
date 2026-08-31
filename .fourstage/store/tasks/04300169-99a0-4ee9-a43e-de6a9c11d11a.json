@@ -1,0 +1,14 @@
+{
+  "taskId": "04300169-99a0-4ee9-a43e-de6a9c11d11a",
+  "requirementId": "de14234b-8eae-4371-ab0d-d3c6696a6c37",
+  "title": "T49 前端：连线点击高亮（仅类图）",
+  "description": "## 任务描述\n\nDiagramSvg.vue 增加连线点击高亮（仅类图）：\n- 连线 <g> 增加 @click（仅 class 图类型响应）\n- 点击连线 → 该连线两端节点高亮 + 与两节点相连的所有连线高亮\n- 再点同一连线取消；点其他连线切换\n- 与现有节点点击高亮（T41）共用高亮状态，不冲突\n- 架构/流程图连线点击无操作\n\n## 涉及文件\n- packages/web/src/components/diagram/DiagramSvg.vue（修改）\n\n## 变更类型\n新增\n\n## 验收标准\n1. 类图点击连线高亮两端节点与相关连线\n2. 再点取消/切换\n3. 与节点点击高亮共存正常\n4. 架构/流程图连线点击无响应",
+  "status": "pending",
+  "acceptanceCriteria": "类图连线点击高亮两端节点+相关连线；再点取消/切换；架构流程图不响应",
+  "files": [
+    "packages/web/src/components/diagram/DiagramSvg.vue"
+  ],
+  "changeType": "新增",
+  "createdAt": 1788168493053,
+  "updatedAt": 1788168493053
+}

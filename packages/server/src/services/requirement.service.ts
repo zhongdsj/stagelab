@@ -82,7 +82,7 @@ export async function syncRequirementIds(workspace: RepoWorkspace): Promise<numb
   return added;
 }
 
-/** 获取需求列表（轻量：标题/状态/分支/任务数） */
+/** 获取需求列表（轻量：标题/状态/分支/任务数/更新时间） */
 export async function listRequirements(workspace: RepoWorkspace) {
   const repos = createRepositories(workspace);
   const reqs = await repos.requirement.list();
@@ -92,8 +92,24 @@ export async function listRequirements(workspace: RepoWorkspace) {
     description: r.description,
     status: normalizeRequirementStatus(r.status),
     branchName: r.branchName,
-    taskCount: r.taskIds.length
+    taskCount: r.taskIds.length,
+    updatedAt: r.updatedAt
   }));
+}
+
+/**
+ * 同步需求更新时间（T51）：需求内部任务变更时调用，保证「按活跃度排序」准确。
+ * createTask/deleteTask 已由仓储 addTask/removeTask 联动 updatedAt，此处补齐
+ * updateTaskStatus 与 updateTask 两个变更点。
+ */
+async function touchRequirement(
+  workspace: RepoWorkspace,
+  requirementId: string
+): Promise<void> {
+  const repos = createRepositories(workspace);
+  const req = await repos.requirement.get(requirementId);
+  req.updatedAt = Date.now();
+  await repos.requirement.save(req);
 }
 
 /** 获取需求详情（含任务摘要列表） */
@@ -213,6 +229,8 @@ export async function updateTaskStatus(
   const task = await repos.task.get(taskId);
   const updated: Task = { ...task, status, updatedAt: Date.now() };
   await repos.task.save(updated);
+  // T51：任务状态变更即同步需求更新时间（无论是否触发自动流转）
+  await touchRequirement(workspace, task.requirementId);
   // 自动流转：需求下所有任务均已完成且需求为开发 → 自动改为测试（done 为终态）
   await maybeAutoAdvanceRequirement(workspace, task.requirementId);
   return updated;
@@ -274,6 +292,8 @@ export async function updateTask(
   ) as Partial<Task>;
   const updated: Task = { ...task, ...cleanPatch, taskId, updatedAt: Date.now() };
   await repos.task.save(updated);
+  // T51：任务内容变更同步需求更新时间
+  await touchRequirement(workspace, task.requirementId);
   return updated;
 }
 
