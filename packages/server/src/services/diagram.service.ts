@@ -92,6 +92,90 @@ export async function getDiagramPartial(
   };
 }
 
+/** 分组内连线（from/to 均落在 nodeIds 集合内） */
+function edgesWithinGroup(
+  edges: Edge[],
+  nodeIds: Set<string>
+): Edge[] {
+  return edges.filter(
+    (e) => nodeIds.has(e.from) && nodeIds.has(e.to)
+  );
+}
+
+/**
+ * 按分组聚合读取（T43）：一次返回该分区的节点详情 + 分区内连线 + 子分区摘要。
+ * - 不返回坐标、不加载整图之外的实体（仅按需组装目标分区）
+ */
+export async function getDiagramGroup(
+  workspace: RepoWorkspace,
+  diagramId: string,
+  groupId: string
+) {
+  const repos = createRepositories(workspace);
+  const d = await repos.diagram.get(diagramId);
+
+  const group = d.groups.find((g) => g.groupId === groupId);
+  if (!group) {
+    throw new Error(`分组不存在: ${groupId}`);
+  }
+
+  const nodeIds = new Set(group.nodeIds);
+  const nodes = d.nodes.filter((n) => nodeIds.has(n.nodeId));
+  const edges = edgesWithinGroup(d.edges, nodeIds);
+  // 子分区：parentGroupId 指向当前分区的 groups 的轻量信息
+  const childGroups = d.groups
+    .filter((g) => g.parentGroupId === groupId)
+    .map((g) => ({
+      groupId: g.groupId,
+      title: g.title,
+      axis: g.axis,
+      nodeCount: g.nodeIds.length
+    }));
+
+  return {
+    diagramId: d.diagramId,
+    type: d.type,
+    group: {
+      groupId: group.groupId,
+      title: group.title,
+      axis: group.axis,
+      parentGroupId: group.parentGroupId,
+      collapsible: group.collapsible
+    },
+    nodes,
+    edges,
+    childGroups
+  };
+}
+
+/**
+ * 节点-分区反向查询（T44）：返回指定节点所属的全部分区（纵向模块/横向泳道）。
+ * 支持单节点或多节点批量，返回 nodeId → 分区列表。
+ */
+export async function getNodeGroups(
+  workspace: RepoWorkspace,
+  diagramId: string,
+  nodeIds: string[]
+) {
+  const repos = createRepositories(workspace);
+  const d = await repos.diagram.get(diagramId);
+
+  const result: Record<
+    string,
+    Array<{ groupId: string; title: string; axis?: string }>
+  > = {};
+  for (const nodeId of nodeIds) {
+    result[nodeId] = d.groups
+      .filter((g) => g.nodeIds.includes(nodeId))
+      .map((g) => ({
+        groupId: g.groupId,
+        title: g.title,
+        axis: g.axis
+      }));
+  }
+  return { diagramId: d.diagramId, type: d.type, nodes: result };
+}
+
 /** 图元局部更新操作 */
 export type DiagramElementPatch =
   | {

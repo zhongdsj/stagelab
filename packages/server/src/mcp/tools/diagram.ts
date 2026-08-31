@@ -16,6 +16,8 @@ import {
   getDiagramPartial,
   updateDiagramElements,
   deleteDiagram,
+  getDiagramGroup,
+  getNodeGroups,
   toDiagramMeta,
   type DiagramElementPatch
 } from "../../services/diagram.service.js";
@@ -159,6 +161,42 @@ export function registerDiagramTools(server: McpServer): void {
         const ws = await getWorkspace();
         await deleteDiagram(ws, args.diagramId);
         return { diagramId: args.diagramId, deleted: true };
+      })
+  );
+
+  server.registerTool(
+    "get_diagram_group",
+    {
+      title: "按分组聚合读取分区",
+      description:
+        "传入 diagramId + groupId，一次返回该分区（纵向模块/横向泳道）的节点详情、分区内连线与子分区摘要；不返回坐标、不拉取整图",
+      inputSchema: {
+        diagramId: z.string().min(1),
+        groupId: z.string().min(1)
+      }
+    },
+    async (args) =>
+      safeCall(async () => {
+        const ws = await getWorkspace();
+        return getDiagramGroup(ws, args.diagramId, args.groupId);
+      })
+  );
+
+  server.registerTool(
+    "get_node_groups",
+    {
+      title: "节点-分区反向查询",
+      description:
+        "查询指定节点属于哪些分区（纵向模块/横向泳道），返回 nodeId → 分区列表（groupId/title/axis）；支持多节点批量",
+      inputSchema: {
+        diagramId: z.string().min(1),
+        nodeIds: z.array(z.string().min(1)).min(1)
+      }
+    },
+    async (args) =>
+      safeCall(async () => {
+        const ws = await getWorkspace();
+        return getNodeGroups(ws, args.diagramId, args.nodeIds);
       })
   );
 }
