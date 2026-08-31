@@ -1,0 +1,19 @@
+{
+  "taskId": "22c78b75-778f-45de-9e89-a44106dba0a4",
+  "requirementId": "71b8c0fe-3809-48f2-93b7-a26d50ec0967",
+  "title": "T11 前端：工程与基础框架",
+  "description": "Vue3 + Vite 初始化前端工程；实现项目总览面板、四阶段流程导航、API 客户端封装（对接 T10）。\n\n完成记录：工程基座/router/api/ProjectListView/ProjectDetailView/StageNav 实现，build 与真实链路浏览器验证通过；修复索引统计字段错误。",
+  "status": "done",
+  "acceptanceCriteria": "页面可访问、纯浏览器运行（vite dev 200 + 无服务端渲染依赖）；项目列表/创建/详情/阶段切换页面功能可用（浏览器端到端验证）；四阶段流程导航正确展示当前阶段（高亮 + 切换生效）。",
+  "files": [
+    "packages/web/vite.config.ts",
+    "packages/web/src/main.ts",
+    "packages/web/src/router/index.ts",
+    "packages/web/src/api/*",
+    "packages/web/src/views/*",
+    "packages/web/src/components/StageNav.vue"
+  ],
+  "changeType": "新增",
+  "createdAt": 1788094322775,
+  "updatedAt": 1788145281908
+}

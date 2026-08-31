@@ -12,6 +12,13 @@ import type { RepoWorkspace } from "../storage/workspace.js";
 import { createRepositories } from "../storage/repositories/factory.js";
 import { generateId } from "./project.service.js";
 
+/** 需求状态归一化：存量 active/archived 映射到三态（active→dev，archived→done） */
+function normalizeRequirementStatus(status: string): RequirementStatus {
+  if (status === "active") return "dev";
+  if (status === "archived") return "done";
+  return status as RequirementStatus;
+}
+
 /** 创建需求（可关联分支名） */
 export async function createRequirement(
   workspace: RepoWorkspace,
@@ -25,13 +32,54 @@ export async function createRequirement(
     title,
     description: options.description,
     branchName: options.branchName,
-    status: "active",
+    status: "dev",
     taskIds: [],
     createdAt: now,
     updatedAt: now
   };
   await repos.requirement.save(requirement);
+  // 自动关联到项目 stage2.requirementIds（与 createTask 自动联动 taskIds 一致）
+  await attachRequirementToProject(workspace, requirement.requirementId);
   return requirement;
+}
+
+/**
+ * 将需求关联到项目 stage2.requirementIds（幂等去重）
+ * 供 createRequirement 自动调用，也可用于存量数据同步
+ */
+export async function attachRequirementToProject(
+  workspace: RepoWorkspace,
+  requirementId: string
+): Promise<void> {
+  const repos = createRepositories(workspace);
+  const project = await repos.project.get(workspace.entry.projectId);
+  if (!project.stage2.requirementIds.includes(requirementId)) {
+    project.stage2.requirementIds.push(requirementId);
+    project.updatedAt = Date.now();
+    await repos.project.save(project);
+  }
+}
+
+/**
+ * 同步存量需求到项目 stage2.requirementIds
+ * 用于修复历史数据：将磁盘上全部需求与项目建立关联
+ */
+export async function syncRequirementIds(workspace: RepoWorkspace): Promise<number> {
+  const repos = createRepositories(workspace);
+  const reqs = await repos.requirement.list();
+  const project = await repos.project.get(workspace.entry.projectId);
+  let added = 0;
+  for (const r of reqs) {
+    if (!project.stage2.requirementIds.includes(r.requirementId)) {
+      project.stage2.requirementIds.push(r.requirementId);
+      added++;
+    }
+  }
+  if (added > 0) {
+    project.updatedAt = Date.now();
+    await repos.project.save(project);
+  }
+  return added;
 }
 
 /** 获取需求列表（轻量：标题/状态/分支/任务数） */
@@ -41,7 +89,8 @@ export async function listRequirements(workspace: RepoWorkspace) {
   return reqs.map((r) => ({
     requirementId: r.requirementId,
     title: r.title,
-    status: r.status,
+    description: r.description,
+    status: normalizeRequirementStatus(r.status),
     branchName: r.branchName,
     taskCount: r.taskIds.length
   }));
@@ -64,6 +113,7 @@ export async function getRequirement(
   }
   return {
     ...req,
+    status: normalizeRequirementStatus(req.status),
     tasks: tasks.map((t) => ({
       taskId: t.taskId,
       title: t.title,
@@ -72,7 +122,7 @@ export async function getRequirement(
   };
 }
 
-/** 更新需求（状态切换 done/archived、分支名等） */
+/** 更新需求（状态切换 dev/test/done、分支名等） */
 export async function updateRequirement(
   workspace: RepoWorkspace,
   requirementId: string,
@@ -163,7 +213,43 @@ export async function updateTaskStatus(
   const task = await repos.task.get(taskId);
   const updated: Task = { ...task, status, updatedAt: Date.now() };
   await repos.task.save(updated);
+  // 自动流转：需求下所有任务均已完成且需求为开发 → 自动改为测试（done 为终态）
+  await maybeAutoAdvanceRequirement(workspace, task.requirementId);
   return updated;
+}
+
+/**
+ * 需求状态自动流转（T33）
+ * 规则：需求下所有任务均「已完成(done)」且需求为「开发(dev)」时 → 自动改为「测试(test)」
+ * done 为终态，不会被自动规则改回；空需求不触发
+ */
+async function maybeAutoAdvanceRequirement(
+  workspace: RepoWorkspace,
+  requirementId: string
+): Promise<void> {
+  const repos = createRepositories(workspace);
+  const req = await repos.requirement.get(requirementId);
+  // 仅开发态触发（存量 active 归一化为 dev 后同样生效）
+  if (normalizeRequirementStatus(req.status) !== "dev") return;
+  if (req.taskIds.length === 0) return; // 空需求不触发
+  // 判断所有任务是否均已完成
+  let allDone = true;
+  for (const taskId of req.taskIds) {
+    try {
+      const t = await repos.task.get(taskId);
+      if (t.status !== "done") {
+        allDone = false;
+        break;
+      }
+    } catch {
+      // 任务缺失视为未完成
+      allDone = false;
+      break;
+    }
+  }
+  if (allDone) {
+    await updateRequirement(workspace, requirementId, { status: "test" });
+  }
 }
 
 /**
@@ -212,6 +298,7 @@ export async function listTasksByRequirement(
   const tasks: Array<{
     taskId: string;
     title: string;
+    description: string;
     status: TaskStatus;
     changeType: Task["changeType"];
   }> = [];
@@ -221,6 +308,7 @@ export async function listTasksByRequirement(
       tasks.push({
         taskId: t.taskId,
         title: t.title,
+        description: t.description,
         status: t.status,
         changeType: t.changeType
       });

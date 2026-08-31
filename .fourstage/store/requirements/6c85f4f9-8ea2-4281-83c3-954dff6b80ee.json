@@ -1,0 +1,14 @@
+{
+  "requirementId": "6c85f4f9-8ea2-4281-83c3-954dff6b80ee",
+  "title": "核心：实体仓储/索引/业务服务/布局引擎",
+  "description": "## 分组说明\n\n数据访问与业务能力核心层。\n\n### 包含任务\n- T05 存储层：实体仓储\n- T06 索引服务\n- T07 业务服务层\n- T08 布局引擎封装(Worker)\n\n### 关键约束\n- 索引优先：批量查询先走索引，禁止全量加载\n- 数据分层：业务语义 Diagram 与布局 LayoutDiagram 严格分离\n- 单分片内容 ≤2000 字",
+  "status": "done",
+  "taskIds": [
+    "1a64e8cf-c9d1-464a-9e2f-3fe55c492e99",
+    "9514ca87-8f37-4a1b-bbd9-dbdfa5f51143",
+    "bb506db5-b662-4ae1-8519-097ea20fc6c8",
+    "5b94833a-241b-41db-ad73-66faa96369e8"
+  ],
+  "createdAt": 1788094205789,
+  "updatedAt": 1788145351712
+}

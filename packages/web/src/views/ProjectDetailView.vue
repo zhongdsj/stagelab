@@ -47,34 +47,16 @@
           </div>
         </div>
 
-        <!-- 阶段1：开发文档分片 + 架构图 -->
+        <!-- 阶段1：文档库（全部文档管理/切换/新建）+ 图库（全部图切换查看） -->
         <template v-if="project.currentStage === 's1'">
-          <DocumentFragments
-            v-if="stage1DocId"
-            :project-id="props.id"
-            :doc-id="stage1DocId"
-            title="开发文档"
-          />
-          <DiagramView
-            v-if="archDiagram"
-            :project-id="props.id"
-            :diagram-id="archDiagram.diagramId"
-            :title="`架构图：${archDiagram.title}`"
-          />
-          <p v-if="!stage1DocId && !archDiagram" class="placeholder-hint">
-            尚无开发文档或架构图，可通过 MCP 工具创建（create_document / create_diagram）。
-          </p>
+          <DocumentLibrary :project-id="props.id" />
+          <DiagramLibrary :project-id="props.id" />
         </template>
 
-        <!-- 阶段2/3：需求清单（按需求分组任务 + 状态追踪）+ 类图/流程图 -->
+        <!-- 阶段2/3：需求清单（按需求分组任务 + 状态追踪）+ 图库 -->
         <template v-else-if="project.currentStage === 's2' || project.currentStage === 's3'">
           <RequirementTasks :project-id="props.id" />
-          <DiagramView
-            v-if="classFlowDiagram"
-            :project-id="props.id"
-            :diagram-id="classFlowDiagram.diagramId"
-            :title="`${diagramTypeLabel(classFlowDiagram.type)}：${classFlowDiagram.title}`"
-          />
+          <DiagramLibrary :project-id="props.id" />
         </template>
 
         <!-- 阶段4：Bug 记录（暂定占位） -->
@@ -87,11 +69,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import StageNav from "../components/StageNav.vue";
-import DocumentFragments from "../components/document/DocumentFragments.vue";
-import DiagramView from "../components/diagram/DiagramView.vue";
+import DocumentLibrary from "../components/document/DocumentLibrary.vue";
+import DiagramLibrary from "../components/diagram/DiagramLibrary.vue";
 import RequirementTasks from "../components/requirement/RequirementTasks.vue";
 import { getProject, getProjectIndex, switchStage, ApiError } from "../api/index";
 import type { Project, Stage } from "@fourstage/shared";
@@ -125,28 +107,6 @@ const stageLabel = (s: Stage) => STAGE_LABELS[s];
 const stageDesc = (s: Stage) => STAGE_DESCS[s];
 const formatTime = (ts: number) =>
   new Date(ts).toLocaleString("zh-CN", { hour12: false });
-
-/** 阶段1开发文档（索引首条文档） */
-const stage1DocId = computed(() => index.value?.documents[0]?.docId ?? "");
-/** 架构图（阶段1展示） */
-const archDiagram = computed(() =>
-  index.value?.diagrams.find((d) => d.type === "architecture")
-);
-/** 类图/流程图（阶段2/3 展示，优先流程图） */
-const classFlowDiagram = computed(() =>
-  index.value?.diagrams.find((d) => d.type === "flow") ??
-  index.value?.diagrams.find((d) => d.type === "class")
-);
-
-/** 图类型中文标签 */
-function diagramTypeLabel(type: string): string {
-  const map: Record<string, string> = {
-    architecture: "架构图",
-    class: "类图",
-    flow: "流程图"
-  };
-  return map[type] ?? type;
-}
 
 /** 加载项目详情与索引 */
 async function load() {

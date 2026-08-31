@@ -1,0 +1,16 @@
+{
+  "taskId": "5b94833a-241b-41db-ad73-66faa96369e8",
+  "requirementId": "6c85f4f9-8ea2-4281-83c3-954dff6b80ee",
+  "title": "T08 布局引擎封装(Worker)",
+  "description": "封装 elkjs：输入业务语义 Diagram → 输出带坐标 LayoutDiagram。三种图类型布局参数预设；双轴分区布局（纵向模块层叠 + 横向泳道拓扑序）；模块折叠（focusModuleId，非聚焦模块输出聚合占位节点）；Worker Thread 隔离支持取消。\n\n完成记录：params/engine/worker 实现，冒烟验证 33 项全部通过（dev tsx + prod dist 双通道）；修复 NodeNext 下 worker 相对导入映射失效。",
+  "status": "done",
+  "acceptanceCriteria": "三种图类型均输出正确坐标与连线路径；双轴分区布局生效（纵向模块层叠+横向泳道拓扑序）；折叠时非聚焦模块输出聚合节点、跨模块连线收敛；大图(400节点)布局在 Worker 执行不阻塞主线程、支持取消（AbortError）。",
+  "files": [
+    "packages/server/src/layout/engine.ts",
+    "packages/server/src/layout/worker.ts",
+    "packages/server/src/layout/params.ts"
+  ],
+  "changeType": "新增",
+  "createdAt": 1788094309166,
+  "updatedAt": 1788145277893
+}

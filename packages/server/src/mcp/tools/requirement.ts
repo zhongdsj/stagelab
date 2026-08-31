@@ -15,7 +15,8 @@ import {
   updateRequirement,
   createTask,
   updateTaskStatus,
-  listTasksByRequirement
+  listTasksByRequirement,
+  syncRequirementIds
 } from "../../services/requirement.service.js";
 import { safeCall } from "./_util.js";
 
@@ -53,6 +54,8 @@ export function registerRequirementTools(server: McpServer): void {
     async () =>
       safeCall(async () => {
         const ws = await getWorkspace();
+        // 确保项目 stage2.requirementIds 与磁盘需求保持一致（修复历史数据 + 兜底自动关联）
+        await syncRequirementIds(ws);
         return listRequirements(ws);
       })
   );
@@ -75,7 +78,7 @@ export function registerRequirementTools(server: McpServer): void {
     "update_requirement",
     {
       title: "更新需求",
-      description: "更新需求（状态切换 done/archived、标题、描述、分支名等）",
+      description: "更新需求（状态切换 dev/test/done、标题、描述、分支名等）",
       inputSchema: {
         requirementId: z.string().min(1),
         title: z.string().optional(),

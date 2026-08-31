@@ -1,0 +1,14 @@
+{
+  "taskId": "fb6a76a1-27ff-46d4-9625-44953beb2b8b",
+  "requirementId": "af4b430a-b283-49ec-885b-680608580794",
+  "title": "T36 SVG 画布改无限坐标系",
+  "description": "## 任务描述\n\n将 DiagramSvg 从「内容驱动画布」改为「无限画布坐标系」：\n\n- SVG 元素尺寸改为 100%（跟随容器），不再绑定 layout.width/height\n- viewBox 改为固定大坐标空间（如 0 0 5000 5000）\n- 内容布局坐标（layout.nodes/edges/groups）整体平移居中到画布空间内\n- 画布空间可加网格/原点标记（可选，增强无限画布感）\n\n## 涉及文件\n- `packages/web/src/components/diagram/DiagramSvg.vue`（修改）\n\n## 变更类型\n修改\n\n## 验收标准\n1. SVG 尺寸跟随容器，不再等于布局尺寸\n2. 内容在画布空间内居中，四周有空白区域可拖拽\n3. 折叠/聚合/连线渲染逻辑不变",
+  "status": "done",
+  "acceptanceCriteria": "SVG 尺寸跟随容器；内容居中于画布空间；四周空白可拖拽",
+  "files": [
+    "packages/web/src/components/diagram/DiagramSvg.vue"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788153029222,
+  "updatedAt": 1788153818643
+}

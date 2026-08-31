@@ -1,0 +1,16 @@
+{
+  "taskId": "dadc67c9-960d-4d67-9d78-56255c556e44",
+  "requirementId": "6c3990f0-4296-4f32-aad9-c23f3d53c2e8",
+  "title": "T15 文档库前端组件",
+  "description": "实现 DocumentLibrary.vue 展示项目全部文档（来自项目索引），支持 tab 切换查看、新建文档（标题+类型+初始内容）、重命名、删除；替换 ProjectDetailView s1 区单文档展示。\n\n完成记录：api/documents.ts 新增 create/rename/delete；DocumentLibrary.vue 实现（tab 列表+新建表单+重命名表单+删除）；ProjectDetailView s1 区替换为 DocumentLibrary。",
+  "status": "done",
+  "acceptanceCriteria": "前端展示项目全部文档、可切换查看；支持新建/重命名/删除文档；文档显示 docType 标签。",
+  "files": [
+    "packages/web/src/components/document/DocumentLibrary.vue",
+    "packages/web/src/views/ProjectDetailView.vue",
+    "packages/web/src/api/documents.ts"
+  ],
+  "changeType": "新增",
+  "createdAt": 1788094339021,
+  "updatedAt": 1788145305516
+}

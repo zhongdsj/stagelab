@@ -18,7 +18,7 @@ import {
   readJsonFile,
   FileNotFoundError
 } from "../storage/io.js";
-import { entityPath, storeSubdir } from "../storage/paths.js";
+import { entityPath, storeSubdir, documentFragmentPath } from "../storage/paths.js";
 import fs from "node:fs";
 import type {
   ProjectIndex,
@@ -83,6 +83,30 @@ async function readAllInDir<T>(dir: string): Promise<T[]> {
   return result;
 }
 
+/** 读取 documents/{docId}/ 嵌套目录下全部分片（搜索用，排除 meta.json） */
+async function readAllDocumentFragments(
+  repoRoot: string
+): Promise<DocumentFragment[]> {
+  const docsDir = storeSubdir(repoRoot, "documents");
+  if (!fs.existsSync(docsDir)) return [];
+  const entries = await fs.promises.readdir(docsDir, { withFileTypes: true });
+  const result: DocumentFragment[] = [];
+  for (const e of entries) {
+    if (!e.isDirectory()) continue;
+    const sub = `${docsDir}/${e.name}`;
+    const files = await fs.promises.readdir(sub);
+    for (const f of files) {
+      if (!f.endsWith(".json") || f === "meta.json") continue;
+      try {
+        result.push(await readJsonFile<DocumentFragment>(`${sub}/${f}`));
+      } catch {
+        // 单分片损坏跳过
+      }
+    }
+  }
+  return result;
+}
+
 /** 小写化并去除空白（搜索归一化） */
 function normalize(s: string): string {
   return s.toLowerCase().trim();
@@ -131,9 +155,7 @@ export async function searchProjectContent(
 
   // 文档：搜索分片标题与内容
   if (types.includes("document")) {
-    const frags = await readAllInDir<DocumentFragment>(
-      storeSubdir(repoRoot, "documents")
-    );
+    const frags = await readAllDocumentFragments(repoRoot);
     const seen = new Set<string>();
     for (const f of frags) {
       if (
@@ -214,7 +236,7 @@ export async function readFragment(
   fragmentId: string
 ): Promise<DocumentFragment> {
   return readJsonFile<DocumentFragment>(
-    entityPath.document(workspace.repoRoot, fragmentId)
+    documentFragmentPath(workspace.repoRoot, docId, fragmentId)
   );
 }
 

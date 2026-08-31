@@ -7,8 +7,9 @@
  * 注意：本模块在实体仓储写后通过全局回调触发，需避免与仓储产生循环依赖。
  */
 import { readJsonFile, writeJsonFile, invalidateCache } from "./io.js";
-import { entityPath, storeSubdir } from "./paths.js";
+import { entityPath, storeSubdir, documentMetaPath } from "./paths.js";
 import fs from "node:fs";
+import path from "node:path";
 import type { RepoWorkspace } from "./workspace.js";
 import type {
   Project,
@@ -16,7 +17,8 @@ import type {
   Requirement,
   Task,
   Diagram,
-  DocumentFragment
+  DocumentFragment,
+  DocumentMeta
 } from "@fourstage/shared";
 
 /** 读取目录下全部 JSON 文件（容忍单文件损坏） */
@@ -31,6 +33,51 @@ async function readAllInDir<T>(dir: string): Promise<T[]> {
       result.push(data);
     } catch {
       // 单实体损坏跳过（Git 冲突场景容忍），其余继续
+    }
+  }
+  return result;
+}
+
+/** 读取 documents/{docId}/ 嵌套目录下的全部分片（跨全部文档，排除 meta.json） */
+async function readAllDocumentFragments(
+  repoRoot: string
+): Promise<DocumentFragment[]> {
+  const docsDir = storeSubdir(repoRoot, "documents");
+  if (!fs.existsSync(docsDir)) return [];
+  const entries = await fs.promises.readdir(docsDir, { withFileTypes: true });
+  const result: DocumentFragment[] = [];
+  for (const e of entries) {
+    if (!e.isDirectory()) continue;
+    const sub = path.join(docsDir, e.name);
+    const files = await fs.promises.readdir(sub);
+    for (const f of files) {
+      if (!f.endsWith(".json") || f === "meta.json") continue;
+      try {
+        result.push(await readJsonFile<DocumentFragment>(path.join(sub, f)));
+      } catch {
+        // 单分片损坏跳过（Git 冲突场景容忍）
+      }
+    }
+  }
+  return result;
+}
+
+/** 读取全部文档 meta（标题独立于分片） */
+async function readAllDocumentMetas(
+  repoRoot: string
+): Promise<DocumentMeta[]> {
+  const docsDir = storeSubdir(repoRoot, "documents");
+  if (!fs.existsSync(docsDir)) return [];
+  const entries = await fs.promises.readdir(docsDir, { withFileTypes: true });
+  const result: DocumentMeta[] = [];
+  for (const e of entries) {
+    if (!e.isDirectory()) continue;
+    const mp = documentMetaPath(repoRoot, e.name);
+    if (!fs.existsSync(mp)) continue;
+    try {
+      result.push(await readJsonFile<DocumentMeta>(mp));
+    } catch {
+      // 单 meta 损坏跳过（Git 冲突场景容忍）
     }
   }
   return result;
@@ -60,25 +107,27 @@ export async function rebuildIndex(
   );
   const tasks = await readAllInDir<Task>(storeSubdir(repoRoot, "tasks"));
   const diagrams = await readAllInDir<Diagram>(storeSubdir(repoRoot, "diagrams"));
-  const fragments = await readAllInDir<DocumentFragment>(
-    storeSubdir(repoRoot, "documents")
-  );
+  const fragments = await readAllDocumentFragments(repoRoot);
+  const docMetas = await readAllDocumentMetas(repoRoot);
 
-  // 文档索引：按 docId 聚合分片
+  // 文档索引：标题/摘要取自独立 meta，分片按 docId 聚合
   const docMap = new Map<string, DocumentFragment[]>();
   for (const f of fragments) {
     const arr = docMap.get(f.docId) ?? [];
     arr.push(f);
     docMap.set(f.docId, arr);
   }
-  const documentIndex = Array.from(docMap.entries()).map(([docId, frags]) => ({
-    docId,
-    title: frags[0]?.title ?? docId,
-    summary: frags[0]?.content.slice(0, 50) ?? "",
-    fragmentIds: frags
-      .sort((a, b) => a.order - b.order)
-      .map((f) => f.fragmentId)
-  }));
+  const documentIndex = docMetas.map((m) => {
+    const frags = (docMap.get(m.docId) ?? [])
+      .sort((a, b) => a.order - b.order);
+    return {
+      docId: m.docId,
+      title: m.title,
+      docType: m.docType,
+      summary: m.summary ?? "",
+      fragmentIds: frags.map((f) => f.fragmentId)
+    };
+  });
 
   const diagramIndex = diagrams.map((d) => ({
     diagramId: d.diagramId,

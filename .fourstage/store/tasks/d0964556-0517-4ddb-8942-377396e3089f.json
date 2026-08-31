@@ -1,0 +1,14 @@
+{
+  "taskId": "d0964556-0517-4ddb-8942-377396e3089f",
+  "requirementId": "36c53c3a-5666-4ed4-942b-d0a148c4d306",
+  "title": "T22 前端：新增图查看路由",
+  "description": "## 任务描述\n\n在 web 前端路由中新增独立图查看页面路由，支持携带项目 ID 与图 ID。\n\n- 路由：`/projects/:id/diagrams/:diagramId`，命名 `diagram-page`\n- 组件指向新页面 `views/DiagramPageView.vue`，使用 `props: true` 透传 `id`/`diagramId`\n- 保持现有 `/` 与 `/projects/:id` 路由不变\n\n## 涉及文件\n- `packages/web/src/router/index.ts`（修改）\n- `packages/web/src/views/DiagramPageView.vue`（新增，T23 提供）\n\n## 变更类型\n修改\n\n## 验收标准\n1. 路由注册成功，直接访问 `/projects/:id/diagrams/:did` 可进入图页面\n2. 项目详情页返回按钮/路由跳转均能正确到达图页面\n3. 不破坏现有两条路由",
+  "status": "done",
+  "acceptanceCriteria": "路由注册成功，/projects/:id/diagrams/:did 可访问；现有路由不受影响",
+  "files": [
+    "packages/web/src/router/index.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788139847686,
+  "updatedAt": 1788145191468
+}

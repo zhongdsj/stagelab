@@ -1,33 +1,31 @@
 <template>
   <div class="doc-fragments">
     <div class="doc-head">
-      <span class="doc-title">{{ title || "开发文档" }}</span>
+      <span class="doc-title">{{ doc?.title || title || "文档" }}</span>
     </div>
 
     <p v-if="loading" class="hint">加载中…</p>
     <p v-else-if="error" class="hint error">{{ error }}</p>
 
     <template v-else>
-      <!-- 分片导航 -->
-      <div class="frag-tabs">
-        <button
-          v-for="f in fragments"
-          :key="f.fragmentId"
-          class="frag-tab"
-          :class="{ active: activeId === f.fragmentId }"
-          type="button"
-          @click="openFragment(f.fragmentId)"
-        >
-          {{ f.title }}
-        </button>
-      </div>
-
-      <!-- 编辑区 -->
+      <!-- 编辑区（全量编辑：标题/摘要 + 内容） -->
       <div v-if="editing" class="frag-editor">
+        <input
+          v-model="draftTitle"
+          class="frag-input"
+          placeholder="文档标题（必填）"
+          maxlength="80"
+        />
+        <textarea
+          v-model="draftSummary"
+          class="frag-input"
+          rows="2"
+          placeholder="文档摘要（可选，markdown 文本，帮助快速理解文档性质）"
+        ></textarea>
         <textarea
           v-model="draft"
           class="frag-textarea"
-          rows="12"
+          rows="18"
           spellcheck="false"
         ></textarea>
         <div class="editor-actions">
@@ -38,24 +36,32 @@
           <span class="char-count">{{ draft.length }} 字</span>
         </div>
       </div>
-      <!-- 只读视图 -->
-      <div v-else-if="active" class="frag-view">
-        <pre class="frag-content">{{ active.content }}</pre>
+      <!-- 只读视图：摘要 + markdown 渲染 -->
+      <div v-else class="frag-view">
+        <div v-if="doc?.summary" class="frag-summary">
+          <span class="summary-label">摘要</span>
+          <span class="summary-text">{{ doc.summary }}</span>
+        </div>
+        <div class="md-body" v-html="html"></div>
         <div class="view-actions">
-          <button class="btn" type="button" @click="startEdit">编辑此分片</button>
+          <button class="btn" type="button" @click="startEdit">编辑文档</button>
         </div>
       </div>
-
-      <p v-if="fragments.length === 0" class="hint">暂无文档分片</p>
     </template>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from "vue";
-import { listFragments, getFragment, updateFragment, ApiError } from "../../api/index";
-import type { DocumentFragment } from "@fourstage/shared";
-import type { FragmentMeta } from "../../api/documents";
+import { computed, onMounted, ref, watch } from "vue";
+import { marked } from "marked";
+import DOMPurify from "dompurify";
+import {
+  getFullDocument,
+  updateFullDocument,
+  renameDocument,
+  ApiError
+} from "../../api/index";
+import type { FullDocument } from "../../api/documents";
 
 const props = defineProps<{
   projectId: string;
@@ -66,58 +72,61 @@ const props = defineProps<{
 const loading = ref(false);
 const error = ref("");
 const saving = ref(false);
-const fragments = ref<FragmentMeta[]>([]);
-const activeId = ref<string | null>(null);
-const active = ref<DocumentFragment | null>(null);
+const doc = ref<FullDocument | null>(null);
 const editing = ref(false);
 const draft = ref("");
+const draftTitle = ref("");
+const draftSummary = ref("");
 
-/** 加载分片列表 */
+/** markdown 渲染（marked 解析 + DOMPurify 消毒防 XSS） */
+const html = computed(() => {
+  if (!doc.value) return "";
+  const raw = marked.parse(doc.value.content) as string;
+  return DOMPurify.sanitize(raw);
+});
+
+/** 加载文档全文 */
 async function load() {
   loading.value = true;
   error.value = "";
+  editing.value = false;
   try {
-    fragments.value = await listFragments(props.projectId, props.docId);
-    if (fragments.value.length > 0) {
-      await openFragment(fragments.value[0].fragmentId);
-    } else {
-      active.value = null;
-      activeId.value = null;
-    }
+    doc.value = await getFullDocument(props.projectId, props.docId);
   } catch (e) {
-    error.value = e instanceof ApiError ? e.message : "加载分片失败";
+    error.value = e instanceof ApiError ? e.message : "加载文档失败";
   } finally {
     loading.value = false;
   }
 }
 
-/** 打开分片全文 */
-async function openFragment(fragmentId: string) {
-  activeId.value = fragmentId;
-  editing.value = false;
-  try {
-    active.value = await getFragment(props.projectId, props.docId, fragmentId);
-    draft.value = active.value.content;
-  } catch (e) {
-    error.value = e instanceof ApiError ? e.message : "读取分片失败";
-  }
-}
-
 function startEdit() {
-  if (!active.value) return;
-  draft.value = active.value.content;
+  if (!doc.value) return;
+  draftTitle.value = doc.value.title;
+  draftSummary.value = doc.value.summary ?? "";
+  draft.value = doc.value.content;
   editing.value = true;
 }
 
-/** 保存编辑（覆盖当前分片，超长自动再分片） */
+/** 保存全量编辑（meta：标题/摘要；正文：order 0 覆盖，超长自动再分片） */
 async function save() {
-  if (!active.value) return;
+  if (!doc.value) return;
+  const title = draftTitle.value.trim();
+  if (!title) {
+    error.value = "文档标题不能为空";
+    return;
+  }
   saving.value = true;
   error.value = "";
   try {
-    await updateFragment(props.projectId, props.docId, active.value.fragmentId, draft.value);
+    // 更新标题/摘要（meta）
+    await renameDocument(props.projectId, props.docId, {
+      title,
+      summary: draftSummary.value.trim()
+    });
+    // 更新正文
+    await updateFullDocument(props.projectId, props.docId, draft.value, title);
     editing.value = false;
-    await load(); // 重新加载（可能产生新分片）
+    await load();
   } catch (e) {
     error.value = e instanceof ApiError ? e.message : "保存失败";
   } finally {
@@ -127,8 +136,7 @@ async function save() {
 
 onMounted(load);
 watch(() => props.docId, () => {
-  activeId.value = null;
-  active.value = null;
+  doc.value = null;
   load();
 });
 </script>
@@ -148,48 +156,57 @@ watch(() => props.docId, () => {
   font-weight: 600;
   color: #303133;
 }
-.frag-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 14px;
-}
-.frag-tab {
-  padding: 4px 10px;
-  font-size: 12px;
-  border: 1px solid #dcdfe6;
-  border-radius: 4px;
-  background: #fff;
-  color: #606266;
-  cursor: pointer;
-}
-.frag-tab.active {
-  border-color: #409eff;
-  background: #ecf5ff;
-  color: #409eff;
-}
 .frag-view {
   border: 1px solid #ebeef5;
   border-radius: 6px;
-  padding: 12px;
+  padding: 12px 16px;
   background: #fafbfc;
-}
-.frag-content {
-  margin: 0 0 10px;
-  white-space: pre-wrap;
-  word-break: break-word;
-  font-family: inherit;
-  font-size: 14px;
-  line-height: 1.7;
-  color: #303133;
 }
 .view-actions {
   text-align: right;
+  margin-top: 12px;
 }
 .frag-editor {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+.frag-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 12px;
+  font-size: 14px;
+  line-height: 1.6;
+  font-family: inherit;
+  border: 1px solid #dcdfe6;
+  border-radius: 6px;
+  outline: none;
+  resize: vertical;
+}
+.frag-input:focus {
+  border-color: #409eff;
+}
+/* 摘要展示区 */
+.frag-summary {
+  display: flex;
+  gap: 8px;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  background: #fdf6ec;
+  border: 1px solid #faecd8;
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #606266;
+}
+.summary-label {
+  flex: 0 0 auto;
+  color: #e6a23c;
+  font-weight: 600;
+}
+.summary-text {
+  word-break: break-word;
+  white-space: pre-wrap;
 }
 .frag-textarea {
   width: 100%;
@@ -249,5 +266,117 @@ watch(() => props.docId, () => {
 }
 .hint.error {
   color: #f56c6c;
+}
+
+/* markdown 渲染样式（v-html 内容需 :deep 命中） */
+.md-body {
+  font-size: 14px;
+  line-height: 1.75;
+  color: #303133;
+  word-break: break-word;
+}
+.md-body :deep(h1),
+.md-body :deep(h2),
+.md-body :deep(h3),
+.md-body :deep(h4),
+.md-body :deep(h5),
+.md-body :deep(h6) {
+  margin: 1.2em 0 0.6em;
+  font-weight: 600;
+  color: #1f2329;
+  line-height: 1.4;
+}
+.md-body :deep(h1) {
+  font-size: 22px;
+  border-bottom: 1px solid #e4e7ed;
+  padding-bottom: 0.3em;
+}
+.md-body :deep(h2) {
+  font-size: 18px;
+  border-bottom: 1px solid #e4e7ed;
+  padding-bottom: 0.3em;
+}
+.md-body :deep(h3) {
+  font-size: 16px;
+}
+.md-body :deep(h4) {
+  font-size: 15px;
+}
+.md-body :deep(p) {
+  margin: 0.6em 0;
+}
+.md-body :deep(ul),
+.md-body :deep(ol) {
+  margin: 0.6em 0;
+  padding-left: 1.6em;
+}
+.md-body :deep(li) {
+  margin: 0.25em 0;
+}
+.md-body :deep(strong) {
+  font-weight: 600;
+}
+.md-body :deep(a) {
+  color: #409eff;
+  text-decoration: none;
+}
+.md-body :deep(a:hover) {
+  text-decoration: underline;
+}
+.md-body :deep(blockquote) {
+  margin: 0.8em 0;
+  padding: 0.2em 1em;
+  border-left: 4px solid #dcdfe6;
+  color: #606266;
+  background: #f8f9fa;
+}
+.md-body :deep(code) {
+  padding: 0.15em 0.4em;
+  font-size: 13px;
+  font-family: Consolas, Monaco, monospace;
+  background: #f0f2f5;
+  border-radius: 4px;
+  color: #c7254e;
+}
+.md-body :deep(pre) {
+  margin: 0.8em 0;
+  padding: 12px 14px;
+  background: #282c34;
+  border-radius: 6px;
+  overflow: auto;
+}
+.md-body :deep(pre code) {
+  padding: 0;
+  background: transparent;
+  color: #abb2bf;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.md-body :deep(table) {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.8em 0;
+  font-size: 13px;
+}
+.md-body :deep(th),
+.md-body :deep(td) {
+  border: 1px solid #dcdfe6;
+  padding: 6px 10px;
+  text-align: left;
+}
+.md-body :deep(th) {
+  background: #f5f7fa;
+  font-weight: 600;
+}
+.md-body :deep(tr:nth-child(2n)) {
+  background: #fafbfc;
+}
+.md-body :deep(hr) {
+  border: none;
+  border-top: 1px solid #e4e7ed;
+  margin: 1.2em 0;
+}
+.md-body :deep(img) {
+  max-width: 100%;
 }
 </style>

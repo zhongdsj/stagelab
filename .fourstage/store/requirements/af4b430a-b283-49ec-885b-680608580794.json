@@ -1,0 +1,14 @@
+{
+  "requirementId": "af4b430a-b283-49ec-885b-680608580794",
+  "title": "图画布改造：Excalidraw 相机无限画布",
+  "description": "## 分组说明\n\n图查看页面改为 Excalidraw 风格无限画布：DOM Canvas（SVG 容器）尺寸固定不变，靠「相机（视口）坐标系」软件数学变换实现平移缩放，模拟无限大效果。\n\n### 背景\n- 上一版 B 模型误把 SVG 撑成 10000×10000 大画布，坐标双重缩放错配导致内容 offscreen\n- 用户明确要求 Excalidraw 方式：不放大 canvas DOM 元素，全靠相机变换\n\n### 核心原理（Excalidraw）\n- **SVG 元素尺寸 = 容器尺寸（100%）**，不随内容放大\n- **viewBox = 相机视口**：`minX minY width height` 跟随相机坐标（scale + offset 反推），内容坐标直接映射\n- **平移/缩放 = 修改相机**（scale/offset 状态），不改 DOM 尺寸、不改内容坐标\n- 内容坐标（layout）始终是原始坐标，相机变换决定可见区域\n\n### 需求\n1. SVG 元素尺寸固定为容器尺寸，不放大\n2. viewBox 由相机状态（scale/offset）驱动，实时反映当前视口\n3. 拖拽平移 / 滚轮以光标为中心缩放 = 修改相机状态\n4. fit 视图 = 相机对准内容包围盒（整图可见）\n5. 重置视图恢复 fit\n\n### 关键约束\n- 纯渲染层 + 相机变换，不修改布局引擎数据\n- 缩放范围 0.2x~3x\n- 折叠/聚合/连线逻辑不变\n- 内容坐标与相机完全解耦\n\n### 包含任务\n- T36 SVG 容器尺寸固定 + viewBox 由相机驱动\n- T37 相机坐标系变换（拖拽/缩放/fit/重置）\n- T38 构建验证与联调",
+  "branchName": "feature/canvas-infinite",
+  "status": "done",
+  "taskIds": [
+    "fb6a76a1-27ff-46d4-9625-44953beb2b8b",
+    "23fe7395-895e-4b09-86b1-dbba9a1bbdfb",
+    "deef6501-e74d-4d5a-aaea-06fc794b6868"
+  ],
+  "createdAt": 1788153016750,
+  "updatedAt": 1788153850882
+}

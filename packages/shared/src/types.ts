@@ -18,8 +18,8 @@ export type Stage = "s1" | "s2" | "s3" | "s4";
 /** 图类型 */
 export type DiagramType = "architecture" | "class" | "flow";
 
-/** 需求生命周期状态 */
-export type RequirementStatus = "active" | "done" | "archived";
+/** 需求生命周期状态（三态：开发/测试/完成，前端可修改；done 为终态） */
+export type RequirementStatus = "dev" | "test" | "done";
 
 /** 任务状态 */
 export type TaskStatus = "pending" | "in_progress" | "done";
@@ -190,6 +190,7 @@ export interface ProjectIndex {
   documentIndex: Array<{
     docId: string;
     title: string;
+    docType?: string; // 文档类型（自由文本，帮助 AI/人工快速理解文档性质）
     summary: string;
     fragmentIds: string[];
   }>;
@@ -223,6 +224,17 @@ export interface DocumentFragment {
   order: number;
   title: string;
   content: string;
+}
+
+/* ========== 6.6.1 DocumentMeta 文档元信息（独立于分片，供索引与展示） ========== */
+
+export interface DocumentMeta {
+  docId: string;
+  title: string; // 文档标题（与分片 title 解耦，索引与展示使用）
+  docType?: string; // 文档类型（自由文本描述，帮助 AI/人工快速理解文档性质，不做枚举限定）
+  summary?: string; // 摘要
+  createdAt: number;
+  updatedAt: number;
 }
 
 /* ========== 阶段2任务 ========== */

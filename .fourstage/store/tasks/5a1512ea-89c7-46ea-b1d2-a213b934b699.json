@@ -1,0 +1,15 @@
+{
+  "taskId": "5a1512ea-89c7-46ea-b1d2-a213b934b699",
+  "requirementId": "65917ee2-c639-4b2f-9c39-74e5b13a76ec",
+  "title": "T09 MCP服务",
+  "description": "基于 @modelcontextprotocol/sdk 实现 stdio 模式 MCP Server，注册开发文档第八章全部工具：项目管理类 7 + 文档操作类 4 + 需求与任务管理类 7 + 图元操作类 5 + 索引查询类 2（另有 list_working_repos 便捷工具）。参数 Zod 校验；错误分类区分文件不存在 / JSON 格式损坏(大概率Git冲突) / 冲突。\n\n完成记录：server + tools 全部实现，InMemory 全链路 51 项、Stdio 子进程 4 项冒烟验证通过；修复 InMemory 握手时序。",
+  "status": "done",
+  "acceptanceCriteria": "标准 MCP 客户端可连接并发现全部工具（InMemory + stdio 双通道 26 个）；全部工具调用返回正确业务语义、无坐标泄漏；错误语义区分三类（文件不存在/格式损坏/冲突）；所有工具支持细粒度操作、无全量拉取大对象。",
+  "files": [
+    "packages/server/src/mcp/server.ts",
+    "packages/server/src/mcp/tools/*.ts"
+  ],
+  "changeType": "新增",
+  "createdAt": 1788094313698,
+  "updatedAt": 1788145256157
+}

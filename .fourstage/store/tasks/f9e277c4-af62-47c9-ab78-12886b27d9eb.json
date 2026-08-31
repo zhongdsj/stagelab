@@ -1,0 +1,20 @@
+{
+  "taskId": "f9e277c4-af62-47c9-ab78-12886b27d9eb",
+  "requirementId": "311621a6-ca26-4050-b682-ac3ac2bba4d5",
+  "title": "T01 工程初始化",
+  "description": "搭建前后端一体化工程骨架，采用 monorepo（npm workspaces）：packages/shared + packages/server + packages/web。安装全部依赖，配置 TypeScript 编译、脚本命令与 ESLint 基础规范，规划前后端共享类型目录。\n\n完成记录：monorepo 骨架创建完成，依赖安装成功（260 包），typecheck/build 通过。",
+  "status": "done",
+  "acceptanceCriteria": "npm run build 全量编译通过；依赖齐全（@modelcontextprotocol/sdk/fastify/zod/elkjs/vue3/vite/typescript 5.x）；前后端共享类型可被两端 import（@fourstage/shared）。",
+  "files": [
+    "package.json",
+    "tsconfig.json",
+    "tsconfig.base.json",
+    ".gitignore",
+    "packages/shared",
+    "packages/server",
+    "packages/web"
+  ],
+  "changeType": "新增",
+  "createdAt": 1788094280389,
+  "updatedAt": 1788145211041
+}

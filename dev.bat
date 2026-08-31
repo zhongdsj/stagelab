@@ -16,7 +16,7 @@ cd /d "%~dp0"
 REM New windows inherit the current working directory (project root).
 
 REM Start MCP server (stdio mode, logs to stderr, see its own window)
-start "fourstage-mcp" cmd /k "npm.cmd run dev:mcp"
+:: start "fourstage-mcp" cmd /k "npm.cmd run dev:mcp"
 
 REM Start HTTP server (port 3000)
 start "fourstage-http" cmd /k "npm.cmd run dev:http"

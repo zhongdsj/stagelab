@@ -1,0 +1,15 @@
+{
+  "taskId": "9514ca87-8f37-4a1b-bbd9-dbdfa5f51143",
+  "requirementId": "6c85f4f9-8ea2-4281-83c3-954dff6b80ee",
+  "title": "T06 索引服务",
+  "description": "实现 ProjectIndex 构建、增量同步更新与分层访问（两级索引：requirementIndex + taskIndex）；实现 search_project_content 关键词搜索（文档/图元/需求/任务）。所有批量查询先走索引，禁止直接全量加载项目数据。\n\n完成记录：getProjectIndex/searchProjectContent/readFragment/readDiagram 实现，冒烟验证通过。",
+  "status": "done",
+  "acceptanceCriteria": "索引生成正确含 documentIndex/diagramIndex/requirementIndex/taskIndex；需求/任务变更后索引增量更新（taskCount 同步）；关键词搜索返回匹配 ID 列表、索引优先不加载全量；AI 读取路径分层访问。",
+  "files": [
+    "packages/server/src/services/index.service.ts",
+    "packages/server/src/storage/index-builder.ts"
+  ],
+  "changeType": "新增",
+  "createdAt": 1788094300991,
+  "updatedAt": 1788145276060
+}

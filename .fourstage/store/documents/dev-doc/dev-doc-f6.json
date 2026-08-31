@@ -1,0 +1,7 @@
+{
+  "fragmentId": "dev-doc-f6",
+  "docId": "dev-doc",
+  "order": 6,
+  "title": "四阶段MCP项目管理工具 - 开发文档(4/4)",
+  "content": "checkout / git reset，Git 尝试替换文件会报资源占用，Windows 尤其严重。\n\n1. **禁止长期持有文件句柄**：所有文件 读→open→read→立即close；写→open→write→立即close。全程不常驻 fd。\n2. **内存不做永久缓存**：可做短时内存缓存（2-5s TTL）降低重复 IO，TTL 到期强制重读磁盘。\n3. **外部变更检测（mtime）**：Git 切换分支会修改磁盘 JSON。每次读取前比较磁盘 mtime 与缓存 mtime，磁盘较新则丢弃缓存重新加载。\n4. **安全写入（防 JSON 损坏）**：禁止直接覆盖原文件，采用 ①写临时文件 `xxx.tmp-{随机串}.json` ②完整序列化+fsync 落盘 ③原子 rename 覆盖正式文件 ④删除临时文件。\n5. **文件锁（短持有）**：`.write.lock` 仅写入期间短暂持有，写完立刻释放；锁只做互斥不常驻。\n6. **冲突拒绝**：拿到锁后发现磁盘 mtime 大于内存版本（外部 Git 已改），本次写入直接拒绝返回冲突，提示刷新重试，避免旧内存数据覆盖磁盘新数据。\n\n### 7.5 存储规则\n\n1. 所有数据采用JSON格式明文存储，便于人工查看与版本管理\n2. 大文档强制分片存储，单分片内容不超过2000字\n3. 布局结果不持久化，每次渲染实时计算\n4. 索引文件随对应数据变更自动同步更新\n5. 设计资产（文档、图、任务）推荐纳入 Git 版本管理，跟随分支切换\n\n### 7.6 Git集成建议与.gitignore\n\n**建议**：`.fourstage/store/**` 纳入 Git，设计文档、结构图、任务记录跟随业务代码一起版本管理、跟着分支走。\n\n```\n# four-stage 工具：可选项——若不想提交设计资产，放开下面两行\n# .fourstage/store/**\n# !.fourstage/project.meta.json\n\n# 临时写入文件、缓存\n.fourstage/*.tmp\n.fourstage/**/*.tmp\n```\n\n### 7.7 Git切换分支与冲突处理\n\n1. Git 切换分支时磁盘 `.fourstage/store/` 被替换，Node 服务不接收 Git 事件，靠 mtime 机制检测磁盘变动\n2. 业务层现象：MCP 读取自动加载分支对应文档、图、任务；项目的 currentStage 也跟随分支切换\n3. **工具不封装、不调用 Git 命令**：不做 git add/commit；提交、合并、冲突解决交给用户\n4. **Git merge 冲突**：工具不做 JSON 冲突合并；冲突标记文件 Zod 校验失败，MCP/HTTP 返回「数据文件格式损坏，请手动解决 git 冲突后继续」\n\n### 7.8 对原有模型与MCP接口的影响\n\n1. Project 不再全局独立，**绑定到一个 Git 仓库**\n2. MCP 工具增加切换工作仓库的参数，所有操作基于当前选中仓库\n3. 读取服务层增加 mtime 判断；写入层实现 临时文件+原子rename+短时文件锁\n4. Zod 校验失败区分两类错误：文件不存在 / JSON 格式损坏（大概率 Git 冲突）"
+}

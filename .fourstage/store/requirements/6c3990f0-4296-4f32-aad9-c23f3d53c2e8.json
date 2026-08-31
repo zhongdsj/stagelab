@@ -1,0 +1,18 @@
+{
+  "requirementId": "6c3990f0-4296-4f32-aad9-c23f3d53c2e8",
+  "title": "增量迭代：文档库/任务模型/摘要优化",
+  "description": "## 分组说明\n\n基于首轮成果的第二轮增量改造（任务文档 v2.0）。\n\n### 包含任务\n- T14 文档元信息支持 docType（全链路透传）\n- T15 文档库前端组件（多文档 tab + 新建/重命名/删除）\n- T16 文档全量 md 渲染与编辑（marked + DOMPurify）\n- T17 需求/任务 description 字段链路打通\n- T18 需求/任务描述 md 输入与渲染\n- T19 任务文档去文档化（task-doc 移出文档库）\n- T20 build 验证（server + web）\n- T21 文档摘要（summary）展示与修改\n\n### 关键约定\n- 任务文档不作为「文档」概念，任务为「标题 + md 描述」\n- 文档库为整个项目全部文档的整合入口（docType 自由文本命名）\n- 前端全量展示，MCP 分片按需读取",
+  "status": "done",
+  "taskIds": [
+    "f619f86f-6932-416e-8d5f-63ae2d777ab7",
+    "dadc67c9-960d-4d67-9d78-56255c556e44",
+    "03ea269c-eaed-43ee-9417-54b3cd5ac339",
+    "c6eac23e-a397-4c83-8e1e-bb4efc923651",
+    "422c5764-dca7-4d2b-a153-7985e14439cc",
+    "84c6378d-eb3b-437f-96d5-187c7901dc20",
+    "4a80d797-e755-443a-94ed-c69054a91dd3",
+    "975b0e7e-a2b9-4d7a-bb22-1f7ba768fda9"
+  ],
+  "createdAt": 1788094210353,
+  "updatedAt": 1788145349024
+}

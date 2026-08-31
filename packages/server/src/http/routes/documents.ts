@@ -7,14 +7,77 @@
  */
 import type { FastifyInstance } from "fastify";
 import {
+  createDocument,
+  renameDocument,
+  deleteDocument,
   listDocumentFragments,
   readDocumentFragment,
+  readDocumentFull,
   writeDocumentFragment
 } from "../../services/document.service.js";
+import { generateId } from "../../services/project.service.js";
 import { HttpError, requireWorkspaceByProjectId } from "./_util.js";
 
-/** 注册文档分片路由 */
+/** 注册文档路由 */
 export function registerDocumentRoutes(app: FastifyInstance): void {
+  // 新建文档（docId 缺省自动生成；docType 为自由文本帮助 AI/人工理解）
+  app.post("/api/projects/:id/documents", async (request) => {
+    const { id } = request.params as { id: string };
+    const body = (request.body ?? {}) as {
+      docId?: string;
+      title?: string;
+      docType?: string;
+      content?: string;
+    };
+    const title = body.title?.trim();
+    if (!title) throw new HttpError(400, "title 必填");
+    const ws = requireWorkspaceByProjectId(id);
+    const docId = body.docId?.trim() || generateId();
+    return createDocument(ws, docId, title, body.content ?? "", body.docType?.trim() || undefined);
+  });
+
+  // 重命名文档（标题/类型/摘要）
+  app.put("/api/projects/:id/documents/:docId", async (request) => {
+    const { id, docId } = request.params as { id: string; docId: string };
+    const body = (request.body ?? {}) as {
+      title?: string;
+      docType?: string;
+      summary?: string;
+    };
+    const ws = requireWorkspaceByProjectId(id);
+    return renameDocument(ws, docId, body);
+  });
+
+  // 删除文档（meta + 全部分片）
+  app.delete("/api/projects/:id/documents/:docId", async (request) => {
+    const { id, docId } = request.params as { id: string; docId: string };
+    const ws = requireWorkspaceByProjectId(id);
+    await deleteDocument(ws, docId);
+    return { ok: true };
+  });
+
+  // 文档全文（按分片顺序拼接，供人工/前端阅读）
+  app.get("/api/projects/:id/documents/:docId/full", async (request) => {
+    const { id, docId } = request.params as { id: string; docId: string };
+    const ws = requireWorkspaceByProjectId(id);
+    return readDocumentFull(ws, docId);
+  });
+
+  // 全量编辑：从 order 0 覆盖全文（超长自动再分片 + 清理孤儿分片）
+  app.put("/api/projects/:id/documents/:docId/full", async (request) => {
+    const { id, docId } = request.params as { id: string; docId: string };
+    const body = (request.body ?? {}) as { content?: string; title?: string };
+    const content = body.content ?? "";
+    if (!content.trim()) {
+      throw new HttpError(400, "content 必填");
+    }
+    const ws = requireWorkspaceByProjectId(id);
+    return writeDocumentFragment(ws, docId, content, {
+      order: 0,
+      title: body.title
+    });
+  });
+
   // 文档分片列表（按分片返回元信息，无全量大文本）
   app.get("/api/projects/:id/documents/:docId/fragments", async (request) => {
     const { id, docId } = request.params as { id: string; docId: string };

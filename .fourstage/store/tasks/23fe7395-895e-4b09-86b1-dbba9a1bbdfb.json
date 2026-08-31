@@ -1,0 +1,14 @@
+{
+  "taskId": "23fe7395-895e-4b09-86b1-dbba9a1bbdfb",
+  "requirementId": "af4b430a-b283-49ec-885b-680608580794",
+  "title": "T37 前端画布变换适配无限画布",
+  "description": "## 任务描述\n\nDiagramView 画布变换适配无限画布模型：\n\n- fitView 仅针对内容包围盒（layout.width/height）计算缩放与居中偏移，保证整图完整可见\n- 拖拽/滚轮缩放仍作用于 transform 层，但偏移不再受内容尺寸限制，可在画布空白区域自由漫游\n- 重置视图恢复 fit\n- 画布容器四周空白区域按下也可拖拽（不命中节点时）\n\n## 涉及文件\n- `packages/web/src/components/diagram/DiagramView.vue`（修改）\n\n## 变更类型\n修改\n\n## 验收标准\n1. fit 视图整图完整可见且居中\n2. 画布空白区域可拖拽平移\n3. 重置视图恢复 fit\n4. 缩放范围 0.2x~3x 不变",
+  "status": "done",
+  "acceptanceCriteria": "fit 仅按内容包围盒适配；重置恢复 fit；缩放/拖拽作用于整个画布",
+  "files": [
+    "packages/web/src/components/diagram/DiagramView.vue"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788153036697,
+  "updatedAt": 1788153819214
+}

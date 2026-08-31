@@ -1,0 +1,348 @@
+{
+  "diagramId": "web-frontend-flow",
+  "type": "flow",
+  "metadata": {
+    "title": "Web 前端 - 核心交互流程图",
+    "version": 4,
+    "description": "基于 packages/web 源码：项目总览→项目详情→四阶段内容（文档/图/需求任务）的交互流程；后端依赖统一以 BackendService 占位（横向泳道）"
+  },
+  "nodes": [
+    {
+      "nodeId": "start",
+      "label": "启动 Web 应用",
+      "nodeKind": "start",
+      "description": "浏览器打开 SPA，Vue3 挂载"
+    },
+    {
+      "nodeId": "load-projects",
+      "label": "加载项目列表\nGET /api/projects",
+      "nodeKind": "process",
+      "description": "listProjects() 拉取全部项目"
+    },
+    {
+      "nodeId": "render-overview",
+      "label": "渲染项目总览",
+      "nodeKind": "process",
+      "description": "项目卡片网格 + 阶段标签 + 修改/删除按钮"
+    },
+    {
+      "nodeId": "decision-op",
+      "label": "用户操作？",
+      "nodeKind": "decision",
+      "description": "总览页操作分支"
+    },
+    {
+      "nodeId": "create-project",
+      "label": "新建项目\nPOST /api/projects",
+      "nodeKind": "process",
+      "description": "createProject(name, repoRoot)"
+    },
+    {
+      "nodeId": "project-op",
+      "label": "修改/删除项目\nPUT/DELETE",
+      "nodeKind": "process",
+      "description": "renameProject / deleteProject"
+    },
+    {
+      "nodeId": "enter-detail",
+      "label": "进入项目详情\nGET /projects/:id + /index",
+      "nodeKind": "process",
+      "description": "getProject + getProjectIndex 并行加载"
+    },
+    {
+      "nodeId": "render-stage",
+      "label": "渲染四阶段导航与统计",
+      "nodeKind": "process",
+      "description": "StageNav + 文档/图/需求/任务计数"
+    },
+    {
+      "nodeId": "decision-stage",
+      "label": "当前阶段？",
+      "nodeKind": "decision",
+      "description": "按 currentStage 渲染内容区"
+    },
+    {
+      "nodeId": "view-doc",
+      "label": "文档查看\nGET /documents/:docId/full",
+      "nodeKind": "process",
+      "description": "s1 文档库：选择文档，加载全文"
+    },
+    {
+      "nodeId": "render-md",
+      "label": "只读渲染\nmarked + DOMPurify",
+      "nodeKind": "process",
+      "description": "markdown 渲染 + XSS 消毒，展示摘要栏"
+    },
+    {
+      "nodeId": "edit-doc",
+      "label": "编辑保存\nPUT full + meta",
+      "nodeKind": "process",
+      "description": "renameDocument(标题/摘要) + updateFullDocument(正文)"
+    },
+    {
+      "nodeId": "view-diagram",
+      "label": "图查看\nGET /diagrams/:id + /layout",
+      "nodeKind": "process",
+      "description": "getDiagram 语义模型 + getLayout 布局"
+    },
+    {
+      "nodeId": "render-svg",
+      "label": "SVG 渲染",
+      "nodeKind": "process",
+      "description": "DiagramSvg 按类型渲染节点/连线/分组"
+    },
+    {
+      "nodeId": "fold-module",
+      "label": "折叠/展开模块\n重新布局",
+      "nodeKind": "process",
+      "description": "setFocus(moduleId) → getLayout 重算"
+    },
+    {
+      "nodeId": "view-req",
+      "label": "需求任务\nGET /requirements",
+      "nodeKind": "process",
+      "description": "s2/s3 需求清单：展开需求懒加载任务"
+    },
+    {
+      "nodeId": "task-op",
+      "label": "任务操作\nPUT/POST/DELETE /tasks",
+      "nodeKind": "process",
+      "description": "状态切换 / 创建 / 修改 / 删除"
+    },
+    {
+      "nodeId": "backend",
+      "label": "BackendService (占位)",
+      "nodeKind": "subprocess",
+      "description": "外部模块统一占位：HTTP API 层 + 业务服务层 + 布局引擎 + 本地文件存储"
+    },
+    {
+      "nodeId": "end",
+      "label": "结束",
+      "nodeKind": "end",
+      "description": "页面交互完成"
+    }
+  ],
+  "edges": [
+    {
+      "edgeId": "e-start-load",
+      "from": "start",
+      "to": "load-projects"
+    },
+    {
+      "edgeId": "e-load-render",
+      "from": "load-projects",
+      "to": "render-overview"
+    },
+    {
+      "edgeId": "e-render-op",
+      "from": "render-overview",
+      "to": "decision-op"
+    },
+    {
+      "edgeId": "e-op-create",
+      "from": "decision-op",
+      "to": "create-project",
+      "label": "新建"
+    },
+    {
+      "edgeId": "e-create-detail",
+      "from": "create-project",
+      "to": "enter-detail"
+    },
+    {
+      "edgeId": "e-op-project",
+      "from": "decision-op",
+      "to": "project-op",
+      "label": "修改/删除"
+    },
+    {
+      "edgeId": "e-project-refresh",
+      "from": "project-op",
+      "to": "render-overview",
+      "label": "刷新"
+    },
+    {
+      "edgeId": "e-op-detail",
+      "from": "decision-op",
+      "to": "enter-detail",
+      "label": "进入项目"
+    },
+    {
+      "edgeId": "e-detail-stage",
+      "from": "enter-detail",
+      "to": "render-stage"
+    },
+    {
+      "edgeId": "e-stage-decision",
+      "from": "render-stage",
+      "to": "decision-stage"
+    },
+    {
+      "edgeId": "e-decision-doc",
+      "from": "decision-stage",
+      "to": "view-doc",
+      "label": "s1 文档"
+    },
+    {
+      "edgeId": "e-decision-req",
+      "from": "decision-stage",
+      "to": "view-req",
+      "label": "s2/s3 需求"
+    },
+    {
+      "edgeId": "e-decision-diagram",
+      "from": "decision-stage",
+      "to": "view-diagram",
+      "label": "图库"
+    },
+    {
+      "edgeId": "e-doc-md",
+      "from": "view-doc",
+      "to": "render-md"
+    },
+    {
+      "edgeId": "e-md-edit",
+      "from": "render-md",
+      "to": "edit-doc",
+      "label": "编辑"
+    },
+    {
+      "edgeId": "e-edit-md",
+      "from": "edit-doc",
+      "to": "render-md",
+      "label": "保存刷新"
+    },
+    {
+      "edgeId": "e-md-end",
+      "from": "render-md",
+      "to": "end"
+    },
+    {
+      "edgeId": "e-req-task",
+      "from": "view-req",
+      "to": "task-op"
+    },
+    {
+      "edgeId": "e-task-req",
+      "from": "task-op",
+      "to": "view-req",
+      "label": "刷新"
+    },
+    {
+      "edgeId": "e-task-end",
+      "from": "task-op",
+      "to": "end"
+    },
+    {
+      "edgeId": "e-diagram-svg",
+      "from": "view-diagram",
+      "to": "render-svg"
+    },
+    {
+      "edgeId": "e-svg-fold",
+      "from": "render-svg",
+      "to": "fold-module",
+      "label": "折叠/展开"
+    },
+    {
+      "edgeId": "e-fold-svg",
+      "from": "fold-module",
+      "to": "render-svg",
+      "label": "重新布局"
+    },
+    {
+      "edgeId": "e-svg-end",
+      "from": "render-svg",
+      "to": "end"
+    },
+    {
+      "edgeId": "e-http-load",
+      "from": "load-projects",
+      "to": "backend",
+      "label": "HTTP"
+    },
+    {
+      "edgeId": "e-http-create",
+      "from": "create-project",
+      "to": "backend",
+      "label": "HTTP"
+    },
+    {
+      "edgeId": "e-http-project",
+      "from": "project-op",
+      "to": "backend",
+      "label": "HTTP"
+    },
+    {
+      "edgeId": "e-http-detail",
+      "from": "enter-detail",
+      "to": "backend",
+      "label": "HTTP"
+    },
+    {
+      "edgeId": "e-http-doc",
+      "from": "view-doc",
+      "to": "backend",
+      "label": "HTTP"
+    },
+    {
+      "edgeId": "e-http-edit",
+      "from": "edit-doc",
+      "to": "backend",
+      "label": "HTTP"
+    },
+    {
+      "edgeId": "e-http-diagram",
+      "from": "view-diagram",
+      "to": "backend",
+      "label": "HTTP"
+    },
+    {
+      "edgeId": "e-http-req",
+      "from": "view-req",
+      "to": "backend",
+      "label": "HTTP"
+    },
+    {
+      "edgeId": "e-http-task",
+      "from": "task-op",
+      "to": "backend",
+      "label": "HTTP"
+    }
+  ],
+  "groups": [
+    {
+      "groupId": "lane-frontend",
+      "title": "Web 前端",
+      "axis": "horizontal",
+      "nodeIds": [
+        "start",
+        "load-projects",
+        "render-overview",
+        "decision-op",
+        "create-project",
+        "project-op",
+        "enter-detail",
+        "render-stage",
+        "decision-stage",
+        "view-doc",
+        "render-md",
+        "edit-doc",
+        "view-diagram",
+        "render-svg",
+        "fold-module",
+        "view-req",
+        "task-op",
+        "end"
+      ]
+    },
+    {
+      "groupId": "lane-backend",
+      "title": "后端服务（占位）",
+      "axis": "horizontal",
+      "nodeIds": [
+        "backend"
+      ]
+    }
+  ]
+}

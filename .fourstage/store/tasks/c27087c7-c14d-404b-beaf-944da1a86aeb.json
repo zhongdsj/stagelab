@@ -1,0 +1,14 @@
+{
+  "taskId": "c27087c7-c14d-404b-beaf-944da1a86aeb",
+  "requirementId": "36c53c3a-5666-4ed4-942b-d0a148c4d306",
+  "title": "T24 前端：改造图库组件为跳转入口",
+  "description": "## 任务描述\n\n改造 `components/diagram/DiagramLibrary.vue`：\n\n- 移除详情页内嵌的 `DiagramView` 渲染（现有位置不再渲染整个图）\n- 图 tab 列表保留，点击 tab 通过 `router.push` 跳转到 `/projects/:id/diagrams/:diagramId`\n- 补充引导文案（如「点击图进入查看页面」）\n\n## 涉及文件\n- `packages/web/src/components/diagram/DiagramLibrary.vue`（修改）\n\n## 变更类型\n修改\n\n## 验收标准\n1. 项目详情页图库位置不再渲染整图，仅保留图 tab 列表入口\n2. 点击任一图 tab 跳转到独立图查看页面\n3. 跳转后详情页不残留图渲染内容",
+  "status": "done",
+  "acceptanceCriteria": "详情页不再内嵌整图；tab 点击跳转正常",
+  "files": [
+    "packages/web/src/components/diagram/DiagramLibrary.vue"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788139853093,
+  "updatedAt": 1788142384748
+}

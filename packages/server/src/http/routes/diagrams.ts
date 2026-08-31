@@ -4,7 +4,7 @@
  * GET /api/projects/:id/diagrams/:did/layout   实时调用布局引擎返回带坐标结果
  * GET /api/projects/:id/diagrams/:did          读取图语义模型（含节点类型，供 SVG 渲染）
  *
- * 布局查询参数：focusModuleId（可选）——聚焦模块，非聚焦模块折叠为聚合节点。
+ * 布局始终返回全量坐标（无折叠参数）：折叠改为前端本地会话态，不再触发服务端重布局。
  * 布局在 Worker Thread 执行，客户端断开时自动取消。
  */
 import type { FastifyInstance } from "fastify";
@@ -28,13 +28,11 @@ export function registerDiagramRoutes(app: FastifyInstance): void {
 
     const diagram = await readDiagram(ws, did);
 
-    const focusModuleId = (request.query as { focusModuleId?: string })
-      ?.focusModuleId;
-
     // 客户端断开连接时取消布局（释放 Worker）
     const ac = new AbortController();
     request.raw.once("close", () => ac.abort());
 
-    return layoutInWorker(diagram, { focusModuleId }, ac.signal);
+    // 折叠为前端本地会话态，这里始终返回全量布局（引擎折叠能力保留为内部兼容）
+    return layoutInWorker(diagram, {}, ac.signal);
   });
 }

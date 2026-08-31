@@ -16,6 +16,7 @@ import {
   getDiagramPartial,
   updateDiagramElements,
   deleteDiagram,
+  toDiagramMeta,
   type DiagramElementPatch
 } from "../../services/diagram.service.js";
 import { safeCall } from "./_util.js";
@@ -55,7 +56,9 @@ export function registerDiagramTools(server: McpServer): void {
     async (args) =>
       safeCall(async () => {
         const ws = await getWorkspace();
-        return createDiagram(ws, args.diagramId, args.type, args.title, args.description);
+        const d = await createDiagram(ws, args.diagramId, args.type, args.title, args.description);
+        // T31：写操作只返回 meta 摘要，不返回节点/连线/分组内容
+        return toDiagramMeta(d);
       })
   );
 
@@ -110,11 +113,37 @@ export function registerDiagramTools(server: McpServer): void {
     async (args) =>
       safeCall(async () => {
         const ws = await getWorkspace();
-        return updateDiagramElements(
-          ws,
-          args.diagramId,
-          args.patches as DiagramElementPatch[]
-        );
+        const patches = args.patches as DiagramElementPatch[];
+        const d = await updateDiagramElements(ws, args.diagramId, patches);
+        // T31：写操作只返回 meta 摘要 + 变更 id 列表，不返回节点/连线/分组内容
+        const upsertedIds: string[] = [];
+        const removedIds: string[] = [];
+        for (const p of patches) {
+          switch (p.action) {
+            case "addNode":
+            case "updateNode":
+              upsertedIds.push(p.node.nodeId);
+              break;
+            case "removeNode":
+              removedIds.push(p.nodeId);
+              break;
+            case "addEdge":
+            case "updateEdge":
+              upsertedIds.push(p.edge.edgeId);
+              break;
+            case "removeEdge":
+              removedIds.push(p.edgeId);
+              break;
+            case "addGroup":
+            case "updateGroup":
+              upsertedIds.push(p.group.groupId);
+              break;
+            case "removeGroup":
+              removedIds.push(p.groupId);
+              break;
+          }
+        }
+        return { ...toDiagramMeta(d), upsertedIds, removedIds };
       })
   );
 

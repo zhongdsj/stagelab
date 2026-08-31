@@ -7,6 +7,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import ProjectListView from "../views/ProjectListView.vue";
 import ProjectDetailView from "../views/ProjectDetailView.vue";
+import DiagramPageView from "../views/DiagramPageView.vue";
 
 export const router = createRouter({
   history: createWebHistory(),
@@ -16,6 +17,13 @@ export const router = createRouter({
       path: "/projects/:id",
       name: "project-detail",
       component: ProjectDetailView,
+      props: true
+    },
+    // T22：独立图查看页面（左右结构：图列表 + 图渲染）
+    {
+      path: "/projects/:id/diagrams/:diagramId",
+      name: "diagram-page",
+      component: DiagramPageView,
       props: true
     }
   ]

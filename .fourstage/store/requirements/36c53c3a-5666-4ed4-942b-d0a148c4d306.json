@@ -1,0 +1,15 @@
+{
+  "requirementId": "36c53c3a-5666-4ed4-942b-d0a148c4d306",
+  "title": "图库改造：独立图查看页面",
+  "description": "## 分组说明\n\n图库展示交互改造：图从项目详情页内嵌渲染改为独立页面左右结构。\n\n### 需求\n1. 详情页图库位置不再渲染整个图，仅保留图 tab 列表入口\n2. 点击 tab 跳转到新页面：左右结构（左侧图列表 + 返回按钮，右侧渲染图）\n\n### 包含任务\n- T22 前端：新增图查看路由\n- T23 前端：新增图查看页面（左右结构）\n- T24 前端：改造图库组件为跳转入口\n- T25 前端：构建验证与联调\n\n### 关键约束\n- 复用现有 DiagramView / DiagramSvg 渲染组件（不重写渲染逻辑）\n- 图列表来自项目索引（getProjectIndex.diagrams）\n- 折叠/展开仍为会话态，不持久化",
+  "branchName": "feature/diagram-page",
+  "status": "done",
+  "taskIds": [
+    "d0964556-0517-4ddb-8942-377396e3089f",
+    "d2953025-f5f5-40cd-8490-8d3e912fdefe",
+    "c27087c7-c14d-404b-beaf-944da1a86aeb",
+    "0a96f292-b8cb-446c-a585-b6d727007fe1"
+  ],
+  "createdAt": 1788139841177,
+  "updatedAt": 1788145245663
+}

@@ -1,0 +1,14 @@
+{
+  "taskId": "4a80d797-e755-443a-94ed-c69054a91dd3",
+  "requirementId": "6c3990f0-4296-4f32-aad9-c23f3d53c2e8",
+  "title": "T20 build 验证",
+  "description": "全量 typecheck + build 验证，确保增量改造不破坏既有功能。\n\n完成记录：修复 packages/server/src/mcp/tools/document.ts create_document 缺少 return/闭合括号语法错误；build shared 通过；typecheck 通过；web build 通过；server build 通过。",
+  "status": "done",
+  "acceptanceCriteria": "typecheck（shared + server）通过；web build（vue-tsc + vite）通过；server build 通过。",
+  "files": [
+    "packages/server/src/mcp/tools/document.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788094358488,
+  "updatedAt": 1788145268775
+}

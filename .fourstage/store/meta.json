@@ -1,16 +1,28 @@
 {
   "projectId": "34a29cd8-790c-43c4-8ce9-e2c25573cfa0",
-  "projectName": "测试项目",
-  "currentStage": "s1",
+  "projectName": "fourstage",
+  "currentStage": "s3",
   "createdAt": 1787984152121,
-  "updatedAt": 1787984904563,
+  "updatedAt": 1788157063041,
   "stage1": {
     "docId": "",
     "diagramIds": []
   },
   "stage2": {
     "taskDocId": "",
-    "requirementIds": [],
+    "requirementIds": [
+      "311621a6-ca26-4050-b682-ac3ac2bba4d5",
+      "6c85f4f9-8ea2-4281-83c3-954dff6b80ee",
+      "65917ee2-c639-4b2f-9c39-74e5b13a76ec",
+      "71b8c0fe-3809-48f2-93b7-a26d50ec0967",
+      "6c3990f0-4296-4f32-aad9-c23f3d53c2e8",
+      "36c53c3a-5666-4ed4-942b-d0a148c4d306",
+      "bfc97a97-8c75-41bb-8428-83bf6ad9efcf",
+      "2e45ae8f-d841-4f74-8017-f42a072bd944",
+      "23a5d5d0-4d16-42e7-a8da-614df27d783a",
+      "af4b430a-b283-49ec-885b-680608580794",
+      "48b8d597-c399-4168-ab88-ee56777c2f45"
+    ],
     "diagramIds": []
   },
   "stage3": {

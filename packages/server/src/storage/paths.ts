@@ -66,8 +66,6 @@ export function lockPath(repoRoot: string): string {
 export const entityPath = {
   meta: (repoRoot: string) => path.join(storeRoot(repoRoot), "meta.json"),
   index: (repoRoot: string) => path.join(storeRoot(repoRoot), "index.json"),
-  document: (repoRoot: string, docId: string) =>
-    path.join(storeSubdir(repoRoot, "documents"), `${docId}.json`),
   diagram: (repoRoot: string, diagramId: string) =>
     path.join(storeSubdir(repoRoot, "diagrams"), `${diagramId}.json`),
   requirement: (repoRoot: string, requirementId: string) =>
@@ -79,3 +77,22 @@ export const entityPath = {
   bugRecord: (repoRoot: string, bugId: string) =>
     path.join(storeSubdir(repoRoot, "records"), `${bugId}.json`)
 };
+
+/** 文档目录：store/documents/{docId}/（内部分片文件 + meta.json，避免平铺散落） */
+export function documentDir(repoRoot: string, docId: string): string {
+  return path.join(storeSubdir(repoRoot, "documents"), docId);
+}
+
+/** 文档分片文件路径 */
+export function documentFragmentPath(
+  repoRoot: string,
+  docId: string,
+  fragmentId: string
+): string {
+  return path.join(documentDir(repoRoot, docId), `${fragmentId}.json`);
+}
+
+/** 文档元信息文件路径 */
+export function documentMetaPath(repoRoot: string, docId: string): string {
+  return path.join(documentDir(repoRoot, docId), "meta.json");
+}

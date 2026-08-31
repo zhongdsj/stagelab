@@ -1,0 +1,16 @@
+{
+  "taskId": "6fa6473b-66d7-49cd-9155-4ad1b8d48c6b",
+  "requirementId": "311621a6-ca26-4050-b682-ac3ac2bba4d5",
+  "title": "T04 存储层：文件IO安全引擎",
+  "description": "实现开发文档 7.4 文件IO强制规范：读 open→read→立即close，写 open→write→立即close；短时内存缓存（2-5s TTL）；mtime 失效检测；安全写入（临时文件 xxx.tmp-{随机串}.json + fsync + 原子 rename）；.write.lock 短持有互斥锁；冲突拒绝（磁盘 mtime 大于内存版本时拒绝写入）。\n\n完成记录：cache/lock/io 实现，冒烟验证全部通过（缓存命中、外部修改检测、冲突拒绝、20 并发写不损坏、锁互斥释放）。",
+  "status": "done",
+  "acceptanceCriteria": "并发写不产生 JSON 损坏（临时文件+原子 rename 生效）；模拟外部修改后读取返回磁盘最新数据；锁互斥生效写完即释放；冲突场景返回明确冲突错误不覆盖磁盘新数据。",
+  "files": [
+    "packages/server/src/storage/io.ts",
+    "packages/server/src/storage/lock.ts",
+    "packages/server/src/storage/cache.ts"
+  ],
+  "changeType": "新增",
+  "createdAt": 1788094293132,
+  "updatedAt": 1788145214668
+}

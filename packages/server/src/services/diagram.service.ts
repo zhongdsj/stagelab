@@ -44,10 +44,8 @@ export async function createDiagram(
   return diagram;
 }
 
-/** 获取图元数据（标题/类型/节点数/连线数，不含详情） */
-export async function getDiagramMeta(workspace: RepoWorkspace, diagramId: string) {
-  const repos = createRepositories(workspace);
-  const d = await repos.diagram.get(diagramId);
+/** 从 Diagram 提取 meta 摘要（不含节点/连线/分组详情，供 MCP 写操作返回，T31） */
+export function toDiagramMeta(d: Diagram) {
   return {
     diagramId: d.diagramId,
     title: d.metadata.title,
@@ -57,6 +55,13 @@ export async function getDiagramMeta(workspace: RepoWorkspace, diagramId: string
     edgeCount: d.edges.length,
     groupCount: d.groups.length
   };
+}
+
+/** 获取图元数据（标题/类型/节点数/连线数，不含详情） */
+export async function getDiagramMeta(workspace: RepoWorkspace, diagramId: string) {
+  const repos = createRepositories(workspace);
+  const d = await repos.diagram.get(diagramId);
+  return toDiagramMeta(d);
 }
 
 /** 按节点ID/连线ID/分组ID读取部分图元 */

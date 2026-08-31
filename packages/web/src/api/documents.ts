@@ -45,3 +45,74 @@ export function updateFragment(
     { content }
   );
 }
+
+/** 文档全文（分片顺序拼接，供全量展示） */
+export interface FullDocument {
+  docId: string;
+  title: string;
+  summary: string;
+  content: string;
+  fragmentCount: number;
+}
+
+/** 读取文档全文 */
+export function getFullDocument(
+  projectId: string,
+  docId: string
+): Promise<FullDocument> {
+  return http.get<FullDocument>(
+    `/api/projects/${encodeURIComponent(projectId)}/documents/${encodeURIComponent(docId)}/full`
+  );
+}
+
+/** 全量编辑文档（从 order 0 覆盖全文，超长自动再分片 + 清理孤儿分片） */
+export function updateFullDocument(
+  projectId: string,
+  docId: string,
+  content: string,
+  title?: string
+): Promise<DocumentFragment[]> {
+  return http.put<DocumentFragment[]>(
+    `/api/projects/${encodeURIComponent(projectId)}/documents/${encodeURIComponent(docId)}/full`,
+    { content, title }
+  );
+}
+
+/** 文档列表项（来自项目索引，含 docType 便于 AI/人工识别文档性质） */
+export interface DocumentItem {
+  docId: string;
+  title: string;
+  docType?: string;
+  summary?: string;
+  fragmentIds: string[];
+}
+
+/** 新建文档（docId 后端自动生成；docType 为自由文本） */
+export function createDocument(
+  projectId: string,
+  payload: { title: string; docType?: string; content?: string }
+): Promise<DocumentFragment> {
+  return http.post<DocumentFragment>(
+    `/api/projects/${encodeURIComponent(projectId)}/documents`,
+    payload
+  );
+}
+
+/** 重命名文档（标题/类型/摘要） */
+export function renameDocument(
+  projectId: string,
+  docId: string,
+  patch: { title?: string; docType?: string; summary?: string }
+): Promise<unknown> {
+  return http.put(
+    `/api/projects/${encodeURIComponent(projectId)}/documents/${encodeURIComponent(docId)}`,
+    patch
+  );
+}
+
+/** 删除文档（meta + 全部分片） */
+export function deleteDocument(projectId: string, docId: string): Promise<void> {
+  return http.del<void>(
+    `/api/projects/${encodeURIComponent(projectId)}/documents/${encodeURIComponent(docId)}`
+  );
+}

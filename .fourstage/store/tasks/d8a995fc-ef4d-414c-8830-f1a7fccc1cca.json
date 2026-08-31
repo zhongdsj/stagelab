@@ -1,0 +1,15 @@
+{
+  "taskId": "d8a995fc-ef4d-414c-8830-f1a7fccc1cca",
+  "requirementId": "bfc97a97-8c75-41bb-8428-83bf6ad9efcf",
+  "title": "T28 前端：折叠改单模块本地折叠",
+  "description": "## 任务描述\n\n修复折叠 bug 并改为单模块本地折叠（折叠不改渲染大小）：\n\n- `DiagramView.vue`：移除 setFocus 服务端重布局调用；新增本地 `collapsedModules: Set<groupId>`（会话态）\n- `DiagramSvg.vue`：折叠按钮只切换该模块折叠状态（不再 emit focus 聚焦语义）\n- 折叠模块：隐藏内部节点与内部连线，跨模块连线端点收敛到模块框边缘；模块框保留原位置与原大小（画布尺寸不变），框内显示模块标题 + 「已折叠」\n- 展开恢复显示\n\n## 涉及文件\n- `packages/web/src/components/diagram/DiagramView.vue`（修改）\n- `packages/web/src/components/diagram/DiagramSvg.vue`（修改）\n\n## 变更类型\n修改\n\n## 验收标准\n1. 点击某模块折叠按钮只折叠该模块，其他模块不折叠\n2. 折叠后画布宽高与节点位置不变\n3. 展开恢复，折叠状态刷新重置（会话态）\n4. 跨模块连线在折叠后收敛到模块框边缘不悬空",
+  "status": "done",
+  "acceptanceCriteria": "点击折叠只折叠单个模块；其他模块位置大小不变；展开恢复；画布尺寸不变",
+  "files": [
+    "packages/web/src/components/diagram/DiagramView.vue",
+    "packages/web/src/components/diagram/DiagramSvg.vue"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788143739929,
+  "updatedAt": 1788146397874
+}
