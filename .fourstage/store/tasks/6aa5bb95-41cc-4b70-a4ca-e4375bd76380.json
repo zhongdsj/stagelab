@@ -1,0 +1,12 @@
+{
+  "taskId": "6aa5bb95-41cc-4b70-a4ca-e4375bd76380",
+  "requirementId": "40822db0-0c50-45b9-9377-164c8b62affa",
+  "title": "T65 构建验证与联调",
+  "description": "全量 build/typecheck；三种图类型（架构/类/流程）回归：旧图首次固化、节点拖拽、线段平移、折点增删、折叠、点击联动、悬停、撤销/重做。",
+  "status": "done",
+  "acceptanceCriteria": "1) 构建与类型检查通过；2) 开发文档验收标准 1-8 全部达成；3) 既有功能（折叠/点击联动/悬停/编辑态开关）回归正常。",
+  "files": [],
+  "changeType": "修改",
+  "createdAt": 1788227068762,
+  "updatedAt": 1788227740289
+}

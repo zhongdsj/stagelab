@@ -92,6 +92,90 @@ export async function getDiagramPartial(
   };
 }
 
+/** 分组内连线（from/to 均落在 nodeIds 集合内） */
+function edgesWithinGroup(
+  edges: Edge[],
+  nodeIds: Set<string>
+): Edge[] {
+  return edges.filter(
+    (e) => nodeIds.has(e.from) && nodeIds.has(e.to)
+  );
+}
+
+/**
+ * 按分组聚合读取（T43）：一次返回该分区的节点详情 + 分区内连线 + 子分区摘要。
+ * - 不返回坐标、不加载整图之外的实体（仅按需组装目标分区）
+ */
+export async function getDiagramGroup(
+  workspace: RepoWorkspace,
+  diagramId: string,
+  groupId: string
+) {
+  const repos = createRepositories(workspace);
+  const d = await repos.diagram.get(diagramId);
+
+  const group = d.groups.find((g) => g.groupId === groupId);
+  if (!group) {
+    throw new Error(`分组不存在: ${groupId}`);
+  }
+
+  const nodeIds = new Set(group.nodeIds);
+  const nodes = d.nodes.filter((n) => nodeIds.has(n.nodeId));
+  const edges = edgesWithinGroup(d.edges, nodeIds);
+  // 子分区：parentGroupId 指向当前分区的 groups 的轻量信息
+  const childGroups = d.groups
+    .filter((g) => g.parentGroupId === groupId)
+    .map((g) => ({
+      groupId: g.groupId,
+      title: g.title,
+      axis: g.axis,
+      nodeCount: g.nodeIds.length
+    }));
+
+  return {
+    diagramId: d.diagramId,
+    type: d.type,
+    group: {
+      groupId: group.groupId,
+      title: group.title,
+      axis: group.axis,
+      parentGroupId: group.parentGroupId,
+      collapsible: group.collapsible
+    },
+    nodes,
+    edges,
+    childGroups
+  };
+}
+
+/**
+ * 节点-分区反向查询（T44）：返回指定节点所属的全部分区（纵向模块/横向泳道）。
+ * 支持单节点或多节点批量，返回 nodeId → 分区列表。
+ */
+export async function getNodeGroups(
+  workspace: RepoWorkspace,
+  diagramId: string,
+  nodeIds: string[]
+) {
+  const repos = createRepositories(workspace);
+  const d = await repos.diagram.get(diagramId);
+
+  const result: Record<
+    string,
+    Array<{ groupId: string; title: string; axis?: string }>
+  > = {};
+  for (const nodeId of nodeIds) {
+    result[nodeId] = d.groups
+      .filter((g) => g.nodeIds.includes(nodeId))
+      .map((g) => ({
+        groupId: g.groupId,
+        title: g.title,
+        axis: g.axis
+      }));
+  }
+  return { diagramId: d.diagramId, type: d.type, nodes: result };
+}
+
 /** 图元局部更新操作 */
 export type DiagramElementPatch =
   | {
@@ -151,7 +235,9 @@ export async function updateDiagramElements(
       case "updateEdge": {
         const idx = edges.findIndex((e) => e.edgeId === patch.edge.edgeId);
         if (idx === -1) edges.push(patch.edge);
-        else edges[idx] = patch.edge;
+        // 字段合并（方案A）：仅覆盖传入字段，保留存储中其余字段（如 points 坐标），
+        // 避免 MCP updateEdge 只改 methods/label 时把坐标整体替换丢失。
+        else edges[idx] = { ...edges[idx], ...patch.edge };
         break;
       }
       case "removeEdge": {
@@ -203,4 +289,91 @@ export async function deleteDiagram(
 ): Promise<void> {
   const repos = createRepositories(workspace);
   await repos.diagram.delete(diagramId);
+}
+
+/* ========== 自由画布坐标（draw.io 改造，T59） ========== */
+
+/** 坐标批量保存载荷：按 nodeId/edgeId 合并节点几何与连线折点 */
+export interface GeometryPatch {
+  nodes?: Array<{
+    nodeId: string;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  }>;
+  edges?: Array<{
+    edgeId: string;
+    points: Array<{ x: number; y: number }>;
+  }>;
+}
+
+/** 坐标合法性校验：有限数值，尺寸必须为正 */
+function isFiniteNum(v: unknown): v is number {
+  return typeof v === "number" && Number.isFinite(v);
+}
+
+/**
+ * 批量保存自由画布坐标（T59）：将节点 geometry / 连线 points 合并进图数据落库。
+ * - 逐元素合并，保留其余字段（不覆盖语义数据）；
+ * - 不存在的 nodeId/edgeId 静默忽略；
+ * - 坐标非法（NaN/Infinity/非正尺寸）直接拒绝，避免脏数据。
+ */
+export async function saveDiagramGeometry(
+  workspace: RepoWorkspace,
+  diagramId: string,
+  patch: GeometryPatch
+): Promise<Diagram> {
+  const repos = createRepositories(workspace);
+  const d = await repos.diagram.get(diagramId);
+
+  // 深拷贝可变副本（保留语义字段）
+  const nodes = d.nodes.map((n) => ({ ...n })) as NodeOfDiagram[];
+  const edges = d.edges.map((e) => ({ ...e }));
+
+  for (const g of patch.nodes ?? []) {
+    if (
+      !isFiniteNum(g.x) ||
+      !isFiniteNum(g.y) ||
+      !isFiniteNum(g.width) ||
+      !isFiniteNum(g.height) ||
+      g.width <= 0 ||
+      g.height <= 0
+    ) {
+      throw new Error(`节点 ${g.nodeId} 坐标非法`);
+    }
+    const idx = nodes.findIndex((n) => n.nodeId === g.nodeId);
+    if (idx === -1) continue; // 忽略不存在的节点
+    nodes[idx] = {
+      ...nodes[idx],
+      geometry: { x: g.x, y: g.y, width: g.width, height: g.height }
+    };
+  }
+
+  for (const g of patch.edges ?? []) {
+    const pts = g.points ?? [];
+    if (!pts.every((p) => isFiniteNum(p.x) && isFiniteNum(p.y))) {
+      throw new Error(`连线 ${g.edgeId} 折点坐标非法`);
+    }
+    const idx = edges.findIndex((e) => e.edgeId === g.edgeId);
+    if (idx === -1) continue; // 忽略不存在的连线
+    edges[idx] = { ...edges[idx], points: pts.map((p) => ({ x: p.x, y: p.y })) };
+  }
+
+  const updated: Diagram = {
+    ...d,
+    nodes,
+    edges,
+    metadata: { ...d.metadata, version: d.metadata.version + 1 }
+  };
+
+  const parsed = DiagramSchema.safeParse(updated);
+  if (!parsed.success) {
+    throw new Error(
+      `坐标保存校验失败: ${parsed.error.issues.map((i) => i.message).join("; ")}`
+    );
+  }
+
+  await repos.diagram.save(updated);
+  return updated;
 }

@@ -1,0 +1,14 @@
+{
+  "taskId": "0d317638-67c0-4ed2-aa7d-9e01c96804d0",
+  "requirementId": "40822db0-0c50-45b9-9377-164c8b62affa",
+  "title": "T61 前端：DiagramView 加载流程改造（首次补默认值 + 固化）",
+  "description": "DiagramView.load 流程改造：getDiagram → 检测缺 geometry/points → getLayout 生成默认坐标（节点尺寸/位置 + 连线正交折线）→ saveGeometry 一次性固化 → 渲染；固化失败降级为本地默认坐标展示不阻塞；移除布局参数面板（自由画布态不再实时计算布局），保留相机/折叠。",
+  "status": "done",
+  "acceptanceCriteria": "1) 旧图首次打开自动补齐缺省默认坐标并固化，行为与新图一致；2) 固化失败不阻塞展示，下次打开再补写；3) 布局参数面板下线；4) 刷新后坐标保持。",
+  "files": [
+    "packages/web/src/components/diagram/DiagramView.vue"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788227063873,
+  "updatedAt": 1788227738640
+}

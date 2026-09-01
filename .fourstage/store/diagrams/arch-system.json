@@ -3,7 +3,7 @@
   "type": "architecture",
   "metadata": {
     "title": "四阶段MCP项目管理工具 - 系统架构",
-    "version": 3,
+    "version": 41,
     "description": "基于开发文档 5.1 整体架构：MCP Client(AI) 与 Web 前端通过 stdio/HTTP 接入 Node.js 后端，经业务服务层与布局引擎，落盘到本地文件存储层"
   },
   "nodes": [
@@ -12,11 +12,17 @@
       "label": "MCP Client (AI)",
       "layer": "接入层",
       "nodeKind": "external",
-      "description": "AI 客户端，通过标准 MCP 协议(stdio)接入后端，执行项目管理/文档/图元/索引操作"
+      "description": "AI 客户端，通过标准 MCP 协议(stdio)接入后端，执行项目管理/文档/图元/索引操作",
+      "geometry": {
+        "x": -296.64287779505764,
+        "y": 381.79345729856686,
+        "width": 168,
+        "height": 60
+      }
     },
     {
-      "label": "Web 前端 (浏览器)",
       "nodeId": "web-frontend",
+      "label": "Web 前端 (浏览器)",
       "layer": "接入层",
       "nodeKind": "external",
       "description": "Vue3 SPA，通过 HTTP 访问后端 API，查看/编辑文档、渲染图表、管理任务",
@@ -33,6 +39,12 @@
             "label": "Web 前端 - 核心交互流程图"
           }
         ]
+      },
+      "geometry": {
+        "x": -181.81795492143453,
+        "y": 215.85638844867924,
+        "width": 168,
+        "height": 60
       }
     },
     {
@@ -40,35 +52,65 @@
       "label": "MCP Server",
       "layer": "服务层",
       "nodeKind": "service",
-      "description": "标准 MCP 协议实现(@modelcontextprotocol/sdk)，注册 25 个工具：项目管理/文档/需求任务/图元/索引"
+      "description": "标准 MCP 协议实现(@modelcontextprotocol/sdk)，注册 25 个工具：项目管理/文档/需求任务/图元/索引",
+      "geometry": {
+        "x": 138.22597904547206,
+        "y": 382,
+        "width": 168,
+        "height": 60
+      }
     },
     {
       "nodeId": "http-api",
       "label": "HTTP API 层",
       "layer": "服务层",
       "nodeKind": "service",
-      "description": "Fastify 提供前端 API：项目/布局/文档分片/需求任务，委托业务服务层与布局引擎"
+      "description": "Fastify 提供前端 API：项目/布局/文档分片/需求任务，委托业务服务层与布局引擎",
+      "geometry": {
+        "x": 752.3049723537375,
+        "y": 214.24160204279187,
+        "width": 168,
+        "height": 60
+      }
     },
     {
       "nodeId": "biz-service",
       "label": "业务服务层",
       "layer": "服务层",
       "nodeKind": "service",
-      "description": "项目管理/文档分片/图元CRUD/索引 四大服务；分层分片按需读取，降 Token"
+      "description": "项目管理/文档分片/图元CRUD/索引 四大服务；分层分片按需读取，降 Token",
+      "geometry": {
+        "x": 138.53769977098148,
+        "y": 529.7144639903015,
+        "width": 168,
+        "height": 60
+      }
     },
     {
       "nodeId": "layout-engine",
       "label": "布局引擎 (Worker)",
       "layer": "服务层",
       "nodeKind": "service",
-      "description": "elkjs 计算节点坐标与连线路径，输出 LayoutDiagram；Worker 隔离支持大图计算与取消"
+      "description": "elkjs 计算节点坐标与连线路径，输出 LayoutDiagram；Worker 隔离支持大图计算与取消",
+      "geometry": {
+        "x": 151.0648378234721,
+        "y": 805.2836293363389,
+        "width": 168,
+        "height": 60
+      }
     },
     {
       "nodeId": "file-store",
       "label": "本地文件存储层",
       "layer": "数据层",
       "nodeKind": "database",
-      "description": "Git 仓库内 .fourstage/ 目录，JSON 明文存储；mtime 检测 + 原子写 + 短时锁"
+      "description": "Git 仓库内 .fourstage/ 目录，JSON 明文存储；mtime 检测 + 原子写 + 短时锁",
+      "geometry": {
+        "x": -296.64287779505764,
+        "y": 520.2711609444887,
+        "width": 168,
+        "height": 60
+      }
     }
   ],
   "edges": [
@@ -76,43 +118,153 @@
       "edgeId": "e-mcp",
       "from": "mcp-client",
       "to": "mcp-server",
-      "label": "stdio"
+      "label": "stdio",
+      "points": [
+        {
+          "x": -128.64287779505764,
+          "y": 412
+        },
+        {
+          "x": 138.22597904547206,
+          "y": 411.79345729856686
+        }
+      ]
     },
     {
       "edgeId": "e-http",
       "from": "web-frontend",
       "to": "http-api",
-      "label": "HTTP"
+      "label": "HTTP",
+      "points": [
+        {
+          "x": -13.817954921434534,
+          "y": 244.24160204279187
+        },
+        {
+          "x": -13.817954921434534,
+          "y": 245.04899524573557
+        },
+        {
+          "x": 752.3049723537375,
+          "y": 245.04899524573557
+        },
+        {
+          "x": 752.3049723537375,
+          "y": 245.85638844867924
+        }
+      ]
     },
     {
       "edgeId": "e-mcp-biz",
       "from": "mcp-server",
       "to": "biz-service",
-      "label": "调用服务"
+      "label": "调用服务",
+      "points": [
+        {
+          "x": 222.53769977098148,
+          "y": 442
+        },
+        {
+          "x": 222.22597904547206,
+          "y": 529.7144639903015
+        }
+      ]
     },
     {
       "edgeId": "e-http-biz",
       "from": "http-api",
       "to": "biz-service",
-      "label": "调用服务"
+      "label": "调用服务",
+      "points": [
+        {
+          "x": 828.0405597810206,
+          "y": 274.2416020427919
+        },
+        {
+          "x": 828.0405597810206,
+          "y": 563.2215417326981
+        },
+        {
+          "x": 306.5376997709815,
+          "y": 563.2215417326981
+        },
+        {
+          "x": 306.5376997709815,
+          "y": 571.2468829020374
+        }
+      ]
     },
     {
       "edgeId": "e-http-layout",
       "from": "http-api",
       "to": "layout-engine",
-      "label": "布局计算"
+      "label": "布局计算",
+      "points": [
+        {
+          "x": 880.974034864606,
+          "y": 274.2416020427919
+        },
+        {
+          "x": 880.974034864606,
+          "y": 833.7469926922456
+        },
+        {
+          "x": 319.0648378234721,
+          "y": 833.7469926922456
+        },
+        {
+          "x": 319.0648378234721,
+          "y": 805.2836293363389
+        }
+      ]
     },
     {
       "edgeId": "e-biz-layout",
       "from": "biz-service",
       "to": "layout-engine",
-      "label": "布局计算"
+      "label": "布局计算",
+      "points": [
+        {
+          "x": 235.0648378234721,
+          "y": 589.7144639903015
+        },
+        {
+          "x": 235.0648378234721,
+          "y": 697.4990466633202
+        },
+        {
+          "x": 235.56747825309463,
+          "y": 697.4990466633202
+        },
+        {
+          "x": 235.56747825309463,
+          "y": 805.2836293363389
+        }
+      ]
     },
     {
       "edgeId": "e-biz-store",
       "from": "biz-service",
       "to": "file-store",
-      "label": "读写 JSON"
+      "label": "读写 JSON",
+      "points": [
+        {
+          "x": 138.53769977098148,
+          "y": 550.2711609444887
+        },
+        {
+          "x": 138.53769977098148,
+          "y": 546.8492009160743
+        },
+        {
+          "x": -128.64287779505764,
+          "y": 546.8492009160743
+        },
+        {
+          "x": -128.64287779505764,
+          "y": 559.7144639903015
+        }
+      ]
     }
   ],
   "groups": [

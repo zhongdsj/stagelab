@@ -3,7 +3,7 @@
   "type": "class",
   "metadata": {
     "title": "Web 前端 - 类图",
-    "version": 4,
+    "version": 137,
     "description": "基于 packages/web 源码：Vue3 SPA 的视图/组件/API 三层结构；后端 HTTP API 层、业务服务层、布局引擎、本地存储等外部模块统一用 BackendService 占位表示"
   },
   "nodes": [
@@ -17,7 +17,13 @@
           "returnType": "void"
         }
       ],
-      "description": "应用外壳：品牌区 + 导航 + router-view"
+      "description": "应用外壳：品牌区 + 导航 + router-view",
+      "geometry": {
+        "x": 12,
+        "y": 38,
+        "width": 250,
+        "height": 96
+      }
     },
     {
       "nodeId": "Router",
@@ -33,7 +39,13 @@
           "returnType": "WebHistory"
         }
       ],
-      "description": "路由配置：/ 项目总览、/projects/:id 项目详情"
+      "description": "路由配置：/ 项目总览、/projects/:id 项目详情",
+      "geometry": {
+        "x": 324,
+        "y": 38,
+        "width": 250,
+        "height": 96
+      }
     },
     {
       "nodeId": "ProjectListView",
@@ -73,7 +85,13 @@
           "returnType": "void"
         }
       ],
-      "description": "项目总览视图：列表 + 新建/重命名/删除"
+      "description": "项目总览视图：列表 + 新建/重命名/删除",
+      "geometry": {
+        "x": 282,
+        "y": 414,
+        "width": 250,
+        "height": 144
+      }
     },
     {
       "nodeId": "ProjectDetailView",
@@ -99,7 +117,13 @@
           "returnType": "void"
         }
       ],
-      "description": "项目详情视图：四阶段导航 + 按阶段渲染内容"
+      "description": "项目详情视图：四阶段导航 + 按阶段渲染内容",
+      "geometry": {
+        "x": 620.2519996999135,
+        "y": 197.62714764644937,
+        "width": 250,
+        "height": 104
+      }
     },
     {
       "nodeId": "StageNav",
@@ -127,7 +151,13 @@
           "returnType": "void"
         }
       ],
-      "description": "四阶段流程导航组件（s1-s4，可点击切换）"
+      "description": "四阶段流程导航组件（s1-s4，可点击切换）",
+      "geometry": {
+        "x": 8.634067542724551,
+        "y": 778.8565346905549,
+        "width": 250,
+        "height": 104
+      }
     },
     {
       "nodeId": "DocumentLibrary",
@@ -151,7 +181,13 @@
           "returnType": "void"
         }
       ],
-      "description": "文档库：文档 tab 列表 + 新建/重命名/删除"
+      "description": "文档库：文档 tab 列表 + 新建/重命名/删除",
+      "geometry": {
+        "x": 573.0370778579718,
+        "y": 693.0252570300303,
+        "width": 250,
+        "height": 124
+      }
     },
     {
       "nodeId": "DocumentFragments",
@@ -171,7 +207,13 @@
           "returnType": "void"
         }
       ],
-      "description": "文档内容：只读 markdown 渲染 + 全量编辑（标题/摘要/正文）"
+      "description": "文档内容：只读 markdown 渲染 + 全量编辑（标题/摘要/正文）",
+      "geometry": {
+        "x": 552,
+        "y": 1060,
+        "width": 250,
+        "height": 104
+      }
     },
     {
       "nodeId": "DiagramLibrary",
@@ -193,7 +235,13 @@
           "returnType": "string"
         }
       ],
-      "description": "图库：图 tab 列表（架构图/类图/流程图）"
+      "description": "图库：图 tab 列表（架构图/类图/流程图）",
+      "geometry": {
+        "x": 835.5054562645226,
+        "y": 659.3798412690822,
+        "width": 250,
+        "height": 96
+      }
     },
     {
       "nodeId": "DiagramView",
@@ -213,9 +261,35 @@
             }
           ],
           "returnType": "void"
+        },
+        {
+          "name": "onPointerDown",
+          "returnType": "void",
+          "description": "画布拖拽：豁免节点/连线(.edge)/折叠按钮/气泡，连线点击事件不被拖拽吞掉（T49 修复）"
+        },
+        {
+          "name": "onWheel",
+          "returnType": "void",
+          "description": "以光标为中心缩放"
+        },
+        {
+          "name": "applyParams",
+          "returnType": "void",
+          "description": "应用布局参数面板：携带覆盖重算布局（T47 扩展）"
+        },
+        {
+          "name": "resetParams",
+          "returnType": "void",
+          "description": "清空布局参数覆盖并重载（T47 扩展）"
         }
       ],
-      "description": "图视图：加载语义模型 + 实时布局，模块折叠/展开"
+      "description": "图视图：加载语义模型 + 实时布局；相机拖拽/缩放；连线点击豁免拖拽；布局参数面板（前端可修改布局参数）",
+      "geometry": {
+        "x": 879.0261284083863,
+        "y": 1032,
+        "width": 250,
+        "height": 164
+      }
     },
     {
       "nodeId": "DiagramSvg",
@@ -239,11 +313,27 @@
           "returnType": "string[]"
         },
         {
+          "name": "edgeMid",
+          "returnType": "Point",
+          "description": "连线标签按弧长取中点（T48）"
+        },
+        {
+          "name": "onEdgeClick",
+          "returnType": "void",
+          "description": "类图连线点击高亮：两端节点+相关连线，再点取消/切换（T49）"
+        },
+        {
           "name": "onToggleModule",
           "returnType": "void"
         }
       ],
-      "description": "SVG 渲染器：按图类型区分节点/连线/分组样式"
+      "description": "SVG 渲染器：按图类型区分节点/连线/分组样式；连线标签按弧长取中点（T48）；类图连线点击高亮两端节点与相关连线（T49）",
+      "geometry": {
+        "x": 822,
+        "y": 1476,
+        "width": 250,
+        "height": 184
+      }
     },
     {
       "nodeId": "RequirementTasks",
@@ -291,7 +381,13 @@
           "returnType": "string"
         }
       ],
-      "description": "需求清单：按需求分组任务 + 状态追踪（marked+DOMPurify）"
+      "description": "需求清单：按需求分组任务 + 状态追踪（marked+DOMPurify）",
+      "geometry": {
+        "x": 378.77055814666994,
+        "y": 796.5276800912512,
+        "width": 250,
+        "height": 184
+      }
     },
     {
       "nodeId": "ApiClient",
@@ -347,7 +443,13 @@
           "returnType": "Promise<T>"
         }
       ],
-      "description": "fetch 统一封装：JSON 序列化、204 处理、错误透传为 ApiError"
+      "description": "fetch 统一封装：JSON 序列化、204 处理、错误透传为 ApiError",
+      "geometry": {
+        "x": 367,
+        "y": 2378,
+        "width": 250,
+        "height": 124
+      }
     },
     {
       "nodeId": "ApiError",
@@ -374,7 +476,13 @@
           ]
         }
       ],
-      "description": "请求失败异常（继承 Error，携带 HTTP 状态码）"
+      "description": "请求失败异常（继承 Error，携带 HTTP 状态码）",
+      "geometry": {
+        "x": 12,
+        "y": 1758,
+        "width": 250,
+        "height": 96
+      }
     },
     {
       "nodeId": "ProjectsApi",
@@ -410,7 +518,13 @@
           "returnType": "Promise<ProjectIndexResult>"
         }
       ],
-      "description": "项目 API：/api/projects 相关路由"
+      "description": "项目 API：/api/projects 相关路由",
+      "geometry": {
+        "x": 342,
+        "y": 1914,
+        "width": 250,
+        "height": 184
+      }
     },
     {
       "nodeId": "DocumentsApi",
@@ -450,7 +564,13 @@
           "returnType": "Promise<void>"
         }
       ],
-      "description": "文档 API：/api/projects/:id/documents 相关路由（分片+全文）"
+      "description": "文档 API：/api/projects/:id/documents 相关路由（分片+全文）",
+      "geometry": {
+        "x": 672,
+        "y": 1894,
+        "width": 250,
+        "height": 204
+      }
     },
     {
       "nodeId": "DiagramsApi",
@@ -472,7 +592,13 @@
           "returnType": "Promise<LayoutDiagram>"
         }
       ],
-      "description": "图 API：语义模型读取 + 实时布局计算（支持模块聚焦）"
+      "description": "图 API：语义模型读取 + 实时布局计算（支持模块聚焦）",
+      "geometry": {
+        "x": 1002,
+        "y": 2002,
+        "width": 250,
+        "height": 96
+      }
     },
     {
       "nodeId": "RequirementsApi",
@@ -516,7 +642,13 @@
           "returnType": "Promise<void>"
         }
       ],
-      "description": "需求任务 API：/api/projects/:id/requirements 相关路由"
+      "description": "需求任务 API：/api/projects/:id/requirements 相关路由",
+      "geometry": {
+        "x": 12,
+        "y": 1874,
+        "width": 250,
+        "height": 224
+      }
     },
     {
       "nodeId": "BackendService",
@@ -534,7 +666,168 @@
           "returnType": "JSON"
         }
       ],
-      "description": "外部模块统一占位：HTTP API 层 + 业务服务层 + 布局引擎 + 本地文件存储（不在 web 前端范围内）"
+      "description": "外部模块统一占位：HTTP API 层 + 业务服务层 + 布局引擎 + 本地文件存储（不在 web 前端范围内）",
+      "geometry": {
+        "x": 12,
+        "y": 2600,
+        "width": 250,
+        "height": 96
+      }
+    },
+    {
+      "nodeId": "useManualEdit",
+      "label": "useManualEdit",
+      "kind": "class",
+      "attributes": [
+        {
+          "name": "editMode",
+          "type": "Ref<boolean>"
+        },
+        {
+          "name": "overrides",
+          "type": "ManualOverrides",
+          "description": "节点位置/连线路径覆盖增量"
+        },
+        {
+          "name": "undoStack",
+          "type": "Ref<ManualOverrides[]>"
+        },
+        {
+          "name": "redoStack",
+          "type": "Ref<ManualOverrides[]>"
+        }
+      ],
+      "methods": [
+        {
+          "name": "createManualEdit",
+          "returnType": "ManualEditStore",
+          "description": "创建手动编辑状态：节点/连线覆盖 + 编辑态开关 + 撤销栈"
+        },
+        {
+          "name": "setNode",
+          "params": [
+            {
+              "name": "nodeId",
+              "type": "string"
+            },
+            {
+              "name": "x",
+              "type": "number"
+            },
+            {
+              "name": "y",
+              "type": "number"
+            },
+            {
+              "name": "commit",
+              "type": "boolean"
+            }
+          ],
+          "returnType": "void",
+          "description": "节点拖拽：拖动中实时更新覆盖，结束压历史栈"
+        },
+        {
+          "name": "setEdge",
+          "params": [
+            {
+              "name": "edgeId",
+              "type": "string"
+            },
+            {
+              "name": "points",
+              "type": "Point[]"
+            },
+            {
+              "name": "commit",
+              "type": "boolean"
+            }
+          ],
+          "returnType": "void",
+          "description": "连线手柄拖拽：更新路径覆盖，结束压历史栈"
+        },
+        {
+          "name": "clearNode",
+          "params": [
+            {
+              "name": "nodeId",
+              "type": "string"
+            }
+          ],
+          "returnType": "void",
+          "description": "清除单个节点覆盖（T56）"
+        },
+        {
+          "name": "clearEdge",
+          "params": [
+            {
+              "name": "edgeId",
+              "type": "string"
+            }
+          ],
+          "returnType": "void",
+          "description": "清除单个连线覆盖（T56）"
+        },
+        {
+          "name": "clearAll",
+          "returnType": "void",
+          "description": "清除全部覆盖（T56）"
+        },
+        {
+          "name": "undo",
+          "returnType": "void",
+          "description": "撤销（T56）"
+        },
+        {
+          "name": "redo",
+          "returnType": "void",
+          "description": "重做（T56）"
+        },
+        {
+          "name": "load",
+          "params": [
+            {
+              "name": "projectId",
+              "type": "string"
+            },
+            {
+              "name": "diagramId",
+              "type": "string"
+            },
+            {
+              "name": "validNodeIds",
+              "type": "string[]"
+            },
+            {
+              "name": "validEdgeIds",
+              "type": "string[]"
+            }
+          ],
+          "returnType": "void",
+          "description": "从 localStorage 恢复覆盖并剔除失效项（T55/T56）"
+        },
+        {
+          "name": "save",
+          "params": [
+            {
+              "name": "projectId",
+              "type": "string"
+            },
+            {
+              "name": "diagramId",
+              "type": "string"
+            }
+          ],
+          "returnType": "void",
+          "description": "持久化覆盖到 localStorage（T55）"
+        }
+      ],
+      "description": "手动编辑状态与持久化（T51/T55/T56）：引擎布局为基底，用户覆盖为增量，渲染层叠加；localStorage 按图持久化；支持撤销/重做/清除",
+      "geometry": {
+        "x": 12,
+        "y": 2794,
+        "width": 250,
+        "height": 324
+      }
     }
   ],
   "edges": [
@@ -542,127 +835,548 @@
       "edgeId": "e-plv-api",
       "from": "ProjectListView",
       "to": "ProjectsApi",
-      "label": "使用"
+      "label": "使用",
+      "points": [
+        {
+          "x": 532,
+          "y": 486
+        },
+        {
+          "x": 542,
+          "y": 486
+        },
+        {
+          "x": 542,
+          "y": 250
+        },
+        {
+          "x": 332,
+          "y": 250
+        },
+        {
+          "x": 332,
+          "y": 2006
+        },
+        {
+          "x": 342,
+          "y": 2006
+        }
+      ]
     },
     {
       "edgeId": "e-plv-err",
       "from": "ProjectListView",
       "to": "ApiError",
-      "label": "使用"
+      "label": "使用",
+      "points": [
+        {
+          "x": 532,
+          "y": 486
+        },
+        {
+          "x": 542,
+          "y": 486
+        },
+        {
+          "x": 542,
+          "y": 216
+        },
+        {
+          "x": 2,
+          "y": 216
+        },
+        {
+          "x": 2,
+          "y": 1806
+        },
+        {
+          "x": 12,
+          "y": 1806
+        }
+      ]
     },
     {
       "edgeId": "e-pdv-api",
       "from": "ProjectDetailView",
       "to": "ProjectsApi",
-      "label": "使用"
+      "label": "使用",
+      "points": [
+        {
+          "x": 828.009429951108,
+          "y": 301.6271476464494
+        },
+        {
+          "x": 828.009429951108,
+          "y": 1127.8135738232247
+        },
+        {
+          "x": 467,
+          "y": 1127.8135738232247
+        },
+        {
+          "x": 467,
+          "y": 1914
+        }
+      ]
     },
     {
       "edgeId": "e-pdv-nav",
       "from": "ProjectDetailView",
       "to": "StageNav",
-      "label": "组合"
+      "label": "组合",
+      "points": [
+        {
+          "x": 745.2519996999135,
+          "y": 301.6271476464494
+        },
+        {
+          "x": 745.2519996999135,
+          "y": 540.2418411685021
+        },
+        {
+          "x": 133.63406754272455,
+          "y": 540.2418411685021
+        },
+        {
+          "x": 133.63406754272455,
+          "y": 778.8565346905549
+        }
+      ]
     },
     {
       "edgeId": "e-pdv-doclib",
       "from": "ProjectDetailView",
       "to": "DocumentLibrary",
-      "label": "组合"
+      "label": "组合",
+      "points": [
+        {
+          "x": 745.2519996999135,
+          "y": 301.6271476464494
+        },
+        {
+          "x": 745.2519996999135,
+          "y": 502.3262023382398
+        },
+        {
+          "x": 698.0370778579718,
+          "y": 502.3262023382398
+        },
+        {
+          "x": 698.0370778579718,
+          "y": 693.0252570300303
+        }
+      ]
     },
     {
       "edgeId": "e-pdv-diaglib",
       "from": "ProjectDetailView",
       "to": "DiagramLibrary",
-      "label": "组合"
+      "label": "组合",
+      "points": [
+        {
+          "x": 870.2519996999135,
+          "y": 299.7304914909598
+        },
+        {
+          "x": 870.2519996999135,
+          "y": 252.14609333682245
+        },
+        {
+          "x": 973.5395212187887,
+          "y": 252.14609333682245
+        },
+        {
+          "x": 973.5395212187887,
+          "y": 659.3798412690822
+        }
+      ]
     },
     {
       "edgeId": "e-pdv-req",
       "from": "ProjectDetailView",
       "to": "RequirementTasks",
-      "label": "组合"
+      "label": "组合",
+      "points": [
+        {
+          "x": 696.5711583756814,
+          "y": 301.6271476464494
+        },
+        {
+          "x": 696.5711583756814,
+          "y": 569.0774138688503
+        },
+        {
+          "x": 503.77055814666994,
+          "y": 569.0774138688503
+        },
+        {
+          "x": 503.77055814666994,
+          "y": 796.5276800912512
+        }
+      ]
     },
     {
       "edgeId": "e-doclib-frag",
       "from": "DocumentLibrary",
       "to": "DocumentFragments",
-      "label": "组合"
+      "label": "组合",
+      "points": [
+        {
+          "x": 698.0370778579718,
+          "y": 755.0252570300303
+        },
+        {
+          "x": 698.0370778579718,
+          "y": 933.5126285150152
+        },
+        {
+          "x": 677,
+          "y": 933.5126285150152
+        },
+        {
+          "x": 677,
+          "y": 1112
+        }
+      ]
     },
     {
       "edgeId": "e-doclib-api",
       "from": "DocumentLibrary",
       "to": "DocumentsApi",
-      "label": "使用"
+      "label": "使用",
+      "points": [
+        {
+          "x": 698.0370778579718,
+          "y": 755.0252570300303
+        },
+        {
+          "x": 698.0370778579718,
+          "y": 1375.512628515015
+        },
+        {
+          "x": 797,
+          "y": 1375.512628515015
+        },
+        {
+          "x": 797,
+          "y": 1996
+        }
+      ]
     },
     {
       "edgeId": "e-frag-api",
       "from": "DocumentFragments",
       "to": "DocumentsApi",
-      "label": "使用"
+      "label": "使用",
+      "points": [
+        {
+          "x": 802,
+          "y": 1112
+        },
+        {
+          "x": 812,
+          "y": 1112
+        },
+        {
+          "x": 812,
+          "y": 896
+        },
+        {
+          "x": 662,
+          "y": 896
+        },
+        {
+          "x": 662,
+          "y": 1996
+        },
+        {
+          "x": 672,
+          "y": 1996
+        }
+      ]
     },
     {
       "edgeId": "e-diaglib-view",
       "from": "DiagramLibrary",
       "to": "DiagramView",
-      "label": "组合"
+      "label": "组合",
+      "points": [
+        {
+          "x": 1004.0261284083863,
+          "y": 755.3798412690822
+        },
+        {
+          "x": 1004.0261284083863,
+          "y": 893.6899206345411
+        },
+        {
+          "x": 960.5054562645226,
+          "y": 893.6899206345411
+        },
+        {
+          "x": 960.5054562645226,
+          "y": 1032
+        }
+      ]
     },
     {
       "edgeId": "e-view-svg",
       "from": "DiagramView",
       "to": "DiagramSvg",
-      "label": "组合"
+      "label": "组合",
+      "points": [
+        {
+          "x": 947,
+          "y": 1196
+        },
+        {
+          "x": 947,
+          "y": 1336
+        },
+        {
+          "x": 1004.0261284083863,
+          "y": 1336
+        },
+        {
+          "x": 1004.0261284083863,
+          "y": 1476
+        }
+      ]
     },
     {
       "edgeId": "e-view-diagapi",
       "from": "DiagramView",
       "to": "DiagramsApi",
-      "label": "使用"
+      "label": "使用",
+      "points": [
+        {
+          "x": 1127,
+          "y": 1196
+        },
+        {
+          "x": 1127,
+          "y": 1599
+        },
+        {
+          "x": 1004.0261284083863,
+          "y": 1599
+        },
+        {
+          "x": 1004.0261284083863,
+          "y": 2002
+        }
+      ]
     },
     {
       "edgeId": "e-req-reqapi",
       "from": "RequirementTasks",
       "to": "RequirementsApi",
-      "label": "使用"
+      "label": "使用",
+      "points": [
+        {
+          "x": 503.77055814666994,
+          "y": 888.5276800912512
+        },
+        {
+          "x": 503.77055814666994,
+          "y": 1437.2638400456258
+        },
+        {
+          "x": 137,
+          "y": 1437.2638400456258
+        },
+        {
+          "x": 137,
+          "y": 1986
+        }
+      ]
     },
     {
       "edgeId": "e-projapi-client",
       "from": "ProjectsApi",
       "to": "ApiClient",
-      "label": "使用"
+      "label": "使用",
+      "points": [
+        {
+          "x": 467,
+          "y": 2098
+        },
+        {
+          "x": 467,
+          "y": 2378
+        }
+      ]
     },
     {
       "edgeId": "e-docapi-client",
       "from": "DocumentsApi",
       "to": "ApiClient",
-      "label": "使用"
+      "label": "使用",
+      "points": [
+        {
+          "x": 797,
+          "y": 2098
+        },
+        {
+          "x": 797,
+          "y": 2248
+        },
+        {
+          "x": 517,
+          "y": 2248
+        },
+        {
+          "x": 517,
+          "y": 2378
+        }
+      ]
     },
     {
       "edgeId": "e-diagapi-client",
       "from": "DiagramsApi",
       "to": "ApiClient",
-      "label": "使用"
+      "label": "使用",
+      "points": [
+        {
+          "x": 1127,
+          "y": 2098
+        },
+        {
+          "x": 1127,
+          "y": 2258
+        },
+        {
+          "x": 567,
+          "y": 2258
+        },
+        {
+          "x": 567,
+          "y": 2378
+        }
+      ]
     },
     {
       "edgeId": "e-reqapi-client",
       "from": "RequirementsApi",
       "to": "ApiClient",
-      "label": "使用"
+      "label": "使用",
+      "points": [
+        {
+          "x": 137,
+          "y": 2098
+        },
+        {
+          "x": 137,
+          "y": 2248
+        },
+        {
+          "x": 417,
+          "y": 2248
+        },
+        {
+          "x": 417,
+          "y": 2378
+        }
+      ]
     },
     {
       "edgeId": "e-client-backend",
       "from": "ApiClient",
       "to": "BackendService",
-      "label": "HTTP 调用"
+      "label": "HTTP 调用",
+      "points": [
+        {
+          "x": 617,
+          "y": 2440
+        },
+        {
+          "x": 627,
+          "y": 2440
+        },
+        {
+          "x": 627,
+          "y": 2112
+        },
+        {
+          "x": 2,
+          "y": 2112
+        },
+        {
+          "x": 2,
+          "y": 2648
+        },
+        {
+          "x": 12,
+          "y": 2648
+        }
+      ]
     },
     {
       "edgeId": "e-router-plv",
       "from": "Router",
       "to": "ProjectListView",
-      "label": "注册"
+      "label": "注册",
+      "points": [
+        {
+          "x": 407,
+          "y": 134
+        },
+        {
+          "x": 407,
+          "y": 414
+        }
+      ]
     },
     {
       "edgeId": "e-router-pdv",
       "from": "Router",
       "to": "ProjectDetailView",
-      "label": "注册"
+      "label": "注册",
+      "points": [
+        {
+          "x": 449,
+          "y": 134
+        },
+        {
+          "x": 449,
+          "y": 167.8135738232247
+        },
+        {
+          "x": 745.2519996999135,
+          "y": 167.8135738232247
+        },
+        {
+          "x": 745.2519996999135,
+          "y": 197.62714764644937
+        }
+      ]
+    },
+    {
+      "edgeId": "e-view-manualedit",
+      "from": "DiagramView",
+      "to": "useManualEdit",
+      "label": "使用",
+      "payload": {
+        "feature": "T51/T52/T53"
+      },
+      "points": [
+        {
+          "x": 879.0261284083863,
+          "y": 1196
+        },
+        {
+          "x": 879.0261284083863,
+          "y": 1995
+        },
+        {
+          "x": 262,
+          "y": 1995
+        },
+        {
+          "x": 262,
+          "y": 2794
+        }
+      ]
     }
   ],
   "groups": [

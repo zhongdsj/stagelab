@@ -1,0 +1,14 @@
+{
+  "taskId": "1d18d92e-a318-4d6c-9255-5fcc51332cc8",
+  "requirementId": "40822db0-0c50-45b9-9377-164c8b62affa",
+  "title": "T62 前端：DiagramSvg 统一按 geometry/points 渲染",
+  "description": "DiagramSvg 渲染取数改为统一读 diagram.nodes[].geometry 与 diagram.edges[].points；无 geometry 节点尺寸兜底（引擎默认）；分组模块框包围盒改为由成员节点几何动态计算；不再区分双态渲染逻辑。",
+  "status": "done",
+  "acceptanceCriteria": "1) 节点位置/大小与连线路径来自数据；2) 无 geometry 节点有尺寸兜底不报错；3) 模块框/泳道包围盒随节点几何正确；4) 三种图类型渲染正确。",
+  "files": [
+    "packages/web/src/components/diagram/DiagramSvg.vue"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788227064991,
+  "updatedAt": 1788227739073
+}

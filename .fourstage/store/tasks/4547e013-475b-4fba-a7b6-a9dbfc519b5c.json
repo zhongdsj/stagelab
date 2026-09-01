@@ -1,0 +1,12 @@
+{
+  "taskId": "4547e013-475b-4fba-a7b6-a9dbfc519b5c",
+  "requirementId": "b378cfec-8607-4705-95b8-b5ea0ae29db0",
+  "title": "T57 构建验证与联调",
+  "description": "构建验证与联调：\n- 全量构建（shared + server + web）无编译错误\n- 手动调整功能端到端验证：节点拖拽/连线拖拽/持久化/清除/冲突回退\n- 与既有交互（画布平移/缩放/折叠/点击高亮/布局参数）不冲突",
+  "status": "done",
+  "acceptanceCriteria": "构建通过；手动调整各功能可用；既有交互回归正常",
+  "files": [],
+  "changeType": "修改",
+  "createdAt": 1788187933426,
+  "updatedAt": 1788189379075
+}

@@ -79,6 +79,14 @@ export interface Diagram {
   groups: Group[];
 }
 
+/** 6.3.0 自由画布几何（draw.io 改造）：节点坐标/尺寸，缺省时由布局引擎兜底 */
+export interface NodeGeometry {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
 /** 6.3.1 架构图节点 */
 export interface ArchitectureNode {
   nodeId: string;
@@ -93,6 +101,7 @@ export interface ArchitectureNode {
     | "gateway"; // 组件类型
   description?: string;
   payload?: Record<string, unknown>;
+  geometry?: NodeGeometry; // 自由画布坐标（无则引擎兜底）
 }
 
 /** 6.3.2 类图节点（属性/方法结构化展开） */
@@ -103,6 +112,7 @@ export interface ClassNode {
   attributes?: ClassAttribute[];
   methods?: ClassMethod[];
   description?: string;
+  geometry?: NodeGeometry; // 自由画布坐标（无则引擎兜底）
 }
 
 export interface ClassAttribute {
@@ -136,6 +146,7 @@ export interface FlowNode {
     | "subprocess"; // 节点类型
   description?: string;
   payload?: Record<string, unknown>; // 扩展信息：判断条件、超时等
+  geometry?: NodeGeometry; // 自由画布坐标（无则引擎兜底）
 }
 
 /** 6.3.4 连线与分组（三种图通用） */
@@ -145,6 +156,10 @@ export interface Edge {
   to: string;
   label?: string;
   payload?: Record<string, unknown>;
+  /** 自由画布折点坐标（draw.io 改造）：points[0]=from 锚点、points[last]=to 锚点；无则引擎兜底 */
+  points?: Array<{ x: number; y: number }>;
+  /** 类图方法映射（T66）：该连线调用的目标类方法名列表，供方法级点击高亮；无则退化为类级高亮 */
+  methods?: string[];
 }
 
 export interface Group {

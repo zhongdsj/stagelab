@@ -1,0 +1,7 @@
+{
+  "fragmentId": "dev-doc-diagram-freeform-f6",
+  "docId": "dev-doc-diagram-freeform",
+  "order": 6,
+  "title": "附录：updateEdge 字段合并修复（防坐标丢失）",
+  "content": "## updateEdge 字段合并修复（变更记录）\n\n### 问题\n- MCP updateEdge 为整体替换（edges[idx] = patch.edge），仅修改 methods/label 时会丢失存储中的 points 坐标\n- 且 MCP 读接口已剔除坐标，调用方无法回传 points，形成数据丢失风险\n\n### 改动\n- packages/server/src/services/diagram.service.ts updateDiagramElements 的 updateEdge 分支改为字段合并：edges[idx] = { ...edges[idx], ...patch.edge }\n- 仅覆盖传入字段，保留其余字段（points 等）；addEdge 行为不变\n\n### 说明\n- 与前端 saveDiagramGeometry 的逐字段合并语义对齐\n- updateNode/updateGroup 仍为整体替换（本轮不涉及，如需一致可后续处理）\n\n### 验收\n- MCP updateEdge 只传 methods 不丢 points\n- 构建通过"
+}

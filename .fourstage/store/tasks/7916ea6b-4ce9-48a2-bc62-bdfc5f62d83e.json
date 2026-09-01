@@ -1,0 +1,15 @@
+{
+  "taskId": "7916ea6b-4ce9-48a2-bc62-bdfc5f62d83e",
+  "requirementId": "b378cfec-8607-4705-95b8-b5ea0ae29db0",
+  "title": "T55 前端：覆盖持久化",
+  "description": "手动调整结果持久化：\n- localStorage 按 (projectId + diagramId) 维度存取 nodeOverrides/edgeOverrides\n- 载入图时恢复覆盖；编辑后自动保存\n- 存储位置决策：优先 localStorage（会话级/本机持久），服务端持久化列为后续增强",
+  "status": "done",
+  "acceptanceCriteria": "手动调整后刷新页面仍生效；不同项目/图互不串扰；localStorage 结构可读；清除覆盖可清理存储",
+  "files": [
+    "packages/web/src/components/diagram/DiagramView.vue",
+    "packages/web/src/components/diagram/DiagramSvg.vue"
+  ],
+  "changeType": "新增",
+  "createdAt": 1788187925952,
+  "updatedAt": 1788189378229
+}

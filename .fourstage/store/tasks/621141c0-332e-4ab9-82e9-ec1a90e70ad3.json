@@ -1,0 +1,15 @@
+{
+  "taskId": "621141c0-332e-4ab9-82e9-ec1a90e70ad3",
+  "requirementId": "6a437b63-f03a-4567-9198-ceccd1d734cc",
+  "title": "T45 MCP 工具 + HTTP 接口：分区读取与反向查询",
+  "description": "## 任务描述\n\n暴露新能力：\n- MCP：新增 get_diagram_group（diagramId+groupId）与 get_node_groups（diagramId+nodeId，可批量）两个工具，Zod 参数校验，走 safeCall 包装\n- HTTP：GET /api/projects/:id/diagrams/:did/group/:groupId 与 GET /api/projects/:id/diagrams/:did/nodes/:nodeId/groups\n- 委托 T43/T44 服务方法\n\n## 涉及文件\n- packages/server/src/mcp/tools/diagram.ts（修改）\n- packages/server/src/http/routes/diagrams.ts（修改）\n\n## 变更类型\n新增\n\n## 验收标准\n1. MCP 新工具参数校验正确、返回符合语义无坐标\n2. HTTP 接口 200 返回正确数据\n3. 不影响既有工具/接口",
+  "status": "done",
+  "acceptanceCriteria": "MCP 两工具 + HTTP 两接口可调用，返回无坐标；既有功能不回归",
+  "files": [
+    "packages/server/src/mcp/tools/diagram.ts",
+    "packages/server/src/http/routes/diagrams.ts"
+  ],
+  "changeType": "新增",
+  "createdAt": 1788167583653,
+  "updatedAt": 1788168038246
+}

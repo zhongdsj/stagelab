@@ -1,0 +1,14 @@
+{
+  "taskId": "f714365e-6dc0-469f-bd7f-114d85ee47bb",
+  "requirementId": "40822db0-0c50-45b9-9377-164c8b62affa",
+  "title": "T60 前端：API 客户端新增 saveGeometry 与类型对齐",
+  "description": "api/diagrams.ts 新增 saveGeometry(projectId, diagramId, {nodes, edges}) 调用 POST /geometry；getDiagram 返回类型补 geometry/points 字段（与 shared 类型对齐）。",
+  "status": "done",
+  "acceptanceCriteria": "1) saveGeometry 成功落库并返回更新后数据；2) getDiagram 返回数据含 geometry/points 类型正确；3) TS 编译通过。",
+  "files": [
+    "packages/web/src/api/diagrams.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788227062428,
+  "updatedAt": 1788227738298
+}

@@ -1,0 +1,14 @@
+{
+  "taskId": "825c081a-82e9-4bcf-8114-9b5629f7c72c",
+  "requirementId": "e7e0ac7a-f714-4ea3-8b56-d20210b8d5d7",
+  "title": "T75 前端：端点手柄拖动跨边吸附",
+  "description": "edgePoint 分支增加端点（首/末下标）特殊处理：拖动首/末端点时将其吸附到 from/to 节点四边（跨边），并同步调整相邻段折点保持正交；中间折点拖动维持现状。",
+  "status": "done",
+  "acceptanceCriteria": "1) 拖动端点（首/末手柄）时端点沿四边自由滑动并跨边；2) 各段保持横平竖直（端点移动只影响相邻段折点）；3) 端点不进入节点内部；4) 折点（非端点）拖动行为不受影响；5) 编译通过。",
+  "files": [
+    "packages/web/src/components/diagram/DiagramSvg.vue"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788230814552,
+  "updatedAt": 1788231729135
+}

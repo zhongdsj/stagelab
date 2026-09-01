@@ -1,0 +1,15 @@
+{
+  "taskId": "0213883d-326e-4bd8-b069-a14b9b57e4f5",
+  "requirementId": "b378cfec-8607-4705-95b8-b5ea0ae29db0",
+  "title": "T51 前端：手动编辑数据模型与状态",
+  "description": "建立手动调整的覆盖数据模型与前端状态：\n- nodeOverrides: Map<nodeId, {x,y}> 节点位置覆盖（含聚合占位节点）\n- edgeOverrides: Map<edgeId, Point[]> 连线路径覆盖\n- 编辑模式开关（工具栏新增「✎ 手动调整」按钮切换）\n- 状态置于 DiagramView 并透传 DiagramSvg 渲染层",
+  "status": "done",
+  "acceptanceCriteria": "存在 nodeOverrides/edgeOverrides 状态与编辑模式开关；工具栏按钮可切换编辑态；类型定义清晰",
+  "files": [
+    "packages/web/src/components/diagram/DiagramView.vue",
+    "packages/web/src/components/diagram/DiagramSvg.vue"
+  ],
+  "changeType": "新增",
+  "createdAt": 1788187911169,
+  "updatedAt": 1788189376285
+}

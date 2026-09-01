@@ -1,0 +1,14 @@
+{
+  "taskId": "21adc3e3-932c-442e-bfa6-555786e6e7db",
+  "requirementId": "196b2e24-dc60-4f98-80c4-fddaf158ace5",
+  "title": "T71 前端：可交互处 hover 样式",
+  "description": "为可交互处补充 hover 样式：连线 hover 描边提亮（.edge:hover polyline）+ cursor pointer；节点 hover 边框高亮（.node:hover .node-rect）；方法行 hover 背景/文字高亮；确保展示态也可交互 hover 反馈。",
+  "status": "done",
+  "acceptanceCriteria": "1) 连线 hover：描边提亮 + cursor pointer（所有图类型）；2) 节点 hover：边框高亮/阴影 + 光标反馈；3) 方法行 hover：背景/文字高亮 + cursor pointer；4) 编辑态节点保留 move 光标；5) 编译通过。",
+  "files": [
+    "packages/web/src/components/diagram/DiagramSvg.vue"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788228744631,
+  "updatedAt": 1788229051140
+}

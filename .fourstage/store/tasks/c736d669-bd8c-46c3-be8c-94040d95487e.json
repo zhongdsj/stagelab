@@ -1,0 +1,15 @@
+{
+  "taskId": "c736d669-bd8c-46c3-be8c-94040d95487e",
+  "requirementId": "196b2e24-dc60-4f98-80c4-fddaf158ace5",
+  "title": "T66 共享层：Edge 扩展 methods 方法映射字段",
+  "description": "types.ts 的 Edge 新增可选 methods: string[]（该连线调用的目标类方法名列表，供方法级高亮）；schemas.ts EdgeSchema 同步新增 methods: z.array(z.string()).optional()；类图样例数据补充 methods 字段。",
+  "status": "done",
+  "acceptanceCriteria": "1) types 与 schemas 同步新增 Edge.methods 可选字段（目标类方法名列表）；2) 旧连线无 methods 仍通过 DiagramSchema 校验；3) 样例/类图数据可携带 methods；4) 类型与构建通过。",
+  "files": [
+    "packages/shared/src/types.ts",
+    "packages/shared/src/schemas.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788228737671,
+  "updatedAt": 1788229049040
+}

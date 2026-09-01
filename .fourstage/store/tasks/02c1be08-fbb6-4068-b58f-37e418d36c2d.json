@@ -1,0 +1,15 @@
+{
+  "taskId": "02c1be08-fbb6-4068-b58f-37e418d36c2d",
+  "requirementId": "b378cfec-8607-4705-95b8-b5ea0ae29db0",
+  "title": "T53 前端：连线路径拖拽手柄",
+  "description": "编辑模式下连线可手动调整路径：\n- 选中连线后显示折点手柄（端点+中间折点，正交路径的弯折点）\n- 拖拽折点实时更新 edgeOverrides 中的 points\n- 端点手柄保持吸附（拖动时只改该端与相邻折点的连接段）\n- 手柄渲染在 DiagramSvg 连线层之上",
+  "status": "done",
+  "acceptanceCriteria": "编辑态选中连线显示可拖手柄；拖动折点路径实时变化并写入 edgeOverrides；端点吸附逻辑正确；非编辑态无手柄",
+  "files": [
+    "packages/web/src/components/diagram/DiagramSvg.vue",
+    "packages/web/src/components/diagram/DiagramView.vue"
+  ],
+  "changeType": "新增",
+  "createdAt": 1788187918978,
+  "updatedAt": 1788189377358
+}

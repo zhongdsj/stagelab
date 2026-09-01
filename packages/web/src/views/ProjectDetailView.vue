@@ -23,7 +23,7 @@
         @switch="onSwitchStage"
       />
 
-      <!-- 阶段内容区（T12：按当前阶段渲染文档/图表/需求任务） -->
+      <!-- 阶段内容区（T52：阶段切换仅改描述文案，内容区固定为 Tab 切换） -->
       <div class="stage-content">
         <h3 class="content-title">{{ stageLabel(project.currentStage) }}</h3>
         <p class="content-desc">{{ stageDesc(project.currentStage) }}</p>
@@ -40,36 +40,41 @@
           <div class="stat-item">
             <span class="stat-num">{{ index?.requirements.length ?? 0 }}</span>
             <span class="stat-label">需求</span>
+            <!-- T53：需求按状态细分（开发/测试/完成） -->
+            <span class="stat-sub">{{ reqStatusSummary }}</span>
           </div>
           <div class="stat-item">
             <span class="stat-num">{{ index?.tasks.length ?? 0 }}</span>
             <span class="stat-label">任务</span>
+            <!-- T53：任务按状态细分（待处理/进行中/已完成） -->
+            <span class="stat-sub">{{ taskStatusSummary }}</span>
           </div>
         </div>
 
-        <!-- 阶段1：文档库（全部文档管理/切换/新建）+ 图库（全部图切换查看） -->
-        <template v-if="project.currentStage === 's1'">
-          <DocumentLibrary :project-id="props.id" />
-          <DiagramLibrary :project-id="props.id" />
-        </template>
+        <!-- 内容区 Tab：文档库 / 需求 / 图库（T52） -->
+        <div class="content-tabs">
+          <button
+            v-for="t in CONTENT_TABS"
+            :key="t.key"
+            type="button"
+            class="content-tab"
+            :class="{ active: activeTab === t.key }"
+            @click="onTabChange(t.key)"
+          >
+            {{ t.label }}
+          </button>
+        </div>
 
-        <!-- 阶段2/3：需求清单（按需求分组任务 + 状态追踪）+ 图库 -->
-        <template v-else-if="project.currentStage === 's2' || project.currentStage === 's3'">
-          <RequirementTasks :project-id="props.id" />
-          <DiagramLibrary :project-id="props.id" />
-        </template>
-
-        <!-- 阶段4：Bug 记录（暂定占位） -->
-        <template v-else>
-          <p class="placeholder-hint">阶段「Bug修复」的记录视图将在后续迭代实现。</p>
-        </template>
+        <DocumentLibrary v-if="activeTab === 'doc'" :project-id="props.id" />
+        <RequirementTasks v-else-if="activeTab === 'req'" :project-id="props.id" />
+        <DiagramLibrary v-else :project-id="props.id" />
       </div>
     </template>
   </section>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import StageNav from "../components/StageNav.vue";
 import DocumentLibrary from "../components/document/DocumentLibrary.vue";
@@ -103,10 +108,75 @@ const STAGE_DESCS: Record<Stage, string> = {
   s4: "定位 Bug 根因、输出修复方案，并进行回归校验。"
 };
 
+/* ========== 内容区 Tab（T52）：阶段切换仅改描述文案，内容区固定 Tab 切换 ========== */
+type ContentTabKey = "doc" | "req" | "diagram";
+
+const CONTENT_TABS: Array<{ key: ContentTabKey; label: string }> = [
+  { key: "doc", label: "文档库" },
+  { key: "req", label: "需求" },
+  { key: "diagram", label: "图库" }
+];
+
+/** 当前激活 Tab（会话态；阶段切换不影响已选 Tab） */
+const activeTab = ref<ContentTabKey>("doc");
+
+/** 用户主动切换 Tab 标记（一旦手动切换，后续阶段变化不再强改默认 Tab） */
+let tabTouched = false;
+
+/** 切换 Tab（记录用户主动操作） */
+function onTabChange(key: ContentTabKey) {
+  tabTouched = true;
+  activeTab.value = key;
+}
+
+/** 默认 Tab 与当前阶段弱关联：s1 文档库 / s2、s3 需求 / s4 文档库 */
+const defaultTabOf = (s: Stage): ContentTabKey =>
+  s === "s2" || s === "s3" ? "req" : "doc";
+
+/** 阶段切换后对齐默认 Tab（仅当用户尚未主动切换过） */
+function pickDefaultTabFor(stage: Stage) {
+  if (!tabTouched) activeTab.value = defaultTabOf(stage);
+}
+
 const stageLabel = (s: Stage) => STAGE_LABELS[s];
 const stageDesc = (s: Stage) => STAGE_DESCS[s];
 const formatTime = (ts: number) =>
   new Date(ts).toLocaleString("zh-CN", { hour12: false });
+
+/* ========== 统计按状态细分（T53）：需求/任务各状态数量，展示于现有 stat-item ========== */
+
+const REQ_STATUS_LABELS: Record<string, string> = {
+  dev: "开发",
+  test: "测试",
+  done: "完成"
+};
+const TASK_STATUS_LABELS: Record<string, string> = {
+  pending: "待处理",
+  in_progress: "进行中",
+  done: "已完成"
+};
+
+/** 需求按状态计数摘要：开发 x · 测试 y · 完成 z */
+const reqStatusSummary = computed(() => {
+  const counts: Record<string, number> = { dev: 0, test: 0, done: 0 };
+  for (const r of index.value?.requirements ?? []) {
+    counts[r.status] = (counts[r.status] ?? 0) + 1;
+  }
+  return ["dev", "test", "done"]
+    .map((s) => `${REQ_STATUS_LABELS[s]} ${counts[s] ?? 0}`)
+    .join(" · ");
+});
+
+/** 任务按状态计数摘要：待处理 x · 进行中 y · 已完成 z */
+const taskStatusSummary = computed(() => {
+  const counts: Record<string, number> = { pending: 0, in_progress: 0, done: 0 };
+  for (const t of index.value?.tasks ?? []) {
+    counts[t.status] = (counts[t.status] ?? 0) + 1;
+  }
+  return ["pending", "in_progress", "done"]
+    .map((s) => `${TASK_STATUS_LABELS[s]} ${counts[s] ?? 0}`)
+    .join(" · ");
+});
 
 /** 加载项目详情与索引 */
 async function load() {
@@ -114,6 +184,8 @@ async function load() {
   error.value = "";
   try {
     project.value = await getProject(props.id);
+    // 初始对齐默认 Tab（s1 文档库 / s2、s3 需求）
+    pickDefaultTabFor(project.value.currentStage);
     try {
       index.value = await getProjectIndex(props.id);
     } catch {
@@ -133,6 +205,8 @@ async function onSwitchStage(stage: Stage) {
   error.value = "";
   try {
     project.value = await switchStage(props.id, stage);
+    // T52：阶段切换仅更新描述文案；未手动切 Tab 时对齐默认 Tab
+    pickDefaultTabFor(project.value.currentStage);
     // 阶段切换后刷新索引（实体集合可能变化）
     try {
       index.value = await getProjectIndex(props.id);
@@ -227,11 +301,38 @@ watch(() => props.id, load);
   font-size: 13px;
   color: #909399;
 }
-.placeholder-hint {
-  margin: 0;
-  font-size: 13px;
-  color: #c0c4cc;
+/* T53：统计项状态细分 */
+.stat-sub {
+  font-size: 11px;
+  color: #b0b3b8;
   text-align: center;
+  line-height: 1.4;
+}
+/* T52：内容区 Tab 切换 */
+.content-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #e4e7ed;
+  padding-bottom: 12px;
+}
+.content-tab {
+  padding: 6px 18px;
+  font-size: 13px;
+  border: 1px solid #dcdfe6;
+  border-radius: 6px;
+  background: #fff;
+  color: #606266;
+  cursor: pointer;
+}
+.content-tab:hover {
+  border-color: #409eff;
+  color: #409eff;
+}
+.content-tab.active {
+  background: #409eff;
+  border-color: #409eff;
+  color: #fff;
 }
 .hint {
   color: #909399;

@@ -1,0 +1,14 @@
+{
+  "taskId": "d4719336-1a61-45f8-845c-2143d14cf2f3",
+  "requirementId": "bbe72970-1124-4675-ab51-1500a8d4aeb5",
+  "title": "T53 需求清单按状态分组折叠",
+  "description": "## 任务描述\n\n需求清单按状态分组折叠（RequirementTasks.vue）：\n- 需求列表改为按「开发/测试/完成」分组渲染，组头含状态标签+计数+折叠开关\n- 各组可独立折叠/展开；「完成」组默认折叠（会话态，刷新重置）\n- 组内沿用既有排序（T51：同状态按更新时间倒序）\n- 需求卡片自身展开/收起（显示任务）保留，与组折叠叠加\n\n## 涉及文件\n- packages/web/src/components/requirement/RequirementTasks.vue（修改）\n\n## 变更类型\n新增\n\n## 验收标准\n1. 三个状态组显示计数，可分别折叠/展开\n2. 完成组默认折叠，点击展开\n3. 组内按更新时间倒序\n4. 需求卡片任务展开/收起不受影响",
+  "status": "done",
+  "acceptanceCriteria": "三态需求分组可分别折叠；完成组默认折叠；刷新重置",
+  "files": [
+    "packages/web/src/components/requirement/RequirementTasks.vue"
+  ],
+  "changeType": "新增",
+  "createdAt": 1788170280592,
+  "updatedAt": 1788170289162
+}

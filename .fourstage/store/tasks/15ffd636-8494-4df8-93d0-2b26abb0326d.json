@@ -1,0 +1,15 @@
+{
+  "taskId": "15ffd636-8494-4df8-93d0-2b26abb0326d",
+  "requirementId": "b378cfec-8607-4705-95b8-b5ea0ae29db0",
+  "title": "T52 前端：节点拖拽移动",
+  "description": "编辑模式下节点可拖拽移动：\n- 节点 pointerdown 在编辑态启动节点拖拽（区分于画布平移：编辑态优先节点拖拽）\n- 屏幕坐标→世界坐标换算（受相机 scale/offset 影响）\n- 拖拽时实时更新 nodeOverrides，up 后结束\n- 被折叠模块内节点不参与拖拽；聚合占位节点可拖拽",
+  "status": "done",
+  "acceptanceCriteria": "编辑态可拖拽节点到新位置；实时跟随；坐标换算正确（缩放/平移后仍对准鼠标）；非编辑态不受影响",
+  "files": [
+    "packages/web/src/components/diagram/DiagramView.vue",
+    "packages/web/src/components/diagram/DiagramSvg.vue"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788187917513,
+  "updatedAt": 1788189376685
+}

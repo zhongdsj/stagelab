@@ -1,0 +1,16 @@
+{
+  "taskId": "556bb908-bfbd-4b46-9db6-2f0f374ff9a1",
+  "requirementId": "40822db0-0c50-45b9-9377-164c8b62affa",
+  "title": "T63 前端：节点整体拖拽 + 连线联动 + 坐标落库",
+  "description": "编辑态节点整体拖拽：实时更新本地 geometry，关联连线端点/折点联动重算（统一锚点重算函数），pointerup 后 saveGeometry 落库；保留抓取偏移；useManualEdit 废弃 localStorage 覆盖路径，改为读写服务端坐标数据，撤销/重做历史栈基于坐标快照。",
+  "status": "done",
+  "acceptanceCriteria": "1) 节点任意处可拖动、连线端点/折点实时跟随；2) 松手后落库，刷新保持；3) 撤销/重做生效；4) 拖拽后不误触发点击气泡/高亮。",
+  "files": [
+    "packages/web/src/components/diagram/DiagramSvg.vue",
+    "packages/web/src/components/diagram/useManualEdit.ts",
+    "packages/web/src/components/diagram/DiagramView.vue"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788227066480,
+  "updatedAt": 1788227739553
+}

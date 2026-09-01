@@ -1,0 +1,15 @@
+{
+  "taskId": "c8d875c3-d075-4720-a0b0-4ba1ed8ec95c",
+  "requirementId": "196b2e24-dc60-4f98-80c4-fddaf158ace5",
+  "title": "T70 前端：类图方法点击高亮关联",
+  "description": "类节点渲染改造：classBodyLines 拆分为结构化方法列表（方法名+行号），每个方法行渲染为可交互元素（rect+text，pointer events）；点击方法触发方法级高亮态（highlightMethod + 关联连线/节点集合），与现有节点/连线高亮互斥；基于 Edge.methods 匹配关联。",
+  "status": "done",
+  "acceptanceCriteria": "1) 类节点方法行渲染为独立可点击元素（方法名+行号）；2) 点击方法 m 高亮所属节点 + 所有 edge.methods 含 m 的连线及两端节点；3) 旧数据（无 methods）退化为高亮所属节点；4) 方法行 hover 有样式；5) 与节点/连线点击高亮互斥处理；6) 编译通过。",
+  "files": [
+    "packages/web/src/components/diagram/DiagramSvg.vue",
+    "packages/shared/src/types.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788228743371,
+  "updatedAt": 1788229050778
+}

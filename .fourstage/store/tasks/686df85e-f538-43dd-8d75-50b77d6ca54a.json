@@ -1,0 +1,14 @@
+{
+  "taskId": "686df85e-f538-43dd-8d75-50b77d6ca54a",
+  "requirementId": "e7e0ac7a-f714-4ea3-8b56-d20210b8d5d7",
+  "title": "T73 前端：端点吸附几何工具（四边投影 + 跨边）",
+  "description": "新增端点几何约束工具模块（如 useEdgeGeometry.ts）：\n- snapToNodeBorder(point, nodeBox)：把任意点吸附到节点四边最近投影（取到四边距离最小者），端点永远落在边框上（含四角）；\n- hitEndpoint / 端点命中判定：基于四边最近投影距离（支持跨边连续滑动）。",
+  "status": "done",
+  "acceptanceCriteria": "1) 端点命中判定为「四边最近投影 + 距离阈值」（支持跨边）；2) 端点坐标始终落在节点边框上（含四角）；3) 无新工具函数重复定义；4) 编译通过。",
+  "files": [
+    "packages/web/src/components/diagram/useEdgeGeometry.ts"
+  ],
+  "changeType": "新增",
+  "createdAt": 1788230811357,
+  "updatedAt": 1788231728416
+}

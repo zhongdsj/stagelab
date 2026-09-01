@@ -3,12 +3,12 @@
   "requirementId": "48b8d597-c399-4168-ab88-ee56777c2f45",
   "title": "T41 类图：节点点击高亮 + 连线高亮",
   "description": "## 任务描述\n\n类图节点点击高亮：\n\n- `DiagramSvg.vue` 节点 rect 增加 @click 事件（仅 class 图类型）\n- 点击节点 → 该节点高亮（边框提亮或阴影）\n- 与该节点相连的连线（layout.edges 中 from/to 命中）也高亮\n- 再点同一节点取消高亮；点其他节点切换高亮\n- 高亮为会话态视觉效果，不影响数据\n- 与折叠/拖拽/缩放共存\n\n## 涉及文件\n- `packages/web/src/components/diagram/DiagramSvg.vue`（修改）\n\n## 变更类型\n修改\n\n## 验收标准\n1. 点击类图节点高亮该节点\n2. 相关连线同时高亮\n3. 再点取消/切换\n4. 不影响画布交互",
-  "status": "pending",
+  "status": "done",
   "acceptanceCriteria": "类图节点点击高亮 + 相关连线高亮；再点取消",
   "files": [
     "packages/web/src/components/diagram/DiagramSvg.vue"
   ],
   "changeType": "修改",
   "createdAt": 1788155892572,
-  "updatedAt": 1788155892572
+  "updatedAt": 1788167232344
 }

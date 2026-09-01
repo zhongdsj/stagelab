@@ -1,0 +1,16 @@
+{
+  "taskId": "b6b4e420-a238-4031-9131-499b22587b52",
+  "requirementId": "0f047e44-d20a-4737-9d99-0dea6eb7b6ea",
+  "title": "T51 需求清单：更新时间展示、排序与任务变更同步",
+  "description": "## 任务描述\n\n需求清单增加更新时间与排序，且任务变更同步需求更新时间：\n\n**服务端**（requirement.service.ts）：\n- listRequirements 返回 updatedAt\n- 需求内部任务变更时 touch 所属需求 updatedAt：updateTaskStatus（无论是否触发自动流转）、createTask、updateTask、deleteTask\n\n**前端**（api/requirements.ts + RequirementTasks.vue）：\n- RequirementItem 增加 updatedAt\n- 需求卡片展示更新时间\n- 排序：状态 dev > test > done，同状态按 updatedAt 倒序\n\n## 涉及文件\n- packages/server/src/services/requirement.service.ts（修改）\n- packages/web/src/api/requirements.ts（修改）\n- packages/web/src/components/requirement/RequirementTasks.vue（修改）\n\n## 变更类型\n修改\n\n## 验收标准\n1. 需求列表项显示更新时间\n2. 排序：开发→测试→完成，同状态按更新时间倒序\n3. 任务状态修改/创建/更新/删除后，所属需求 updatedAt 同步刷新，列表随之重排\n4. 不影响既有需求 CRUD",
+  "status": "done",
+  "acceptanceCriteria": "列表显示更新时间；按状态+更新时间排序正确；任务变更同步需求更新时间",
+  "files": [
+    "packages/server/src/services/requirement.service.ts",
+    "packages/web/src/api/requirements.ts",
+    "packages/web/src/components/requirement/RequirementTasks.vue"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788169547191,
+  "updatedAt": 1788169976846
+}

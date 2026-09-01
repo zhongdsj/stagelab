@@ -1,0 +1,7 @@
+{
+  "fragmentId": "dev-doc-diagram-freeform-f2",
+  "docId": "dev-doc-diagram-freeform",
+  "order": 2,
+  "title": "七、服务端接口设计",
+  "content": "## 七、服务端接口设计\n\n### 7.1 现有接口回顾\n\n- GET /api/projects/:id/diagrams/:did —— 读图语义数据（getDiagram）；\n- GET .../layout —— 布局计算（getLayout，ELK 引擎）。\n\n### 7.2 接口改造点\n\n1. **图数据读取（getDiagram）**：返回的节点/连线携带 geometry / points（未固化的图对应字段为空/缺省，由前端补齐）；\n2. **坐标落库（复用 updateDiagramElements）**：节点拖拽结束 / 连线改形结束后，前端调 updateDiagramElements 下发 updateNode（含 geometry）与 updateEdge（含 points）局部 patch，单次可批量多 patch；\n3. **首次补默认值并固化**：图首次打开检测到缺 geometry/points 时，前端调 getLayout 获取默认坐标 → 通过批量接口一次性固化全部 geometry/points → 之后直接进入自由画布态，不再依赖实时布局；\n4. **重新自动布局**：新增「自动布局」能力入口（复用现有 layout 接口），成功后用引擎结果覆盖 geometry/points 并落库（本次可选）。\n\n### 7.3 批量坐标保存接口（新增，推荐）\n\n```\nPOST /api/projects/:id/diagrams/:did/geometry\nBody: {\n  nodes: { nodeId, x, y, width, height }[],\n  edges: { edgeId, points: {x,y}[] }[]\n}\n```\n\n- 返回更新后的图数据（meta）；\n- 用于「首次补默认值固化」与「拖拽结束后批量落库」，减少多次 updateDiagramElements 往返；\n- 前端拖拽中仍本地响应（实时渲染），仅拖动结束（pointerup）触发保存。\n\n### 7.4 旧图自动迁移固化（替代原兼容双态）\n\n- 旧图（无 geometry/points）打开：不区分新旧渲染逻辑，统一走「检测缺省 → 引擎生成默认值 → 固化」流程；\n- 固化后该图即成为自由画布图，与新图行为完全一致（可拖拽、可持久化）；\n- 幂等保护：固化动作加锁/标识，避免并发或重复打开时重复写库；\n- 数据校验：geometry/points 坐标合法数值校验，防止脏数据。"
+}

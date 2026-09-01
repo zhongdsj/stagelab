@@ -57,6 +57,20 @@ export const RequirementSchema = z.object({
 
 /* ========== 6.3 Diagram 业务图模型 ========== */
 
+/** 自由画布节点几何（draw.io 改造）：strict 节点 schema 需显式声明 */
+export const NodeGeometrySchema = z.object({
+  x: z.number().finite(),
+  y: z.number().finite(),
+  width: z.number().positive().finite(),
+  height: z.number().positive().finite()
+});
+
+/** 连线折点坐标 */
+export const PointSchema = z.object({
+  x: z.number().finite(),
+  y: z.number().finite()
+});
+
 /** 业务语义模型禁止出现坐标/尺寸/颜色等视觉字段——通过仅声明必要字段的 Schema 天然约束 */
 export const ArchitectureNodeSchema = z
   .object({
@@ -67,7 +81,8 @@ export const ArchitectureNodeSchema = z
       .enum(["service", "database", "mq", "cache", "external", "gateway"])
       .optional(),
     description: z.string().optional(),
-    payload: z.record(z.string(), z.unknown()).optional()
+    payload: z.record(z.string(), z.unknown()).optional(),
+    geometry: NodeGeometrySchema.optional()
   })
   .strict();
 
@@ -103,7 +118,8 @@ export const ClassNodeSchema = z
     kind: z.enum(["class", "interface", "abstract", "enum"]).optional(),
     attributes: z.array(ClassAttributeSchema).optional(),
     methods: z.array(ClassMethodSchema).optional(),
-    description: z.string().optional()
+    description: z.string().optional(),
+    geometry: NodeGeometrySchema.optional()
   })
   .strict();
 
@@ -122,7 +138,8 @@ export const FlowNodeSchema = z
       ])
       .optional(),
     description: z.string().optional(),
-    payload: z.record(z.string(), z.unknown()).optional()
+    payload: z.record(z.string(), z.unknown()).optional(),
+    geometry: NodeGeometrySchema.optional()
   })
   .strict();
 
@@ -131,7 +148,9 @@ export const EdgeSchema = z.object({
   from: z.string().min(1),
   to: z.string().min(1),
   label: z.string().optional(),
-  payload: z.record(z.string(), z.unknown()).optional()
+  payload: z.record(z.string(), z.unknown()).optional(),
+  points: z.array(PointSchema).optional(),
+  methods: z.array(z.string().min(1)).optional()
 });
 
 export const GroupSchema = z.object({

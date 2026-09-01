@@ -17,6 +17,22 @@ import { getLayoutParams, type LayoutParams } from "./params.ts";
 export interface LayoutOptions {
   /** 聚焦模块 groupId；非聚焦模块折叠为聚合占位节点 */
   focusModuleId?: string;
+  /** 布局参数覆盖（前端可调，T47 扩展）：缺省用当前图类型预设 */
+  params?: LayoutOverrides;
+}
+
+/** 前端可覆盖的布局参数（数字字段全可选，缺省回退到预设/常量默认值） */
+export interface LayoutOverrides {
+  nodeNodeSpacing?: number;
+  layerSpacing?: number;
+  baseNodeWidth?: number;
+  baseNodeHeight?: number;
+  colGap?: number;
+  rowGap?: number;
+  cellPadding?: number;
+  edgeChannelSpread?: number;
+  edgeChannelSlots?: number;
+  edgeChannelStep?: number;
 }
 
 interface NodeMeta {
@@ -73,9 +89,9 @@ interface CellLayout {
 
 const MODULE_HEADER_H = 26; // 行（模块）标题高度
 const LANE_HEADER_H = 26; // 列（泳道）标题高度
-const CELL_PADDING = 12; // 单元格内边距
-const COL_GAP = 48; // 列间距
-const ROW_GAP = 20; // 行间距
+const CELL_PADDING = 20; // 单元格内边距（T47 二次加大，给跨单元连线留空间）
+const COL_GAP = 88; // 列间距（T47 二次加大）
+const ROW_GAP = 40; // 行间距（T47 二次加大）
 
 const DEFAULT_MODULE = "__default_module__";
 const DEFAULT_LANE = "__default_lane__";
@@ -282,7 +298,8 @@ async function layoutCell(
   nodeIds: string[],
   metaById: Map<string, NodeMeta>,
   edges: Edge[],
-  p: LayoutParams
+  p: LayoutParams,
+  cellPadding: number
 ): Promise<CellLayout> {
   const elk = new ELK();
   const idSet = new Set(nodeIds);
@@ -339,8 +356,8 @@ async function layoutCell(
   }));
   return {
     nodes: nodeIds.map((id) => boxes.get(id)!),
-    width: maxR + CELL_PADDING,
-    height: maxB + CELL_PADDING,
+    width: maxR + cellPadding,
+    height: maxB + cellPadding,
     cellEdges: routed
   };
 }
@@ -350,6 +367,8 @@ async function layoutCell(
 let channelCounter = 0;
 
 function routeEdge(from: NodeBox, to: NodeBox, p: LayoutParams): Point[] {
+  // 每条跨格连线分配唯一序号，用于把各边横/纵通道互相错开（减少竖直挤一根、水平重叠，T47 收尾）
+  const seq = channelCounter++;
   const sx = from.x + from.width;
   const sy = from.y + from.height / 2;
   const ex = to.x;
@@ -366,8 +385,13 @@ function routeEdge(from: NodeBox, to: NodeBox, p: LayoutParams): Point[] {
     ];
   }
   if (sx <= ex + 1) {
-    // 起点在终点左侧：Z 形正交路径
-    const midX = (sx + ex) / 2;
+    // 起点在终点左侧：Z 形正交路径。令竖直通道在节点水平间隙内按序号错开，
+    // 避免多条边共用同一根 midX 竖线导致"竖直挤一根"。spread/slots 可经面板调整（T47 收尾）。
+    const gap = ex - sx;
+    const slots = Math.max(1, Math.round(p.edgeChannelSlots)); // 参与错开的通道槽位数
+    const spread = Math.min(gap * 0.4, Math.max(0, p.edgeChannelSpread)); // 允许错开总宽度（受间隙约束）
+    const off = ((seq % slots) - (slots >> 1)) * (spread / slots);
+    const midX = (sx + ex) / 2 + off;
     return [
       { x: sx, y: sy },
       { x: midX, y: sy },
@@ -375,8 +399,8 @@ function routeEdge(from: NodeBox, to: NodeBox, p: LayoutParams): Point[] {
       { x: ex, y: ey }
     ];
   }
-  // 起点在终点右侧：向上绕行（通道随边数错开避免重叠）
-  const channel = Math.min(from.y, to.y) - p.layerSpacing - 12 - (channelCounter++ % 8) * 14;
+  // 起点在终点右侧：向上绕行（通道随边序号错开避免重叠，step 可经面板调整，T47 收尾）
+  const channel = Math.min(from.y, to.y) - p.layerSpacing - 24 - (seq % 8) * Math.max(0, p.edgeChannelStep);
   return [
     { x: sx, y: sy },
     { x: sx + 10, y: sy },
@@ -417,7 +441,22 @@ export async function computeLayout(
   options: LayoutOptions = {}
 ): Promise<LayoutDiagram> {
   channelCounter = 0;
-  const p = getLayoutParams(diagram.type);
+  const ov = options.params ?? {};
+  const base = getLayoutParams(diagram.type);
+  // 覆盖优先：前端可调参数（T47）
+  const p: LayoutParams = {
+    ...base,
+    nodeNodeSpacing: ov.nodeNodeSpacing ?? base.nodeNodeSpacing,
+    layerSpacing: ov.layerSpacing ?? base.layerSpacing,
+    baseNodeWidth: ov.baseNodeWidth ?? base.baseNodeWidth,
+    baseNodeHeight: ov.baseNodeHeight ?? base.baseNodeHeight,
+    edgeChannelSpread: ov.edgeChannelSpread ?? base.edgeChannelSpread,
+    edgeChannelSlots: ov.edgeChannelSlots ?? base.edgeChannelSlots,
+    edgeChannelStep: ov.edgeChannelStep ?? base.edgeChannelStep
+  };
+  const cellPadding = ov.cellPadding ?? CELL_PADDING;
+  const colGap = ov.colGap ?? COL_GAP;
+  const rowGap = ov.rowGap ?? ROW_GAP;
   const rawNodes = diagram.nodes as NodeMeta[];
   const allNodeIds = rawNodes.map((n) => n.nodeId);
   const metaById = new Map<string, NodeMeta>(rawNodes.map((n) => [n.nodeId, n]));
@@ -480,7 +519,7 @@ export async function computeLayout(
         (nid) => nodeToLane.get(nid) === colId
       );
       if (cellNodes.length === 0) continue;
-      const cell = await layoutCell(cellNodes, metaById, activeEdges, p);
+      const cell = await layoutCell(cellNodes, metaById, activeEdges, p, cellPadding);
       cells.set(colId, cell);
       maxH = Math.max(maxH, cell.height);
     }
@@ -500,7 +539,7 @@ export async function computeLayout(
       const cell = rl.cells.get(colId);
       if (cell) w = Math.max(w, cell.width);
     }
-    colW.set(colId, Math.max(w, p.baseNodeWidth + CELL_PADDING));
+    colW.set(colId, Math.max(w, p.baseNodeWidth + cellPadding));
   }
 
   // 网格坐标
@@ -508,13 +547,13 @@ export async function computeLayout(
   let cx = 0;
   for (const colId of colIds) {
     colX.set(colId, cx);
-    cx += colW.get(colId)! + COL_GAP;
+    cx += colW.get(colId)! + colGap;
   }
-  const totalW = cx > 0 ? cx - COL_GAP : 0;
+  const totalW = cx > 0 ? cx - colGap : 0;
 
   let contentH = 0;
   for (const rl of rowLayouts) contentH += rl.rowH;
-  contentH += ROW_GAP * Math.max(0, rowLayouts.length - 1);
+  contentH += rowGap * Math.max(0, rowLayouts.length - 1);
   const totalH = LANE_HEADER_H + contentH;
 
   // 节点绝对坐标
@@ -542,7 +581,7 @@ export async function computeLayout(
         }
       }
     }
-    rowY += rl.rowH + ROW_GAP;
+    rowY += rl.rowH + rowGap;
   }
 
   // 连线：单元格内沿用 elk 路径（换算为绝对坐标），跨单元/聚合走正交路由
@@ -562,7 +601,7 @@ export async function computeLayout(
         }
       }
     }
-    rowY += rl.rowH + ROW_GAP;
+    rowY += rl.rowH + rowGap;
   }
   for (const e of activeEdges) {
     if (laidEdges.has(e.edgeId)) continue;

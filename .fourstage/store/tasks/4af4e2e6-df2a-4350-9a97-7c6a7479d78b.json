@@ -1,0 +1,15 @@
+{
+  "taskId": "4af4e2e6-df2a-4350-9a97-7c6a7479d78b",
+  "requirementId": "196b2e24-dc60-4f98-80c4-fddaf158ace5",
+  "title": "T68 前端：连线/节点移动正交重布线",
+  "description": "新增正交重布线函数 rerouteOrthogonal(fromCenter, toCenter)：以两端节点中心为锚点生成正交阶梯折线；DiagramView 节点移动时将 recomputeEdgeAnchors 改为整体重布线（丢弃中间折点重新生成）；DiagramSvg 折点删除合并后触发正交重布线，保证连线固定横平竖直。",
+  "status": "done",
+  "acceptanceCriteria": "1) 连线始终横平竖直（正交），无斜线；2) 节点移动时关联连线整体重布线，折点自适应两端中心锚点；3) 线段平移/折点新增仍保持正交；4) 折点删除后该连线正交重布线，不产生斜线；5) 编译通过。",
+  "files": [
+    "packages/web/src/components/diagram/DiagramView.vue",
+    "packages/web/src/components/diagram/DiagramSvg.vue"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788228740431,
+  "updatedAt": 1788229049950
+}

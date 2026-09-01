@@ -1,0 +1,15 @@
+{
+  "taskId": "4071aaa7-fd9e-4577-a1a2-d5c6bb39edf0",
+  "requirementId": "40822db0-0c50-45b9-9377-164c8b62affa",
+  "title": "T59 服务端：批量坐标保存接口与固化服务",
+  "description": "diagram.service.ts 新增 saveDiagramGeometry(workspace, diagramId, {nodes, edges})：批量合并节点 geometry 与连线 points 落库（version+1、Zod 校验、坐标数值合法性校验）；http/routes/diagrams.ts 新增 POST /api/projects/:id/diagrams/:did/geometry 路由解析并校验 body。",
+  "status": "done",
+  "acceptanceCriteria": "1) POST /geometry 可批量保存节点坐标与连线折点并返回更新后图数据；2) 非法坐标（NaN/越界）返回 4xx；3) GET 图接口返回携带 geometry/points；4) 旧图未写坐标字段不报错。",
+  "files": [
+    "packages/server/src/services/diagram.service.ts",
+    "packages/server/src/http/routes/diagrams.ts"
+  ],
+  "changeType": "新增",
+  "createdAt": 1788227061397,
+  "updatedAt": 1788227737990
+}

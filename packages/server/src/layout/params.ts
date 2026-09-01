@@ -21,6 +21,12 @@ export interface LayoutParams {
   baseNodeWidth: number;
   /** 基础节点高度 */
   baseNodeHeight: number;
+  /** 跨格连线竖线错开总宽度上限（Z 形通道，T47 收尾） */
+  edgeChannelSpread: number;
+  /** 跨格连线竖线错开槽位数（Z 形通道） */
+  edgeChannelSlots: number;
+  /** 跨格连线绕行通道间隔（右出向上绕行时相邻边错开的纵向步长） */
+  edgeChannelStep: number;
 }
 
 /**
@@ -29,38 +35,47 @@ export interface LayoutParams {
 export function getLayoutParams(type: DiagramType): LayoutParams {
   switch (type) {
     case "architecture":
-      // 架构图：分层自上而下，层级间留白较大以承载组件块
+      // 架构图：分层自上而下，层级间留白较大以承载组件块（T47 二次加大间距减少连线重叠）
       return {
         algorithm: "layered",
         direction: "DOWN",
-        nodeNodeSpacing: 28,
-        layerSpacing: 56,
+        nodeNodeSpacing: 56,
+        layerSpacing: 120,
         edgeRouting: "ORTHOGONAL",
         baseNodeWidth: 168,
-        baseNodeHeight: 60
+        baseNodeHeight: 60,
+        edgeChannelSpread: 90,
+        edgeChannelSlots: 5,
+        edgeChannelStep: 34
       };
     case "class":
-      // 类图：节点较大（容纳属性/方法），间距宽松
+      // 类图：节点较大（容纳属性/方法），间距宽松（T47 二次加大间距减少连线重叠）
       return {
         algorithm: "layered",
         direction: "DOWN",
-        nodeNodeSpacing: 44,
-        layerSpacing: 72,
+        nodeNodeSpacing: 80,
+        layerSpacing: 140,
         edgeRouting: "ORTHOGONAL",
         baseNodeWidth: 210,
-        baseNodeHeight: 96
+        baseNodeHeight: 96,
+        edgeChannelSpread: 90,
+        edgeChannelSlots: 5,
+        edgeChannelStep: 34
       };
     case "flow":
     default:
-      // 流程图：紧凑排布，步骤感强
+      // 流程图：紧凑排布，步骤感强（T47 二次加大间距减少连线重叠）
       return {
         algorithm: "layered",
         direction: "DOWN",
-        nodeNodeSpacing: 24,
-        layerSpacing: 48,
+        nodeNodeSpacing: 50,
+        layerSpacing: 100,
         edgeRouting: "ORTHOGONAL",
         baseNodeWidth: 152,
-        baseNodeHeight: 56
+        baseNodeHeight: 56,
+        edgeChannelSpread: 90,
+        edgeChannelSlots: 5,
+        edgeChannelStep: 34
       };
   }
 }

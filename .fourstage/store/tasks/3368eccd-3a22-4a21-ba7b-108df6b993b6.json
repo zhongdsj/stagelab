@@ -1,0 +1,14 @@
+{
+  "taskId": "3368eccd-3a22-4a21-ba7b-108df6b993b6",
+  "requirementId": "e7e0ac7a-f714-4ea3-8b56-d20210b8d5d7",
+  "title": "T78 前端：去除端点/折点圆形手柄",
+  "description": "DiagramSvg 移除编辑态下 edge-handles 圆形手柄渲染（edge-handle circle 与相关样式）；折点/端点操作改为通过线段平移（pointerdown 命中）、双击插入/删除折点、右键删除折点完成，不再以圆形标出。",
+  "status": "done",
+  "acceptanceCriteria": "1) 编辑态不再显示圆形折点/端点手柄；2) 端点与折点仍可通过现有交互（线段平移/双击/右键）操作；3) 编译通过。",
+  "files": [
+    "packages/web/src/components/diagram/DiagramSvg.vue"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788231043038,
+  "updatedAt": 1788231730422
+}

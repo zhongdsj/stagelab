@@ -1,0 +1,14 @@
+{
+  "taskId": "9a557b79-1ca9-47d4-ad79-2b7ba7c23cfa",
+  "requirementId": "0f047e44-d20a-4737-9d99-0dea6eb7b6ea",
+  "title": "T52 详情页：内容区改为文档库/需求/图库 Tab 切换",
+  "description": "## 任务描述\n\n项目详情页内容区改为 Tab 切换，阶段切换不再改变布局：\n- ProjectDetailView.vue 移除按阶段（s1/s2/s3）渲染不同组件组合的逻辑\n- 阶段切换仅更新阶段描述文案（content-desc），内容区固定为三个 Tab：「文档库」「需求」「图库」\n- Tab 默认选中与当前阶段弱关联（s1→文档库，s2/s3→需求），切换后保持会话态，阶段切换不影响已选 Tab\n- 文档库 / 需求 / 图库分别渲染 DocumentLibrary / RequirementTasks / DiagramLibrary\n\n## 涉及文件\n- packages/web/src/views/ProjectDetailView.vue（修改）\n\n## 变更类型\n修改\n\n## 验收标准\n1. 阶段切换仅改描述文案，内容区不变\n2. Tab 三个：文档库/需求/图库，可自由切换\n3. 默认选中按当前阶段（s1 文档库 / s2/s3 需求）\n4. 需求增多后图库不再被顶到页面下方",
+  "status": "done",
+  "acceptanceCriteria": "阶段切换仅改描述；内容区固定为文档库/需求/图库 tab 切换",
+  "files": [
+    "packages/web/src/views/ProjectDetailView.vue"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788169549696,
+  "updatedAt": 1788169847430
+}

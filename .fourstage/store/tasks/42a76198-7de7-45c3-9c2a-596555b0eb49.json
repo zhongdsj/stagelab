@@ -1,0 +1,15 @@
+{
+  "taskId": "42a76198-7de7-45c3-9c2a-596555b0eb49",
+  "requirementId": "b378cfec-8607-4705-95b8-b5ea0ae29db0",
+  "title": "T54 前端：覆盖合并与渲染叠加",
+  "description": "渲染层合并覆盖：\n- renderNodes：应用 nodeOverrides（覆盖节点 x/y）\n- renderEdges：应用 edgeOverrides（覆盖 points），无覆盖的边仍用引擎路径\n- 覆盖不修改布局实时计算链路（引擎仍算原始布局，覆盖在渲染层叠加）\n- 分组框位置不随节点移动（保持引擎布局，避免拖裂分组）",
+  "status": "done",
+  "acceptanceCriteria": "有覆盖的节点/连线渲染位置被覆盖值替换；无覆盖者不变；分组框不因覆盖位移；布局重算后覆盖仍叠加生效",
+  "files": [
+    "packages/web/src/components/diagram/DiagramSvg.vue",
+    "packages/web/src/components/diagram/DiagramView.vue"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788187924620,
+  "updatedAt": 1788189377905
+}

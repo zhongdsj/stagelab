@@ -1,0 +1,14 @@
+{
+  "taskId": "eb14ad41-f7ca-426c-9979-d5c5bc81632b",
+  "requirementId": "6a437b63-f03a-4567-9198-ceccd1d734cc",
+  "title": "T44 服务层：节点-分区反向查询服务",
+  "description": "## 任务描述\n\ndiagram.service.ts 新增 getNodeGroups 服务方法：\n- 输入 diagramId + nodeId\n- 返回该节点所属的全部分区（纵向模块/横向泳道，含 groupId/title/axis）\n- 可扩展为多 nodeId 批量\n- 不加载整图\n\n## 涉及文件\n- packages/server/src/services/diagram.service.ts（修改）\n\n## 变更类型\n新增\n\n## 验收标准\n1. 输入 nodeId 返回所属分区列表（含 axis）\n2. 不加载整图",
+  "status": "done",
+  "acceptanceCriteria": "getNodeGroups 返回节点所属分区（含 axis）；不加载整图",
+  "files": [
+    "packages/server/src/services/diagram.service.ts"
+  ],
+  "changeType": "新增",
+  "createdAt": 1788167576917,
+  "updatedAt": 1788168037745
+}

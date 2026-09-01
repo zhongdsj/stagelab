@@ -1,0 +1,14 @@
+{
+  "taskId": "3fa6cfed-d899-4fdb-8c6d-80f3397d60c6",
+  "requirementId": "6a437b63-f03a-4567-9198-ceccd1d734cc",
+  "title": "T43 服务层：按分组聚合读取服务",
+  "description": "## 任务描述\n\ndiagram.service.ts 新增 getDiagramGroup 服务方法：\n- 输入 diagramId + groupId\n- 返回该分区节点详情（nodeIds 对应节点对象）+ 该分区内连线（from/to 落在 nodeIds 内）+ 子分区摘要（parentGroupId 指向该分区的 groups 的轻量信息）\n- 不返回坐标；不加载整图（仅读取所需节点/连线/分组）\n\n## 涉及文件\n- packages/server/src/services/diagram.service.ts（修改）\n\n## 变更类型\n新增\n\n## 验收标准\n1. 传入 groupId 一次返回分区节点+连线+子分区摘要\n2. 不泄漏坐标，不加载整图",
+  "status": "done",
+  "acceptanceCriteria": "getDiagramGroup 一次返回分区节点/连线/子分区；无坐标无整图",
+  "files": [
+    "packages/server/src/services/diagram.service.ts"
+  ],
+  "changeType": "新增",
+  "createdAt": 1788167575873,
+  "updatedAt": 1788168037362
+}

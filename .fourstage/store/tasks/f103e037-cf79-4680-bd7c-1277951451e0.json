@@ -1,0 +1,14 @@
+{
+  "taskId": "f103e037-cf79-4680-bd7c-1277951451e0",
+  "requirementId": "e7e0ac7a-f714-4ea3-8b56-d20210b8d5d7",
+  "title": "T79 前端：线段平移共线合并（去冗余折点）",
+  "description": "DiagramSvg onSvgPointerMove edgeSegment 分支增加共线合并：拖动某段时，若其相邻段（同为水平或同为垂直）与中间段位移后产生重叠（同向共线），则移除中间折点、删除中间段、将两平行段合并为一段，保持连线横平竖直；合并后返回正交化结果。",
+  "status": "done",
+  "acceptanceCriteria": "1) 拖动线段过程中相邻两平行线段重合时，中间折点移除、中间段消失、两段合并为一段；2) 合并后仍正交；3) 端点锚点不参与合并（仅中间段）；4) 变更结束后落库；5) 编译通过。",
+  "files": [
+    "packages/web/src/components/diagram/DiagramSvg.vue"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788231044940,
+  "updatedAt": 1788231730714
+}
