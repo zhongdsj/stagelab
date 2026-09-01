@@ -1,0 +1,14 @@
+{
+  "taskId": "d17d77d5-a0f9-45c5-8c2f-8a4edcf94051",
+  "requirementId": "e7e0ac7a-f714-4ea3-8b56-d20210b8d5d7",
+  "title": "T74 前端：线段平移端点跨边滑动",
+  "description": "重写 DiagramSvg onSvgPointerMove 的 edgeSegment 分支：拖动线段时，端点目标位置先经 snapToNodeBorder 吸附到节点四边（跨边支持：命中最近的边，而非固定顶/底或左/右），再更新端点与相邻折点，保持各段水平/垂直。",
+  "status": "done",
+  "acceptanceCriteria": "1) 任意拖动方向下端点沿四边连续滑动，可跨过角到相邻边；2) 端点不进入节点内部、不脱离节点边框；3) 各段仍保持横平竖直；4) 编译通过。",
+  "files": [
+    "packages/web/src/components/diagram/DiagramSvg.vue"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788230812871,
+  "updatedAt": 1788231728708
+}

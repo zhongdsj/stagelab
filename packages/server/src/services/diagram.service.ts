@@ -235,7 +235,9 @@ export async function updateDiagramElements(
       case "updateEdge": {
         const idx = edges.findIndex((e) => e.edgeId === patch.edge.edgeId);
         if (idx === -1) edges.push(patch.edge);
-        else edges[idx] = patch.edge;
+        // 字段合并（方案A）：仅覆盖传入字段，保留存储中其余字段（如 points 坐标），
+        // 避免 MCP updateEdge 只改 methods/label 时把坐标整体替换丢失。
+        else edges[idx] = { ...edges[idx], ...patch.edge };
         break;
       }
       case "removeEdge": {
@@ -287,4 +289,91 @@ export async function deleteDiagram(
 ): Promise<void> {
   const repos = createRepositories(workspace);
   await repos.diagram.delete(diagramId);
+}
+
+/* ========== 自由画布坐标（draw.io 改造，T59） ========== */
+
+/** 坐标批量保存载荷：按 nodeId/edgeId 合并节点几何与连线折点 */
+export interface GeometryPatch {
+  nodes?: Array<{
+    nodeId: string;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  }>;
+  edges?: Array<{
+    edgeId: string;
+    points: Array<{ x: number; y: number }>;
+  }>;
+}
+
+/** 坐标合法性校验：有限数值，尺寸必须为正 */
+function isFiniteNum(v: unknown): v is number {
+  return typeof v === "number" && Number.isFinite(v);
+}
+
+/**
+ * 批量保存自由画布坐标（T59）：将节点 geometry / 连线 points 合并进图数据落库。
+ * - 逐元素合并，保留其余字段（不覆盖语义数据）；
+ * - 不存在的 nodeId/edgeId 静默忽略；
+ * - 坐标非法（NaN/Infinity/非正尺寸）直接拒绝，避免脏数据。
+ */
+export async function saveDiagramGeometry(
+  workspace: RepoWorkspace,
+  diagramId: string,
+  patch: GeometryPatch
+): Promise<Diagram> {
+  const repos = createRepositories(workspace);
+  const d = await repos.diagram.get(diagramId);
+
+  // 深拷贝可变副本（保留语义字段）
+  const nodes = d.nodes.map((n) => ({ ...n })) as NodeOfDiagram[];
+  const edges = d.edges.map((e) => ({ ...e }));
+
+  for (const g of patch.nodes ?? []) {
+    if (
+      !isFiniteNum(g.x) ||
+      !isFiniteNum(g.y) ||
+      !isFiniteNum(g.width) ||
+      !isFiniteNum(g.height) ||
+      g.width <= 0 ||
+      g.height <= 0
+    ) {
+      throw new Error(`节点 ${g.nodeId} 坐标非法`);
+    }
+    const idx = nodes.findIndex((n) => n.nodeId === g.nodeId);
+    if (idx === -1) continue; // 忽略不存在的节点
+    nodes[idx] = {
+      ...nodes[idx],
+      geometry: { x: g.x, y: g.y, width: g.width, height: g.height }
+    };
+  }
+
+  for (const g of patch.edges ?? []) {
+    const pts = g.points ?? [];
+    if (!pts.every((p) => isFiniteNum(p.x) && isFiniteNum(p.y))) {
+      throw new Error(`连线 ${g.edgeId} 折点坐标非法`);
+    }
+    const idx = edges.findIndex((e) => e.edgeId === g.edgeId);
+    if (idx === -1) continue; // 忽略不存在的连线
+    edges[idx] = { ...edges[idx], points: pts.map((p) => ({ x: p.x, y: p.y })) };
+  }
+
+  const updated: Diagram = {
+    ...d,
+    nodes,
+    edges,
+    metadata: { ...d.metadata, version: d.metadata.version + 1 }
+  };
+
+  const parsed = DiagramSchema.safeParse(updated);
+  if (!parsed.success) {
+    throw new Error(
+      `坐标保存校验失败: ${parsed.error.issues.map((i) => i.message).join("; ")}`
+    );
+  }
+
+  await repos.diagram.save(updated);
+  return updated;
 }

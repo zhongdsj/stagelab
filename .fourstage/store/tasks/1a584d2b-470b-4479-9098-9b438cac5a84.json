@@ -1,0 +1,14 @@
+{
+  "taskId": "1a584d2b-470b-4479-9098-9b438cac5a84",
+  "requirementId": "e7e0ac7a-f714-4ea3-8b56-d20210b8d5d7",
+  "title": "T76 前端：重布线端点严格贴边",
+  "description": "重写 DiagramView orthogonalPath/recomputeEdgeAnchors：统一使用端点吸附工具（T73），使自动重布线（节点移动/首次固化）的端点也严格落在节点边框上；保证任何操作后连线无斜线。",
+  "status": "done",
+  "acceptanceCriteria": "1) 节点移动重布线后端点落在节点四边（跨边由后续手动调整）；2) 任意布局/相对位置下路径无斜线；3) 跨边滑动的端点坐标在节点移动后保持贴边；4) 编译通过。",
+  "files": [
+    "packages/web/src/components/diagram/DiagramView.vue"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788230816166,
+  "updatedAt": 1788231729629
+}

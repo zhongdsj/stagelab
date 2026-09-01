@@ -1,8 +1,12 @@
 <template>
   <svg
+    ref="svgEl"
     class="diagram-svg"
     :viewBox="viewBox"
     xmlns="http://www.w3.org/2000/svg"
+    @pointermove="onSvgPointerMove"
+    @pointerup="onSvgPointerUp"
+    @pointercancel="onSvgPointerUp"
   >
     <defs>
       <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
@@ -45,21 +49,41 @@
     <g
       v-for="e in renderEdges"
       :key="e.edgeId"
-      :class="['edge', isEdgeHighlighted(e.edgeId) ? 'is-highlighted' : '']"
+      :class="[
+        'edge',
+        diagram.type === 'class' ? 'is-clickable' : '',
+        isEdgeHighlighted(e.edgeId) ? 'is-highlighted' : '',
+        hasEdgeOverride(e.edgeId) ? 'has-override' : ''
+      ]"
+      @click="onEdgeClickSuppressed(e.edgeId)"
+      @contextmenu.prevent="onEdgeContextMenu(e.edgeId, $event)"
+      @pointerdown="onEdgeDown(e.edgeId, $event)"
+      @dblclick="onEdgeDblClick(e.edgeId, $event)"
     >
+      <!-- T49 透明粗热区：扩大连线点击命中范围（仅命中用，不参与高亮样式） -->
+      <polyline class="edge-hit" :points="pointsToStr(e.points)" fill="none" stroke="transparent" stroke-width="14" />
       <polyline :points="pointsToStr(e.points)" fill="none" marker-end="url(#arrow)" />
       <text v-if="edgeLabel(e.edgeId)" class="edge-label" :x="edgeMid(e).x" :y="edgeMid(e).y" text-anchor="middle">
         {{ edgeLabel(e.edgeId) }}
       </text>
+      <!-- T53 手动编辑：折点/端点操作改为线段命中/双击/右键，不再以圆形手柄标出（T78） -->
     </g>
 
     <!-- 节点（按语义类型区分样式；聚合节点特殊渲染；折叠模块内部节点隐藏） -->
     <g
       v-for="n in renderNodes"
       :key="n.nodeId"
-      :class="['node', isAggregate(n.nodeId) ? 'is-aggregate' : '', isNodeHighlighted(n.nodeId) ? 'is-highlighted' : '']"
+      :class="[
+        'node',
+        isAggregate(n.nodeId) ? 'is-aggregate' : '',
+        isNodeHighlighted(n.nodeId) ? 'is-highlighted' : '',
+        editMode ? 'is-editing' : '',
+        hasNodeOverride(n.nodeId) ? 'has-override' : ''
+      ]"
       :transform="`translate(${n.x}, ${n.y})`"
-      @click="onNodeClick(n.nodeId)"
+      @click="onNodeClickSuppressed(n.nodeId)"
+      @pointerdown="onNodeDown(n.nodeId, $event)"
+      @contextmenu.prevent="onNodeContextMenu(n.nodeId)"
       @mouseenter="onNodeHover(n.nodeId, true)"
       @mouseleave="onNodeHover(n.nodeId, false)"
     >
@@ -82,15 +106,26 @@
         </text>
       </template>
 
-      <!-- 类节点：类名 + 属性/方法分栏 -->
+      <!-- 类节点：类名 + 属性/方法分栏；方法行可点击（T70 方法级高亮） -->
       <template v-else-if="nodeShape(n.nodeId) === 'class'">
         <rect :width="n.width" :height="n.height" rx="6" :class="['node-rect', nodeKindClass(n.nodeId)]" />
         <rect :width="n.width" :height="24" rx="6" :class="['node-rect', 'class-header', nodeKindClass(n.nodeId)]" />
         <text class="node-label class-title" :x="6" :y="16">{{ nodeLabel(n.nodeId) }}</text>
         <line :x1="0" :y1="24" :x2="n.width" :y2="24" class="class-sep" />
-        <text v-for="(line, i) in classBodyLines(n)" :key="i" class="node-label class-line" :x="6" :y="24 + 16 * (i + 1)">
-          {{ line }}
-        </text>
+        <g
+          v-for="row in classBodyRows(n)"
+          :key="row.key"
+          :class="[
+            'class-body-row',
+            row.type === 'method' ? 'is-method' : 'is-attr',
+            row.type === 'method' && isMethodHighlighted(n.nodeId, row.methodName) ? 'is-method-highlighted' : ''
+          ]"
+          @pointerdown.stop.prevent
+          @click.stop="row.type === 'method' ? onMethodClick(n.nodeId, row.methodName!) : undefined"
+        >
+          <rect v-if="row.type === 'method'" :x="0" :y="row.y - 13" :width="n.width" :height="16" class="method-hit" />
+          <text class="node-label class-line" :x="6" :y="row.y">{{ row.text }}</text>
+        </g>
       </template>
 
       <!-- 常规节点 -->
@@ -107,6 +142,8 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import type { Diagram, LayoutDiagram } from "@fourstage/shared";
+import type { ManualOverrides } from "./useManualEdit";
+import { dist, snapToNodeBorder, orthogonalizePath, mergeCollinear, type NodeBox } from "./useEdgeGeometry";
 
 const props = defineProps<{
   layout: LayoutDiagram;
@@ -116,6 +153,10 @@ const props = defineProps<{
   collapsedModules?: string[];
   /** 相机视口（Excalidraw 方式）：viewBox 字符串，由父级相机状态计算 */
   viewBox?: string;
+  /** 编辑态（T52/T53）：节点可拖拽、连线显示手柄；仅影响交互与外观，不改数据 */
+  editMode?: boolean;
+  /** 手动覆盖（T51/T54）：节点位置/连线路径的用户增量，渲染层叠加于引擎结果 */
+  overrides?: ManualOverrides;
 }>();
 
 const emit = defineEmits<{
@@ -125,6 +166,14 @@ const emit = defineEmits<{
   (e: "node-click", nodeId: string): void;
   /** 架构层节点悬停：enter 传 nodeId，leave 传 null（T40） */
   (e: "node-hover", nodeId: string | null): void;
+  /** T52 节点拖拽：commit=false 拖动中实时更新，commit=true 拖动结束 */
+  (e: "node-move", nodeId: string, x: number, y: number, commit: boolean): void;
+  /** T53 连线手柄拖拽：points 为完整新路径，commit=false 拖动中，true 结束 */
+  (e: "edge-move", edgeId: string, points: Array<{ x: number; y: number }>, commit: boolean): void;
+  /** T56 右键清除节点覆盖 */
+  (e: "clear-node", nodeId: string): void;
+  /** T56 右键清除连线覆盖 */
+  (e: "clear-edge", edgeId: string): void;
 }>();
 
 /** 语义节点映射：nodeId → 节点对象 */
@@ -156,6 +205,105 @@ const edgeLabelMap = computed(() => {
 
 /** 已折叠集合（快速查找） */
 const collapsedSet = computed(() => new Set(props.collapsedModules ?? []));
+
+/* ========== 手动编辑：覆盖合并与渲染叠加（T54） ========== */
+
+/** 节点位置覆盖：覆盖优先于引擎布局坐标，渲染层直接替换 */
+const effectiveNodes = computed(() =>
+  props.layout.nodes.map((n) => {
+    const ov = props.overrides?.nodes?.[n.nodeId];
+    return ov ? { ...n, x: ov.x, y: ov.y } : n;
+  })
+);
+
+/** 语义连线端点表（edgeId → from/to 节点 id），供路径跟随节点移动 */
+const edgeEndpointById = computed(() => {
+  const m = new Map<string, { from: string; to: string }>();
+  for (const e of props.diagram.edges) m.set(e.edgeId, { from: e.from, to: e.to });
+  return m;
+});
+
+/** 连线端点节点盒子（T68 优化：端点沿节点边框滑动）；a=points[0] 端、b=points[last] 端 */
+function endpointBoxes(edgeId: string): { a: { x: number; y: number; width: number; height: number }; b: { x: number; y: number; width: number; height: number } } | null {
+  const ep = edgeEndpointById.value.get(edgeId);
+  if (!ep) return null;
+  const from = props.layout.nodes.find((n) => n.nodeId === ep.from);
+  const to = props.layout.nodes.find((n) => n.nodeId === ep.to);
+  if (!from || !to) return null;
+  return { a: from, b: to };
+}
+
+/**
+ * 连线路径合并（T54）：
+ * - 有覆盖的连线：直接用覆盖路径（手动优先于引擎）
+ * - 无覆盖的连线：若端点节点被手动移动，路径按弧长比例跟随端点位移
+ *   （t=0 端点跟 from 节点位移，t=1 端点跟 to 节点位移，中间线性过渡，
+ *   保证连线两端始终贴附在各自节点上）
+ */
+const effectiveEdges = computed(() =>
+  props.layout.edges.map((e) => {
+    const ov = props.overrides?.edges?.[e.edgeId];
+    if (ov) return { edgeId: e.edgeId, points: ov.points };
+    const ep = edgeEndpointById.value.get(e.edgeId);
+    if (!ep) return e;
+    const fromDelta = nodeDelta(ep.from);
+    const toDelta = nodeDelta(ep.to);
+    if (fromDelta.dx === 0 && fromDelta.dy === 0 && toDelta.dx === 0 && toDelta.dy === 0) return e;
+    // 各折点按弧长占比 t（0=from 端，1=to 端）线性插值端点位移
+    const t = arcFractions(e.points);
+    return {
+      edgeId: e.edgeId,
+      points: e.points.map((p, i) => ({
+        x: p.x + fromDelta.dx * (1 - t[i]) + toDelta.dx * t[i],
+        y: p.y + fromDelta.dy * (1 - t[i]) + toDelta.dy * t[i]
+      }))
+    };
+  })
+);
+
+/** 折点沿路径的弧长归一化占比（首点 0，末点 1；等长退化返回全 0） */
+function arcFractions(points: Array<{ x: number; y: number }>): number[] {
+  const n = points.length;
+  if (n < 2) return points.map(() => 0);
+  const segs: number[] = [];
+  let total = 0;
+  for (let i = 0; i < n - 1; i++) {
+    const len = Math.hypot(points[i + 1].x - points[i].x, points[i + 1].y - points[i].y);
+    segs.push(len);
+    total += len;
+  }
+  if (total <= 0) return points.map(() => 0);
+  const t: number[] = [0];
+  let acc = 0;
+  for (let i = 0; i < segs.length; i++) {
+    acc += segs[i];
+    t.push(acc / total);
+  }
+  return t;
+}
+
+/** 节点覆盖位移（覆盖位置 - 引擎布局位置），供连线跟随；兼容聚合占位节点 */
+function nodeDelta(nodeId: string): { dx: number; dy: number } {
+  const ov = props.overrides?.nodes?.[nodeId];
+  if (!ov) return { dx: 0, dy: 0 };
+  // 真实节点：以引擎布局坐标作基底
+  const n = props.layout.nodes.find((nd) => nd.nodeId === nodeId);
+  if (n) return { dx: ov.x - n.x, dy: ov.y - n.y };
+  // 聚合占位节点（折叠模块）：以聚合节点当前渲染位置作基底
+  const agg = aggregateNodes.value.find((a) => a.nodeId === nodeId);
+  if (agg) return { dx: ov.x - agg.x, dy: ov.y - agg.y };
+  return { dx: 0, dy: 0 };
+}
+
+/** 节点是否有手动覆盖（用于样式提示） */
+function hasNodeOverride(nodeId: string): boolean {
+  return !!props.overrides?.nodes?.[nodeId];
+}
+
+/** 连线是否有手动覆盖（用于样式提示） */
+function hasEdgeOverride(edgeId: string): boolean {
+  return !!props.overrides?.edges?.[edgeId];
+}
 
 /* ========== 折叠几何：判定节点/连线归属的可折叠模块框 ========== */
 
@@ -240,10 +388,13 @@ const aggregateNodes = computed(() => {
   return out;
 });
 
-/** 可见节点：真实节点过滤折叠模块内节点 + 追加折叠模块聚合节点 */
+/** 可见节点：真实节点过滤折叠模块内节点 + 追加折叠模块聚合节点；两者均叠加手动覆盖（T54） */
 const renderNodes = computed(() => [
-  ...props.layout.nodes.filter((n) => !isNodeHidden(n)),
-  ...aggregateNodes.value
+  ...effectiveNodes.value.filter((n) => !isNodeHidden(n)),
+  ...aggregateNodes.value.map((n) => {
+    const ov = props.overrides?.nodes?.[n.nodeId];
+    return ov ? { ...n, x: ov.x, y: ov.y } : n;
+  })
 ]);
 
 /** 分组是否处于折叠态（用于「已折叠」提示） */
@@ -269,10 +420,10 @@ function outsideOf(points: Array<{ x: number; y: number }>, b: Box): Array<{ x: 
   return points.filter((p) => !inBox(p, b));
 }
 
-/** 可见连线：折叠模块整体作为统一出入口，进出连线汇聚到模块框中心 */
+/** 可见连线：折叠模块整体作为统一出入口，进出连线汇聚到模块框中心（基于覆盖合并后的路径） */
 const renderEdges = computed(() => {
   const out: LayoutDiagram["edges"] = [];
-  for (const e of props.layout.edges) {
+  for (const e of effectiveEdges.value) {
     const pts = e.points;
     if (pts.length < 2) {
       out.push(e);
@@ -301,7 +452,9 @@ const renderEdges = computed(() => {
       const tb = moduleBoxes.value.get(toM);
       arr = [...(tb ? outsideOf(pts, tb) : pts.slice(0, -1)), toAnchor];
     } else {
-      arr = pts;
+      // T80 渲染层正交化兜底：旧数据/异常路径存在斜线段时自动补最小折点（Z 形），
+      // 保证渲染连线严格横平竖直；已正交路径原样返回（幂等），不影响正常渲染。
+      arr = orthogonalizePath(pts);
     }
     if (arr.length >= 2) out.push({ edgeId: e.edgeId, points: arr });
   }
@@ -323,11 +476,39 @@ function edgeLabel(edgeId: string): string {
   return edgeLabelMap.value.get(edgeId) ?? "";
 }
 
+/**
+ * 连线标签定位（T48）：按弧长取中点。
+ * 遍历折线 points 累计各段长度，取总长 50% 处坐标（线性插值到所在段），
+ * 兼容正交/绕行/自环等任意点数；标签 y 仍做 -6 偏移避让连线。
+ */
 function edgeMid(e: { points: Array<{ x: number; y: number }> }) {
   const pts = e.points;
   if (pts.length === 0) return { x: 0, y: 0 };
-  const mid = pts[Math.floor(pts.length / 2)];
-  return { x: mid.x, y: mid.y - 6 };
+  if (pts.length === 1) return { x: pts[0].x, y: pts[0].y - 6 };
+  // 累计各段长度
+  let total = 0;
+  const segs: number[] = [];
+  for (let i = 0; i < pts.length - 1; i++) {
+    const len = Math.hypot(pts[i + 1].x - pts[i].x, pts[i + 1].y - pts[i].y);
+    segs.push(len);
+    total += len;
+  }
+  // total 为 0（所有点重合）时退化为首点
+  if (total <= 0) return { x: pts[0].x, y: pts[0].y - 6 };
+  const target = total / 2;
+  let acc = 0;
+  for (let i = 0; i < segs.length; i++) {
+    if (acc + segs[i] >= target) {
+      const t = segs[i] > 0 ? (target - acc) / segs[i] : 0;
+      return {
+        x: pts[i].x + (pts[i + 1].x - pts[i].x) * t,
+        y: pts[i].y + (pts[i + 1].y - pts[i].y) * t - 6
+      };
+    }
+    acc += segs[i];
+  }
+  const last = pts[pts.length - 1];
+  return { x: last.x, y: last.y - 6 };
 }
 
 function groupTitle(groupId: string): string {
@@ -360,29 +541,120 @@ function onAggregateClick(nodeId: string) {
 
 /* ========== 节点交互：架构层点击联动（T39）/ 类图点击高亮（T41） ========== */
 
-/** 类图节点点击高亮（会话态，刷新重置）：当前高亮节点 id */
+/** 类图节点点击高亮（T41，会话态，刷新重置）：当前高亮节点 id */
 const highlightNodeId = ref("");
 
-/** 与高亮节点相连的语义连线 edgeId 集合（layout.edges 依此判断高亮） */
-const highlightedEdgeIds = computed(() => {
+/** 类图连线点击高亮（T49，会话态）：当前高亮连线 id（与节点高亮互斥，共用高亮态） */
+const highlightEdgeId = ref("");
+
+/** T70 方法级高亮（会话态）：点击类节点方法后高亮该方法关联的连线与节点 */
+const highlightMethod = ref<{ nodeId: string; method: string } | null>(null);
+
+/** T70 方法关联连线集合：from=所属节点 且 (edge.methods 含该方法 或 无 methods 退化为该节点出发的全部连线) */
+const methodEdgeIds = computed(() => {
   const ids = new Set<string>();
-  if (props.diagram.type !== "class" || !highlightNodeId.value) return ids;
+  const hm = highlightMethod.value;
+  if (!hm) return ids;
   for (const e of props.diagram.edges) {
-    if (e.from === highlightNodeId.value || e.to === highlightNodeId.value) {
-      ids.add(e.edgeId);
+    if (e.from !== hm.nodeId) continue;
+    if (e.methods && e.methods.length > 0) {
+      if (e.methods.includes(hm.method)) ids.add(e.edgeId);
+    } else {
+      ids.add(e.edgeId); // 旧数据无 methods：退化为类级高亮
     }
   }
   return ids;
 });
 
-/** 节点是否处于类图点击高亮态 */
-function isNodeHighlighted(nodeId: string): boolean {
-  return props.diagram.type === "class" && highlightNodeId.value === nodeId;
+/** T70 方法高亮涉及的节点集合：所属节点 + 关联连线两端节点 */
+const methodHighlightedNodeIds = computed(() => {
+  const ids = new Set<string>();
+  const hm = highlightMethod.value;
+  if (!hm) return ids;
+  ids.add(hm.nodeId);
+  const eids = methodEdgeIds.value;
+  for (const e of props.diagram.edges) {
+    if (eids.has(e.edgeId)) {
+      ids.add(e.from);
+      ids.add(e.to);
+    }
+  }
+  return ids;
+});
+
+/** T70 点击方法：切换方法级高亮；再点同方法取消；与节点/连线高亮互斥 */
+function onMethodClick(nodeId: string, method: string) {
+  if (props.diagram.type !== "class") return;
+  if (highlightMethod.value && highlightMethod.value.nodeId === nodeId && highlightMethod.value.method === method) {
+    highlightMethod.value = null;
+    return;
+  }
+  highlightMethod.value = { nodeId, method };
+  highlightNodeId.value = "";
+  highlightEdgeId.value = "";
 }
 
-/** 连线是否与高亮节点相连（类图连线高亮） */
+/** T70 方法行是否处于高亮态 */
+function isMethodHighlighted(nodeId: string, method?: string): boolean {
+  return (
+    !!highlightMethod.value &&
+    highlightMethod.value.nodeId === nodeId &&
+    highlightMethod.value.method === method
+  );
+}
+
+/** 类图点击高亮涉及的节点集合：节点点击→单节点；连线点击→两端节点 */
+const highlightedNodeIds = computed(() => {
+  const ids = new Set<string>();
+  if (props.diagram.type !== "class") return ids;
+  if (highlightNodeId.value) ids.add(highlightNodeId.value);
+  if (highlightEdgeId.value) {
+    const e = props.diagram.edges.find((ed) => ed.edgeId === highlightEdgeId.value);
+    if (e) {
+      ids.add(e.from);
+      ids.add(e.to);
+    }
+  }
+  return ids;
+});
+
+/** 与高亮相关的语义连线 edgeId 集合（layout.edges 依此判断高亮） */
+const highlightedEdgeIds = computed(() => {
+  const ids = new Set<string>();
+  if (props.diagram.type !== "class") return ids;
+  const nodes = highlightedNodeIds.value;
+  if (nodes.size === 0) return ids;
+  for (const e of props.diagram.edges) {
+    if (nodes.has(e.from) || nodes.has(e.to)) ids.add(e.edgeId);
+  }
+  return ids;
+});
+
+/** 节点是否处于高亮态（类图：节点/连线点击高亮 + 方法级高亮，T70） */
+function isNodeHighlighted(nodeId: string): boolean {
+  if (props.diagram.type !== "class") return false;
+  if (highlightedNodeIds.value.has(nodeId)) return true;
+  return methodHighlightedNodeIds.value.has(nodeId);
+}
+
+/** 连线是否处于高亮态（与高亮节点/高亮连线两端节点相连 + 方法关联连线，T70） */
 function isEdgeHighlighted(edgeId: string): boolean {
-  return highlightedEdgeIds.value.has(edgeId);
+  if (props.diagram.type !== "class") return false;
+  if (highlightedEdgeIds.value.has(edgeId)) return true;
+  return methodEdgeIds.value.has(edgeId);
+}
+
+/**
+ * 连线点击（T49）：仅类图响应。
+ * 点击连线 → 高亮该连线两端节点 + 与两端节点相连的所有连线；
+ * 再点同一连线取消，点其他连线切换；与节点点击高亮（T41）互斥。
+ * 架构/流程图连线点击无操作。
+ */
+function onEdgeClick(edgeId: string) {
+  if (props.diagram.type !== "class") return;
+  highlightEdgeId.value = highlightEdgeId.value === edgeId ? "" : edgeId;
+  highlightNodeId.value = "";
+  highlightMethod.value = null; // T70 与方法高亮互斥
 }
 
 /**
@@ -400,29 +672,374 @@ function onNodeClick(nodeId: string) {
   if (props.diagram.type === "architecture") {
     emit("node-click", nodeId);
   } else if (props.diagram.type === "class") {
-    // 再点同一节点取消高亮；点其他节点切换高亮
+    // 再点同一节点取消高亮；点其他节点切换高亮（T41）；与连线点击高亮（T49）/方法高亮（T70）互斥
     highlightNodeId.value = highlightNodeId.value === nodeId ? "" : nodeId;
+    highlightEdgeId.value = "";
+    highlightMethod.value = null;
   }
   // flow：无操作
 }
 
 /**
- * 节点悬停（T40）：仅架构图节点触发，enter 上抛 nodeId，leave 上抛 null。
+ * 节点悬停（T69）：所有图类型节点（非聚合）有 description 时上抛 nodeId，leave 上抛 null。
  * 父级 DiagramView 依节点 description 显示/隐藏描述气泡。
  */
 function onNodeHover(nodeId: string, enter: boolean) {
-  if (props.diagram.type !== "architecture") return;
   if (isAggregate(nodeId)) return;
   emit("node-hover", enter ? nodeId : null);
 }
 
-/** 切换图时重置类图高亮态（避免残留到新图） */
+/** 切换图时重置类图高亮态（节点+连线+方法，避免残留到新图） */
 watch(
   () => props.diagram,
   () => {
     highlightNodeId.value = "";
+    highlightEdgeId.value = "";
+    highlightMethod.value = null;
   }
 );
+
+/* ========== 手动编辑：节点拖拽（T52）/ 连线手柄拖拽（T53）/ 右键清除（T56） ========== */
+
+const svgEl = ref<SVGSVGElement | null>(null);
+
+/** 拖动中的目标：node → 拖节点；edgePoint → 拖连线折点/端点；edgeSegment → 拖连线整段（T64 线段平移） */
+interface DragTarget {
+  kind: "node" | "edgePoint" | "edgeSegment";
+  /** 节点或连线 id */
+  targetId: string;
+  /** 连线折点下标（仅 edgePoint） */
+  index?: number;
+  /** 线段下标（仅 edgeSegment）：该段起点在 points 中的下标 */
+  segIndex?: number;
+  /** 线段方向（仅 edgeSegment）：true=水平（平移改 y），false=垂直（平移改 x） */
+  segHorizontal?: boolean;
+  /** 触发拖动的指针 id（用于捕获/释放） */
+  pointerId?: number;
+  /** 拖动手柄的起始客户端坐标 */
+  startClient: { x: number; y: number };
+  /** 拖动对象的起始世界坐标（节点为当前位置；连线点为当前点） */
+  startPos: { x: number; y: number };
+  /** 连线起始完整点集（仅 edgePoint，拖动中实时更新） */
+  points?: Array<{ x: number; y: number }>;
+  /** 拖动过程中的最新目标（节点最新位置 / 连线最新点集，供结束时 commit 用） */
+  last?: { x: number; y: number; points?: Array<{ x: number; y: number }> };
+}
+
+/** 当前拖动目标（null = 未在拖动） */
+const dragTarget = ref<DragTarget | null>(null);
+/** 是否发生了实际位移（用于抑制拖动结束后的 click 事件） */
+let dragMoved = false;
+
+/** 屏幕客户端坐标 → 世界坐标（viewBox 换算：viewBox 即世界坐标系 1:1 映射） */
+function clientToWorld(clientX: number, clientY: number): { x: number; y: number } {
+  const svg = svgEl.value;
+  if (!svg) return { x: 0, y: 0 };
+  const rect = svg.getBoundingClientRect();
+  const vb = (props.viewBox ?? "").split(/\s+/).map(Number);
+  if (vb.length !== 4 || rect.width === 0 || rect.height === 0) return { x: 0, y: 0 };
+  const [minX, minY, w, h] = vb;
+  return {
+    x: minX + ((clientX - rect.left) / rect.width) * w,
+    y: minY + ((clientY - rect.top) / rect.height) * h
+  };
+}
+
+/** T52 节点拖拽开始（仅编辑态）：记录起始客户端坐标与节点当前世界坐标（保留抓取偏移） */
+function onNodeDown(nodeId: string, e: PointerEvent) {
+  if (!props.editMode) return;
+  // 编辑态节点拖动：阻止冒泡（避免触发父级画布平移），但不 preventDefault（否则会吞掉 click，
+  // 影响编辑态下的节点点击交互：气泡/类图高亮）。文本选择由 CSS user-select:none 禁止。
+  e.stopPropagation();
+  dragMoved = false;
+  const node = renderNodes.value.find((n) => n.nodeId === nodeId);
+  const world = clientToWorld(e.clientX, e.clientY);
+  dragTarget.value = {
+    kind: "node",
+    targetId: nodeId,
+    pointerId: e.pointerId,
+    startClient: { x: e.clientX, y: e.clientY },
+    // 以节点当前渲染位置为起点（含已有覆盖），拖动按指针位移增量移动，保留抓取偏移
+    startPos: node ? { x: node.x, y: node.y } : world
+  };
+}
+
+/* ========== T64 连线线段平移 + 折点新增/删除（draw.io 改造） ========== */
+
+/** 点到线段的最近距离 */
+function distToSegment(p: { x: number; y: number }, a: { x: number; y: number }, b: { x: number; y: number }): number {
+  const dx = b.x - a.x;
+  const dy = b.y - a.y;
+  const len2 = dx * dx + dy * dy;
+  let t = len2 > 0 ? ((p.x - a.x) * dx + (p.y - a.y) * dy) / len2 : 0;
+  t = Math.max(0, Math.min(1, t));
+  const px = a.x + t * dx;
+  const py = a.y + t * dy;
+  return Math.hypot(p.x - px, p.y - py);
+}
+
+/** 命中折线最近线段下标（找不到或距离超阈值返回 -1） */
+function hitSegment(edgeId: string, world: { x: number; y: number }, maxDist = 20): number {
+  const edge = renderEdges.value.find((ed) => ed.edgeId === edgeId);
+  const pts = edge?.points ?? [];
+  if (pts.length < 2) return -1;
+  let best = -1;
+  let bestDist = Infinity;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const d = distToSegment(world, pts[i], pts[i + 1]);
+    if (d < bestDist) {
+      bestDist = d;
+      best = i;
+    }
+  }
+  return bestDist <= maxDist ? best : -1;
+}
+
+/** T64/T75 折点/端点拖动开始（仅编辑态）：按下连线时先命中折点（含端点）→ 拖动该折点；否则命中线段 → 拖动线段 */
+function onEdgeDown(edgeId: string, e: PointerEvent) {
+  if (!props.editMode) return;
+  const world = clientToWorld(e.clientX, e.clientY);
+  const edge = renderEdges.value.find((ed) => ed.edgeId === edgeId);
+  const pts = edge?.points ?? [];
+  if (pts.length < 2) return;
+  // 优先命中已有折点/端点（半径阈值）：拖动该点（T75 端点跨边吸附在其拖动分支处理）
+  const hitIndex = pts.findIndex((p) => dist(world, p) <= 10);
+  if (hitIndex !== -1) {
+    e.stopPropagation();
+    dragMoved = false;
+    dragTarget.value = {
+      kind: "edgePoint",
+      targetId: edgeId,
+      index: hitIndex,
+      pointerId: e.pointerId,
+      startClient: { x: e.clientX, y: e.clientY },
+      startPos: { x: pts[hitIndex].x, y: pts[hitIndex].y },
+      points: pts.map((p) => ({ ...p }))
+    };
+    return;
+  }
+  const seg = hitSegment(edgeId, world);
+  if (seg === -1) return;
+  const horizontal = Math.abs(pts[seg].y - pts[seg + 1].y) < 0.5;
+  e.stopPropagation();
+  dragMoved = false;
+  dragTarget.value = {
+    kind: "edgeSegment",
+    targetId: edgeId,
+    segIndex: seg,
+    segHorizontal: horizontal,
+    pointerId: e.pointerId,
+    startClient: { x: e.clientX, y: e.clientY },
+    startPos: { x: world.x, y: world.y },
+    points: pts.map((p) => ({ ...p }))
+  };
+}
+
+
+/** T64 双击连线空白段：插入折点；若命中已有折点则改为删除该折点（T64 修复：热区覆盖折点导致删除失效） */
+function onEdgeDblClick(edgeId: string, e: MouseEvent) {
+  if (!props.editMode) return;
+  const world = clientToWorld(e.clientX, e.clientY);
+  const edge = renderEdges.value.find((ed) => ed.edgeId === edgeId);
+  const pts = edge?.points ?? [];
+  if (pts.length < 2) return;
+  // 先检测是否命中已有折点（含端点）：命中则删除该折点（端点锚点由 removeEdgePoint 保护）
+  const hitIndex = pts.findIndex((p) => dist(world, p) <= 10);
+  if (hitIndex !== -1) {
+    removeEdgePoint(edgeId, hitIndex);
+    return;
+  }
+  let best = -1;
+  let bestDist = Infinity;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const d = distToSegment(world, pts[i], pts[i + 1]);
+    if (d < bestDist) {
+      bestDist = d;
+      best = i;
+    }
+  }
+  if (best === -1 || bestDist > 20) return;
+  const a = pts[best];
+  const b = pts[best + 1];
+  const horizontal = Math.abs(a.y - b.y) < 0.5;
+  const dx = b.x - a.x;
+  const dy = b.y - a.y;
+  const len2 = dx * dx + dy * dy;
+  let t = len2 > 0 ? ((world.x - a.x) * dx + (world.y - a.y) * dy) / len2 : 0;
+  t = Math.max(0, Math.min(1, t));
+  // 正交吸附：水平段 y 取段 y，垂直段 x 取段 x
+  const px = horizontal ? a.x + dx * t : a.x;
+  const py = horizontal ? a.y : a.y + dy * t;
+  const np = pts.map((p) => ({ ...p }));
+  np.splice(best + 1, 0, { x: px, y: py });
+  emit("edge-move", edgeId, np, true);
+}
+
+/** T64 删除折点：右键/双击折点触发；端点锚点（首/末）禁止删除；删除后正交化（T68/T80） */
+function removeEdgePoint(edgeId: string, index: number) {
+  if (!props.editMode) return;
+  const edge = renderEdges.value.find((ed) => ed.edgeId === edgeId);
+  const pts = edge?.points ?? [];
+  if (pts.length <= 2) return; // 至少保留两端锚点
+  if (index === 0 || index === pts.length - 1) return; // 端点锚点禁止删除
+  const np = pts.filter((_, i) => i !== index).map((p) => ({ ...p }));
+  emit("edge-move", edgeId, orthogonalizePath(np), true);
+}
+
+/**
+ * 拖动中：位移超过阈值才真正开始拖（捕获指针 + 实时上抛 commit=false）。
+ * 阈值内视为点击，交由 click 事件处理（气泡/高亮等）。
+ */
+function onSvgPointerMove(e: PointerEvent) {
+  const d = dragTarget.value;
+  if (!d) return;
+  const start = clientToWorld(d.startClient.x, d.startClient.y);
+  const world = clientToWorld(e.clientX, e.clientY);
+  const dx = world.x - start.x;
+  const dy = world.y - start.y;
+  const moved = Math.abs(dx) > 1 || Math.abs(dy) > 1;
+  // 首次超过阈值：捕获指针，标记已拖动（此后 click 重定向到 svg，不会误触发节点/连线点击）
+  if (moved && !dragMoved) {
+    dragMoved = true;
+    const pid = d.pointerId ?? e.pointerId;
+    try {
+      svgEl.value?.setPointerCapture(pid);
+    } catch {
+      /* 指针已不在/捕获失败：忽略，仍按位移继续 */
+    }
+  }
+  if (!dragMoved) return;
+  if (d.kind === "node") {
+    const x = d.startPos.x + dx;
+    const y = d.startPos.y + dy;
+    d.last = { x, y };
+    emit("node-move", d.targetId, x, y, false);
+  } else if (d.kind === "edgePoint") {
+    // T75 折点/端点拖动：端点（首/末）吸附到节点四边（跨边），中间折点保持自由
+    const idx = d.index!;
+    const pts = d.points!.map((p) => ({ ...p }));
+    let nx = d.startPos.x + dx;
+    let ny = d.startPos.y + dy;
+    const boxes = endpointBoxes(d.targetId);
+    if (idx === 0 && boxes) {
+      const s = snapToNodeBorder({ x: nx, y: ny }, boxes.a);
+      nx = s.x;
+      ny = s.y;
+    } else if (idx === pts.length - 1 && boxes) {
+      const s = snapToNodeBorder({ x: nx, y: ny }, boxes.b);
+      nx = s.x;
+      ny = s.y;
+    }
+    pts[idx] = { x: nx, y: ny };
+    const out = mergeCollinear(orthogonalizePath(pts));
+    d.last = { x: 0, y: 0, points: out };
+    emit("edge-move", d.targetId, out, false);
+  } else {
+    // T74/T79/T80 线段平移：端点沿节点四边跨边滑动；相邻平行段重合时共线合并；保证正交
+    const pts = d.points!.map((p) => ({ ...p }));
+    const boxes = endpointBoxes(d.targetId);
+    const segA = d.segIndex!;
+    const segB = d.segIndex! + 1;
+    const isAEnd = segA === 0;
+    const isBEnd = segB === pts.length - 1;
+    if (d.segHorizontal) {
+      // 水平段平移改 y：中间折点跟随；端点经四边吸附（跨边），确保端点不脱离节点边框
+      const ny = (pIdx: number, isEnd: boolean, box?: NodeBox): number => {
+        const base = d.points![pIdx].y;
+        if (isEnd && box) return snapToNodeBorder({ x: pts[pIdx].x, y: base + dy }, box).y;
+        return base + dy;
+      };
+      pts[segA].y = ny(segA, isAEnd, isAEnd ? boxes?.a : undefined);
+      pts[segB].y = ny(segB, isBEnd, isBEnd ? boxes?.b : undefined);
+    } else {
+      // 垂直段平移改 x：同上，端点沿左右/顶底四边吸附
+      const nx = (pIdx: number, isEnd: boolean, box?: NodeBox): number => {
+        const base = d.points![pIdx].x;
+        if (isEnd && box) return snapToNodeBorder({ x: base + dx, y: pts[pIdx].y }, box).x;
+        return base + dx;
+      };
+      pts[segA].x = nx(segA, isAEnd, isAEnd ? boxes?.a : undefined);
+      pts[segB].x = nx(segB, isBEnd, isBEnd ? boxes?.b : undefined);
+    }
+    // T79：相邻平行段重合 → 共线合并去冗余折点；T80：非正交 → 自动补最小折点
+    const out = mergeCollinear(orthogonalizePath(pts));
+    d.last = { x: 0, y: 0, points: out };
+    emit("edge-move", d.targetId, out, false);
+  }
+}
+
+/** 拖动结束：若确有位移则上抛最终结果（commit=true），并释放指针与状态 */
+function onSvgPointerUp() {
+  const d = dragTarget.value;
+  if (!d) return;
+  if (dragMoved) {
+    if (d.kind === "node") {
+      emit("node-move", d.targetId, d.last?.x ?? d.startPos.x, d.last?.y ?? d.startPos.y, true);
+    } else {
+      emit("edge-move", d.targetId, d.last?.points ?? d.points!, true);
+    }
+    const pid = d.pointerId;
+    if (pid !== undefined && svgEl.value?.hasPointerCapture(pid)) {
+      try {
+        svgEl.value.releasePointerCapture(pid);
+      } catch {
+        /* 捕获可能已失效，忽略 */
+      }
+    }
+    // 延迟复位 dragMoved：click 事件在 pointerup 后同步派发，先让
+    // onNodeClickSuppressed/onEdgeClickSuppressed 消费掉「拖动后的残余 click」，
+    // 再复位标志，避免拖尾影响后续的正常点击。
+    setTimeout(() => {
+      dragMoved = false;
+    }, 0);
+  }
+  dragTarget.value = null;
+}
+
+/** 节点点击：若刚拖动过则忽略本次点击（避免拖动结束后误触发气泡/高亮） */
+function onNodeClickSuppressed(nodeId: string) {
+  if (dragMoved) {
+    dragMoved = false;
+    return;
+  }
+  onNodeClick(nodeId);
+}
+
+/** 连线点击：若刚拖动过则忽略本次点击（避免误触发类图高亮） */
+function onEdgeClickSuppressed(edgeId: string) {
+  if (dragMoved) {
+    dragMoved = false;
+    return;
+  }
+  onEdgeClick(edgeId);
+}
+
+/** T56 右键清除节点覆盖（仅编辑态且有覆盖时） */
+function onNodeContextMenu(nodeId: string) {
+  if (!props.editMode || !hasNodeOverride(nodeId)) return;
+  emit("clear-node", nodeId);
+}
+
+/** T56 右键清除连线覆盖；若命中折点（编辑态）则删除该折点（T78：手柄移除后右键折点删除入口） */
+function onEdgeContextMenu(edgeId: string, e?: MouseEvent) {
+  if (!props.editMode) {
+    // 展示态：仅清除覆盖
+    if (hasEdgeOverride(edgeId)) emit("clear-edge", edgeId);
+    return;
+  }
+  // 编辑态：命中折点（含端点）→ 删除；否则清除覆盖
+  const world = e ? clientToWorld(e.clientX, e.clientY) : null;
+  if (world) {
+    const edge = renderEdges.value.find((ed) => ed.edgeId === edgeId);
+    const pts = edge?.points ?? [];
+    const hitIndex = pts.findIndex((p) => dist(world, p) <= 10);
+    if (hitIndex !== -1) {
+      removeEdgePoint(edgeId, hitIndex);
+      return;
+    }
+  }
+  if (hasEdgeOverride(edgeId)) emit("clear-edge", edgeId);
+}
 
 /* ========== 聚合节点 ========== */
 
@@ -468,19 +1085,32 @@ function diamondPath(n: { width: number; height: number }): string {
   return `M ${w / 2} 0 L ${w} ${h / 2} L ${w / 2} ${h} L 0 ${h / 2} Z`;
 }
 
-/** 类节点正文行（属性/方法），按节点高度裁剪 */
-function classBodyLines(n: { nodeId: string; height: number }): string[] {
+/** 类节点正文行（属性/方法），按节点高度裁剪；方法行携带方法名供点击高亮（T70） */
+interface ClassBodyRow {
+  key: string;
+  type: "attribute" | "method";
+  text: string;
+  y: number;
+  methodName?: string;
+}
+
+function classBodyRows(n: { nodeId: string; height: number }): ClassBodyRow[] {
   const node = nodeById.value.get(n.nodeId);
-  const lines: string[] = [];
+  const rows: Array<Omit<ClassBodyRow, "y">> = [];
   for (const a of (node?.attributes as Array<Record<string, unknown>>) ?? []) {
-    lines.push(`${a.name}: ${a.type}`);
+    rows.push({ key: `a-${a.name}`, type: "attribute", text: `${a.name}: ${a.type}` });
   }
   for (const mth of (node?.methods as Array<Record<string, unknown>>) ?? []) {
-    lines.push(`${mth.name}(${((mth.params as Array<Record<string, unknown>>) ?? []).map((p) => p.type).join(", ")})`);
+    rows.push({
+      key: `m-${mth.name}`,
+      type: "method",
+      text: `${mth.name}(${((mth.params as Array<Record<string, unknown>>) ?? []).map((p) => p.type).join(", ")})`,
+      methodName: String(mth.name)
+    });
   }
   // 每行 16px，顶部标题栏 24px
   const max = Math.max(0, Math.floor((n.height - 28) / 16));
-  return lines.slice(0, max);
+  return rows.slice(0, max).map((r, i) => ({ ...r, y: 24 + 16 * (i + 1) }));
 }
 </script>
 
@@ -491,6 +1121,9 @@ function classBodyLines(n: { nodeId: string; height: number }): string[] {
   display: block;
   background: #ffffff;
   border-radius: 8px;
+  /* T67：SVG 内禁止选中文字，避免拖拽时误选中 */
+  user-select: none;
+  -webkit-user-select: none;
 }
 .group-rect {
   fill: #f5f7fa;
@@ -535,9 +1168,23 @@ function classBodyLines(n: { nodeId: string; height: number }): string[] {
   stroke: #909399;
   stroke-width: 1.5;
   stroke-linejoin: round;
+  /* T71：连线 hover 过渡 */
+  transition: stroke 0.15s, stroke-width 0.15s;
 }
-/* 类图点击高亮：相连连线高亮（T41） */
-.edge.is-highlighted polyline {
+/* 类图连线可点击（T49）：仅类图显示手型光标 */
+.edge.is-clickable {
+  cursor: pointer;
+}
+/* T71 可交互处标识：连线移入时描边提亮（所有图类型，展示态亦可交互反馈） */
+.edge:hover polyline:not(.edge-hit) {
+  stroke: #409eff;
+  stroke-width: 2.5;
+}
+.edge {
+  cursor: pointer;
+}
+/* 类图点击高亮：相连连线高亮（T41/T49，热区 polyline 除外避免被描边覆盖） */
+.edge.is-highlighted polyline:not(.edge-hit) {
   stroke: #409eff;
   stroke-width: 3;
   filter: drop-shadow(0 0 4px rgba(64, 158, 255, 0.7));
@@ -549,8 +1196,30 @@ function classBodyLines(n: { nodeId: string; height: number }): string[] {
   stroke: #fff;
   stroke-width: 3px;
 }
+/* 手动覆盖的连线（T54）：高亮路径提示手动调整过 */
+.edge.has-override polyline:not(.edge-hit) {
+  stroke: #b88230;
+  stroke-width: 2;
+}
 .node {
   cursor: default;
+  /* T71：节点 hover 过渡 */
+  transition: filter 0.15s;
+}
+/* T71 可交互处标识：节点移入时边框高亮（展示态亦可交互反馈） */
+.node:hover .node-rect:not(.class-header):not(.aggregate) {
+  stroke: #409eff;
+  stroke-width: 2.5;
+  filter: drop-shadow(0 0 4px rgba(64, 158, 255, 0.35));
+}
+/* 编辑态节点可拖拽（T52） */
+.node.is-editing {
+  cursor: move;
+}
+/* 手动覆盖的节点（T54）：描边加深提示手动调整过 */
+.node.has-override .node-rect:not(.class-header) {
+  stroke: #b88230;
+  stroke-width: 2;
 }
 /* 类图点击高亮：节点边框提亮 + 阴影（T41，会话态，不影响数据） */
 .node.is-highlighted .node-rect:not(.class-header) {
@@ -600,6 +1269,29 @@ function classBodyLines(n: { nodeId: string; height: number }): string[] {
 .class-line {
   font-size: 11px;
   fill: #606266;
+}
+/* T70 方法行热区：透明背景撑满行高，承接点击/hover */
+.method-hit {
+  fill: transparent;
+  stroke: none;
+}
+/* T71 可交互处标识：方法行移入背景高亮 + 手型光标 */
+.class-body-row.is-method {
+  cursor: pointer;
+}
+.class-body-row.is-method:hover .method-hit {
+  fill: rgba(64, 158, 255, 0.12);
+}
+.class-body-row.is-method:hover .class-line {
+  fill: #409eff;
+}
+/* T70 方法行高亮态（点击后）：背景加深 + 文字高亮 */
+.class-body-row.is-method.is-method-highlighted .method-hit {
+  fill: rgba(64, 158, 255, 0.2);
+}
+.class-body-row.is-method.is-method-highlighted .class-line {
+  fill: #409eff;
+  font-weight: 600;
 }
 
 /* 架构图节点类型 */

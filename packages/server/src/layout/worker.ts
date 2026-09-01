@@ -8,7 +8,9 @@
  */
 import { Worker, isMainThread, parentPort } from "node:worker_threads";
 import type { Diagram, LayoutDiagram } from "@fourstage/shared";
-import { computeLayout, type LayoutOptions } from "./engine.ts";
+import { computeLayout, type LayoutOptions, type LayoutOverrides } from "./engine.ts";
+
+export type { LayoutOverrides };
 
 /* ---------- Worker 侧：布局执行器 ---------- */
 if (!isMainThread && parentPort) {

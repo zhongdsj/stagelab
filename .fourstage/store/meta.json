@@ -1,9 +1,9 @@
 {
   "projectId": "34a29cd8-790c-43c4-8ce9-e2c25573cfa0",
   "projectName": "fourstage",
-  "currentStage": "s3",
+  "currentStage": "s2",
   "createdAt": 1787984152121,
-  "updatedAt": 1788170268772,
+  "updatedAt": 1788230803247,
   "stage1": {
     "docId": "",
     "diagramIds": []
@@ -25,7 +25,11 @@
       "6a437b63-f03a-4567-9198-ceccd1d734cc",
       "de14234b-8eae-4371-ab0d-d3c6696a6c37",
       "0f047e44-d20a-4737-9d99-0dea6eb7b6ea",
-      "bbe72970-1124-4675-ab51-1500a8d4aeb5"
+      "bbe72970-1124-4675-ab51-1500a8d4aeb5",
+      "b378cfec-8607-4705-95b8-b5ea0ae29db0",
+      "40822db0-0c50-45b9-9377-164c8b62affa",
+      "196b2e24-dc60-4f98-80c4-fddaf158ace5",
+      "e7e0ac7a-f714-4ea3-8b56-d20210b8d5d7"
     ],
     "diagramIds": []
   },

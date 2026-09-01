@@ -1,0 +1,8 @@
+{
+  "docId": "dev-doc-diagram-freeform",
+  "title": "附录：updateEdge 字段合并修复（防坐标丢失）",
+  "docType": "开发文档",
+  "summary": "## updateEdge 字段合并修复（变更记录）\n\n### 问题\n- MCP updateEdg",
+  "createdAt": 1788226512308,
+  "updatedAt": 1788232784932
+}

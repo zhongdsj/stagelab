@@ -1,0 +1,14 @@
+{
+  "taskId": "7c62575d-e630-4ccd-9bbf-571a1b47fa08",
+  "requirementId": "40822db0-0c50-45b9-9377-164c8b62affa",
+  "title": "T64 前端：连线线段平移 + 折点增删",
+  "description": "编辑态折线线段横向/纵向平移改形（保持正交、相邻线段自适应伸缩，端点锚点段贴附节点）；双击折线空白段插入新折点（正交展开）；右键/双击折点删除并合并相邻段（端点锚点禁止删除）；结束后 saveGeometry 落库。",
+  "status": "done",
+  "acceptanceCriteria": "1) 折线中任一线段可横向/纵向平移且保持正交；2) 双击空白段插入折点并正交展开；3) 折点可删除并合并相邻段；4) 端点锚点不可删除且始终贴附节点；5) 变更落库刷新保持。",
+  "files": [
+    "packages/web/src/components/diagram/DiagramSvg.vue"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788227067671,
+  "updatedAt": 1788227739866
+}

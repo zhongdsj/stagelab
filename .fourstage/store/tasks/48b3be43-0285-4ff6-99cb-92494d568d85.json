@@ -1,0 +1,12 @@
+{
+  "taskId": "48b3be43-0285-4ff6-99cb-92494d568d85",
+  "requirementId": "e7e0ac7a-f714-4ea3-8b56-d20210b8d5d7",
+  "title": "T77 构建验证与联调",
+  "description": "全量 build/typecheck；回归验证：横平竖直约束、端点跨边滑动、端点贴边约束；三种图类型无回归。",
+  "status": "done",
+  "acceptanceCriteria": "1) 构建与类型检查通过；2) 连线在任何操作下横平竖直（无斜线断言）；3) 端点跨边滑动、手动端点贴边约束验收达成；4) 既有功能（拖拽/线段平移/折点增删/高亮/气泡/折叠）回归正常。",
+  "files": [],
+  "changeType": "修改",
+  "createdAt": 1788230817455,
+  "updatedAt": 1788231729994
+}

@@ -1,0 +1,15 @@
+{
+  "taskId": "baf7076a-defd-420d-b483-dc2d32b23df9",
+  "requirementId": "40822db0-0c50-45b9-9377-164c8b62affa",
+  "title": "T58 共享层：Diagram 数据模型扩展 geometry/points",
+  "description": "在 types.ts 中为 ArchitectureNode/ClassNode/FlowNode 新增可选 geometry(x/y/width/height)，Edge 新增可选 points[{x,y}]；同步扩展 schemas.ts 对应 NodeSchema（.strict() 需显式声明新字段）与 EdgeSchema，保证旧图无几何字段仍通过校验。",
+  "status": "done",
+  "acceptanceCriteria": "1) types 与 schemas 同步新增 geometry/points 可选字段；2) 旧图（无 geometry/points）仍通过 DiagramSchema 校验；3) server updateDiagramElements 对含 geometry 的 updateNode / 含 points 的 updateEdge patch 校验通过；4) 类型与构建通过。",
+  "files": [
+    "packages/shared/src/types.ts",
+    "packages/shared/src/schemas.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788227059981,
+  "updatedAt": 1788227737538
+}

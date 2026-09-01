@@ -1,0 +1,12 @@
+{
+  "taskId": "46c358d9-86f1-4b01-8868-9b69b5c4123d",
+  "requirementId": "196b2e24-dc60-4f98-80c4-fddaf158ace5",
+  "title": "T72 构建验证与联调",
+  "description": "全量 build/typecheck；回归验证：拖拽不选文字、正交重布线、节点气泡、方法高亮、hover 样式；三种图类型无回归。",
+  "status": "done",
+  "acceptanceCriteria": "1) 构建与类型检查通过；2) 优化验收标准全部达成；3) 既有功能（拖拽/线段平移/折点增删/气泡/高亮/折叠）回归正常。",
+  "files": [],
+  "changeType": "修改",
+  "createdAt": 1788228745700,
+  "updatedAt": 1788229051622
+}

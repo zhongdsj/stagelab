@@ -1,0 +1,19 @@
+{
+  "requirementId": "40822db0-0c50-45b9-9377-164c8b62affa",
+  "title": "图渲染改造：自由画布 + 坐标固化为数据（draw.io 风格）",
+  "description": "阶段1开发文档 dev-doc-diagram-freeform。图渲染改为自由画布：节点坐标/连线折点持久化为图数据；旧图首次打开自动补齐缺省默认坐标并固化，行为与新图一致；支持节点整体拖拽、连线线段横向/纵向平移、折点新增/删除；暂不支持节点/连线创建删除。",
+  "branchName": "feature/diagram-freeform",
+  "status": "done",
+  "taskIds": [
+    "baf7076a-defd-420d-b483-dc2d32b23df9",
+    "4071aaa7-fd9e-4577-a1a2-d5c6bb39edf0",
+    "f714365e-6dc0-469f-bd7f-114d85ee47bb",
+    "0d317638-67c0-4ed2-aa7d-9e01c96804d0",
+    "1d18d92e-a318-4d6c-9255-5fcc51332cc8",
+    "556bb908-bfbd-4b46-9db6-2f0f374ff9a1",
+    "7c62575d-e630-4ccd-9bbf-571a1b47fa08",
+    "6aa5bb95-41cc-4b70-a4ca-e4375bd76380"
+  ],
+  "createdAt": 1788227053157,
+  "updatedAt": 1788228534767
+}

@@ -3,10 +3,30 @@
     <!-- 折叠状态提示 + 视图控制 -->
     <div class="diagram-toolbar">
       <span class="diagram-title">{{ title }}</span>
-      <button class="btn-sm" type="button" @click="resetView">⟳ 重置视图</button>
+      <div class="toolbar-actions">
+        <button
+          class="btn-sm"
+          :class="{ primary: manual.editMode.value }"
+          type="button"
+          @click="toggleEditMode"
+        >
+          ✏ 手动调整{{ manual.editMode.value ? "（编辑中）" : "" }}
+        </button>
+        <!-- 编辑态：撤销/重做 -->
+        <template v-if="manual.editMode.value">
+          <button class="btn-sm" type="button" :disabled="!manual.canUndo.value" @click="onUndo">↩ 撤销</button>
+          <button class="btn-sm" type="button" :disabled="!manual.canRedo.value" @click="onRedo">↪ 重做</button>
+        </template>
+        <button class="btn-sm" type="button" @click="resetView">⟳ 重置视图</button>
+      </div>
     </div>
 
-    <p v-if="loading" class="hint">布局计算中…</p>
+    <!-- 编辑态使用提示（draw.io 交互） -->
+    <p v-if="manual.editMode.value" class="edit-hint">
+      拖拽节点或连线调整位置；双击连线空白处新增折点，右键/双击折点删除折点。
+    </p>
+
+    <p v-if="loading" class="hint">加载中…</p>
     <p v-else-if="error" class="hint error">{{ error }}</p>
 
     <!-- 画布容器：固定尺寸（Excalidraw 相机方式），SVG 撑满容器，viewBox 由相机驱动 -->
@@ -26,9 +46,13 @@
         :diagram="diagram"
         :view-box="viewBox"
         :collapsed-modules="collapsedModules"
+        :edit-mode="manual.editMode.value"
+        :overrides="manual.overrides"
         @toggle-collapse="toggleCollapse"
         @node-click="onNodeClick"
         @node-hover="onNodeHover"
+        @node-move="onNodeMove"
+        @edge-move="onEdgeMove"
       />
 
       <!-- 架构层节点点击：关联图气泡按钮（T39，屏幕坐标跟随相机） -->
@@ -69,8 +93,17 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import DiagramSvg from "./DiagramSvg.vue";
-import { getDiagram, getLayout, ApiError } from "../../api/index";
-import type { Diagram, LayoutDiagram } from "@fourstage/shared";
+import { createManualEdit, DEFAULT_NODE_SIZE } from "./useManualEdit";
+import {
+  getDiagram,
+  getLayout,
+  saveGeometry,
+  ApiError,
+  type GeometrySave,
+  type LayoutResponse
+} from "../../api/index";
+import type { Diagram, NodeGeometry } from "@fourstage/shared";
+import { snapToNodeBorder, orthogonalPath, type NodeBox } from "./useEdgeGeometry";
 
 const props = defineProps<{
   projectId: string;
@@ -83,7 +116,72 @@ const router = useRouter();
 const loading = ref(false);
 const error = ref("");
 const diagram = ref<Diagram | null>(null);
-const layout = ref<LayoutDiagram | null>(null);
+
+/* ========== 画布坐标状态（draw.io 改造，T61/T63） ========== */
+const manual = createManualEdit();
+
+/** 编辑态/展示态切换 */
+function toggleEditMode() {
+  manual.editMode.value = !manual.editMode.value;
+  // 切换编辑态时收起交互气泡，避免遮挡手柄
+  bubble.value = null;
+  tooltip.value = null;
+}
+
+/** 保存当前画布坐标到服务端（拖拽结束/撤销重做后调用；失败静默，会话内坐标仍生效） */
+async function persist() {
+  try {
+    await saveGeometry(props.projectId, props.diagramId, manual.collectSavePayload());
+  } catch {
+    /* 保存失败静默：本次会话坐标仍生效，下次拖拽/刷新会重新同步 */
+  }
+}
+
+/** 节点拖动后：关联连线整体重布线（T76，端点严格贴节点四边，用 T73 工具生成正交折线） */
+function recomputeEdgeAnchors(nodeId: string) {
+  const g = manual.nodes[nodeId];
+  const d = diagram.value;
+  if (!g || !d) return;
+  for (const e of d.edges) {
+    if (e.from !== nodeId && e.to !== nodeId) continue;
+    const otherId = e.from === nodeId ? e.to : e.from;
+    const og = manual.nodes[otherId];
+    if (!og) continue;
+    const a = (e.from === nodeId ? g : og) as NodeBox;
+    const b = (e.from === nodeId ? og : g) as NodeBox;
+    // 端点吸附到各自节点边框上朝对方的一边（跨边吸附由手动调整控制）
+    const aC = { x: b.x + b.width / 2, y: b.y + b.height / 2 };
+    const bC = { x: a.x + a.width / 2, y: a.y + a.height / 2 };
+    const fromPt = snapToNodeBorder(aC, a);
+    const toPt = snapToNodeBorder(bC, b);
+    manual.edges[e.edgeId] = { points: orthogonalPath(fromPt, toPt) };
+  }
+}
+
+/** 节点拖拽：拖动中实时更新坐标并重算关联连线端点，结束后保存 */
+function onNodeMove(nodeId: string, x: number, y: number, commit: boolean) {
+  manual.setNode(nodeId, x, y, commit);
+  recomputeEdgeAnchors(nodeId);
+  if (commit) persist();
+}
+
+/** 连线改形（手柄/线段平移/折点增删）：同上 */
+function onEdgeMove(edgeId: string, points: Array<{ x: number; y: number }>, commit: boolean) {
+  manual.setEdge(edgeId, points, commit);
+  if (commit) persist();
+}
+
+/** 撤销：变更后保存 */
+function onUndo() {
+  manual.undo();
+  persist();
+}
+
+/** 重做：变更后保存 */
+function onRedo() {
+  manual.redo();
+  persist();
+}
 
 /* ========== Excalidraw 相机（视口）坐标系：SVG 容器尺寸固定，靠相机变换模拟无限画布 ========== */
 const paneEl = ref<HTMLElement | null>(null);
@@ -120,7 +218,6 @@ function fitView() {
   if (!pane || !l || l.width <= 0 || l.height <= 0) return;
   const pw = pane.clientWidth;
   const ph = pane.clientHeight;
-  // 整图完整可见优先：不设下限（大图可缩小到任意比例），上限 1（不放大）
   const s = clamp(Math.min(pw / l.width, ph / l.height, 1), 0.01, 1);
   scale.value = s;
   offset.value = {
@@ -142,20 +239,18 @@ let startOffset = { x: 0, y: 0 };
 function onPointerDown(e: PointerEvent) {
   if (e.button !== 0) return;
   const target = e.target as Element | null;
-  // 命中节点整体/折叠按钮/交互气泡：不启动拖拽，把点击权交给浏览器（节点文字可选中）
   if (
     target &&
     (target.closest?.(".node") ||
+      target.closest?.(".edge") ||
       target.closest?.(".collapse-btn") ||
       target.closest?.(".node-bubble") ||
       target.closest?.(".node-tooltip"))
   ) {
     return;
   }
-  // 空白处拖拽平移时收起交互气泡
   bubble.value = null;
   tooltip.value = null;
-  // 空白处：阻止浏览器原生文本选择后再拖拽平移（否则会选中画布上的文字）
   e.preventDefault();
   dragging = true;
   startX = e.clientX;
@@ -202,7 +297,6 @@ function clamp(v: number, min: number, max: number): number {
 }
 
 /* ========== 单模块本地折叠（会话态，不触发重布局） ========== */
-/** 已折叠模块 groupId 列表（会话态，刷新重置） */
 const collapsedModules = ref<string[]>([]);
 
 function toggleCollapse(groupId: string) {
@@ -215,7 +309,6 @@ function toggleCollapse(groupId: string) {
 
 /* ========== 架构层节点交互：点击关联图气泡（T39）+ 悬停描述气泡（T40） ========== */
 
-/** 关联图信息（payload.linkedDiagrams 元素） */
 interface LinkedDiagram {
   diagramId: string;
   label?: string;
@@ -246,7 +339,7 @@ function nodeScreenCenter(nodeId: string): { x: number; y: number } {
 
 /** T39：架构节点点击 → 检测 payload.linkedDiagrams，弹出关联图气泡（无关联则提示） */
 function onNodeClick(nodeId: string) {
-  tooltip.value = null; // 点击时收起悬停气泡
+  tooltip.value = null;
   const node = semanticNode(nodeId);
   const payload = (node?.payload ?? {}) as Record<string, unknown>;
   const raw = payload.linkedDiagrams;
@@ -278,35 +371,162 @@ function gotoDiagram(diagramId: string) {
   router.push(`/projects/${props.projectId}/diagrams/${diagramId}`);
 }
 
-/* ========== 数据加载 ========== */
+/* ========== 画布布局：从坐标数据实时构建（draw.io 改造，T62） ========== */
+/**
+ * 统一取数：节点坐标/尺寸来自 manual.nodes（geometry 固化 + 拖拽实时更新），
+ * 连线折点来自 manual.edges；无坐标的节点/连线用兜底值，保证渲染不报错。
+ */
+const layout = computed<LayoutResponse | null>(() => {
+  const d = diagram.value;
+  if (!d) return null;
+
+  const nodePos = d.nodes.map((n) => {
+    const g = manual.nodes[n.nodeId];
+    return g
+      ? { nodeId: n.nodeId, x: g.x, y: g.y, width: g.width, height: g.height }
+      : { nodeId: n.nodeId, x: 0, y: 0, width: DEFAULT_NODE_SIZE.width, height: DEFAULT_NODE_SIZE.height };
+  });
+
+  const edgePos = d.edges.map((e) => {
+    const pts = manual.edges[e.edgeId]?.points ?? e.points;
+    if (pts && pts.length >= 2) return { edgeId: e.edgeId, points: pts };
+    // 兜底：两端节点中心直连
+    const from = nodePos.find((nd) => nd.nodeId === e.from);
+    const to = nodePos.find((nd) => nd.nodeId === e.to);
+    const p0 = from ? { x: from.x + from.width / 2, y: from.y + from.height / 2 } : { x: 0, y: 0 };
+    const p1 = to ? { x: to.x + to.width / 2, y: to.y + to.height / 2 } : { x: 100, y: 100 };
+    return { edgeId: e.edgeId, points: [p0, p1] };
+  });
+
+  // 分组（模块/泳道）包围盒：由成员节点几何动态计算
+  const groupPos = d.groups.map((g) => {
+    const boxes = g.nodeIds
+      .map((id) => nodePos.find((nd) => nd.nodeId === id))
+      .filter(
+        (b): b is { nodeId: string; x: number; y: number; width: number; height: number } =>
+          !!b && b.width > 0 && b.height > 0
+      );
+    if (boxes.length === 0) return { groupId: g.groupId, x: 0, y: 0, width: 0, height: 0 };
+    const minX = Math.min(...boxes.map((b) => b.x));
+    const minY = Math.min(...boxes.map((b) => b.y));
+    const maxX = Math.max(...boxes.map((b) => b.x + b.width));
+    const maxY = Math.max(...boxes.map((b) => b.y + b.height));
+    const pad = 10;
+    return {
+      groupId: g.groupId,
+      x: minX - pad,
+      y: minY - pad,
+      width: maxX - minX + pad * 2,
+      height: maxY - minY + pad * 2
+    };
+  });
+
+  // 整体内容包围盒（fitView 用）
+  let minX = 0;
+  let minY = 0;
+  let maxX = 0;
+  let maxY = 0;
+  if (nodePos.length > 0) {
+    minX = Math.min(...nodePos.map((b) => b.x));
+    minY = Math.min(...nodePos.map((b) => b.y));
+    maxX = Math.max(...nodePos.map((b) => b.x + b.width));
+    maxY = Math.max(...nodePos.map((b) => b.y + b.height));
+  }
+
+  return {
+    diagramId: d.diagramId,
+    width: Math.max(maxX - minX, 200) + 40,
+    height: Math.max(maxY - minY, 200) + 40,
+    nodes: nodePos,
+    edges: edgePos,
+    groups: groupPos,
+    params: { algorithm: "freeform", direction: "down", edgeRouting: "orthogonal" }
+  };
+});
+
+/* ========== 数据加载（draw.io 改造：首次补默认值 + 固化，T61） ========== */
+
+/** 检测图是否缺坐标：任一节点无 geometry 或任一连线无 points */
+function hasMissingGeometry(d: Diagram): boolean {
+  return (
+    d.nodes.some((n) => !(n as { geometry?: unknown }).geometry) ||
+    d.edges.some((e) => !e.points || e.points.length < 2)
+  );
+}
+
+/** 用布局结果补齐图坐标（节点 geometry + 连线 points），返回新图对象（不落库） */
+function enrichWithLayout(d: Diagram, l: LayoutResponse): Diagram {
+  const layoutNodes = new Map(l.nodes.map((n) => [n.nodeId, n]));
+  const layoutEdges = new Map(l.edges.map((e) => [e.edgeId, e.points]));
+  return {
+    ...d,
+    nodes: d.nodes.map((n) => {
+      const ln = layoutNodes.get(n.nodeId);
+      return ln
+        ? { ...n, geometry: { x: ln.x, y: ln.y, width: ln.width, height: ln.height } }
+        : n;
+    }),
+    edges: d.edges.map((e) => {
+      const pts = layoutEdges.get(e.edgeId);
+      return pts ? { ...e, points: pts } : e;
+    })
+  };
+}
+
+/** 从图数据收集坐标载荷（用于首次固化落库） */
+function toGeometryPayload(d: Diagram): GeometrySave {
+  return {
+    nodes: (d.nodes as Array<{ nodeId: string; geometry?: NodeGeometry }>)
+      .filter((n) => n.geometry)
+      .map((n) => ({ nodeId: n.nodeId, ...(n.geometry as NodeGeometry) })),
+    edges: d.edges
+      .filter((e) => e.points && e.points.length >= 2)
+      .map((e) => ({ edgeId: e.edgeId, points: e.points as Array<{ x: number; y: number }> }))
+  };
+}
+
+/**
+ * 加载图数据：旧图（无坐标）首次打开自动补齐缺省默认坐标并固化，
+ * 固化后与新图行为完全一致（统一走 geometry/points 渲染）。
+ */
 async function load() {
   loading.value = true;
   error.value = "";
   try {
-    diagram.value = await getDiagram(props.projectId, props.diagramId);
-    // 布局始终返回全量坐标；折叠改为本地会话态，不再传折叠参数
-    layout.value = await getLayout(props.projectId, props.diagramId);
+    const d = await getDiagram(props.projectId, props.diagramId);
+    if (hasMissingGeometry(d)) {
+      // 缺坐标 → 引擎生成默认坐标 → 固化到服务端
+      const l = await getLayout(props.projectId, props.diagramId);
+      const enriched = enrichWithLayout(d, l);
+      diagram.value = enriched;
+      try {
+        await saveGeometry(props.projectId, props.diagramId, toGeometryPayload(enriched));
+      } catch {
+        /* 固化失败不阻塞展示：下次打开再补写 */
+      }
+    } else {
+      diagram.value = d;
+    }
+    manual.load(diagram.value);
   } catch (e) {
     error.value = e instanceof ApiError ? e.message : "加载图失败";
   } finally {
     loading.value = false;
-    // 等画布容器渲染完成后适配视图（整图完整可见）
     await nextTick();
     fitView();
-    // 首帧兜底：某些情况下 nextTick 时容器尚未有最终尺寸
     requestAnimationFrame(fitView);
   }
 }
 
 onMounted(() => {
   load();
-  // 容器尺寸变化（窗口/侧栏折叠）后自动重适配
   window.addEventListener("resize", onWindowResize);
 });
 watch(() => props.diagramId, () => {
   collapsedModules.value = [];
   bubble.value = null;
   tooltip.value = null;
+  manual.resetEdit();
   resetView();
   load();
 });
@@ -339,6 +559,32 @@ function onWindowResize() {
   font-weight: 600;
   color: #303133;
 }
+.toolbar-actions {
+  display: flex;
+  gap: 8px;
+}
+/* 编辑态使用提示 */
+.edit-hint {
+  margin: 0 0 10px;
+  font-size: 12px;
+  color: #b88230;
+  background: #fdf6ec;
+  border: 1px solid #f5dab1;
+  border-radius: 4px;
+  padding: 6px 10px;
+}
+.btn-sm:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.btn-sm.primary {
+  background: #409eff;
+  border-color: #409eff;
+  color: #fff;
+}
+.btn-sm.primary:hover {
+  background: #66b1ff;
+}
 .btn-sm {
   padding: 4px 10px;
   font-size: 12px;
@@ -363,6 +609,9 @@ function onWindowResize() {
   border-radius: 6px;
   cursor: grab;
   touch-action: none;
+  /* T67：画布内禁止选中文字，避免拖拽连线/节点时误选中 */
+  user-select: none;
+  -webkit-user-select: none;
 }
 .canvas-pane.grabbing {
   cursor: grabbing;

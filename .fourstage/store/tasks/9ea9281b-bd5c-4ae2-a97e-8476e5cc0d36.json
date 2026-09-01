@@ -1,0 +1,15 @@
+{
+  "taskId": "9ea9281b-bd5c-4ae2-a97e-8476e5cc0d36",
+  "requirementId": "b378cfec-8607-4705-95b8-b5ea0ae29db0",
+  "title": "T56 前端：冲突协调与清除",
+  "description": "冲突协调与清除：\n- 图重算/切图/折叠后：nodeOverrides 按节点保留（节点仍存在则继续生效）；edgeOverrides 端点对应节点被折叠/删除时回退引擎路径\n- 工具栏「清除手动调整」按钮：清空全部覆盖并恢复引擎布局\n- 编辑态/展示态切换不丢失覆盖",
+  "status": "done",
+  "acceptanceCriteria": "重算布局后有效覆盖继续生效；折叠/删除相关节点时对应边回退引擎路径；清除按钮一键恢复；切换编辑态覆盖保留",
+  "files": [
+    "packages/web/src/components/diagram/DiagramView.vue",
+    "packages/web/src/components/diagram/DiagramSvg.vue"
+  ],
+  "changeType": "新增",
+  "createdAt": 1788187932399,
+  "updatedAt": 1788189378707
+}

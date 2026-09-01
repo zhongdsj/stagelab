@@ -1,0 +1,7 @@
+{
+  "fragmentId": "dev-doc-diagram-freeform-f5",
+  "docId": "dev-doc-diagram-freeform",
+  "order": 5,
+  "title": "附录：MCP 读接口坐标剔除（业务/布局分离落地）",
+  "content": "## MCP 读接口坐标剔除（变更记录）\n\n### 背景\n- 坐标固化后 geometry/points 回流进业务 Diagram，MCP 读接口（get_diagram_partial / get_diagram_group）原样返回坐标，泄漏视觉数据、浪费 token\n- 原设计（diagram.ts 头注「MCP 层永不返回布局坐标」）与实现脱节\n\n### 改动\n- 仅在 MCP 工具层（packages/server/src/mcp/tools/diagram.ts）新增 stripVisual()：读取返回前剔除节点 geometry 与连线 points\n- 服务层与存储保持完整数据；HTTP 接口（getDiagramGroup 共用）与前端 LayoutDiagram 渲染不受影响\n\n### 验收\n- MCP 读接口返回纯语义（无 geometry/points）\n- 前端渲染/HTTP 行为不变\n"
+}

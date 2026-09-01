@@ -41,6 +41,27 @@ const DiagramPatchSchema = z.union([
   z.object({ action: z.literal("removeGroup"), groupId: z.string().min(1) })
 ]);
 
+/**
+ * MCP 读侧语义视图：剔除布局坐标（节点 geometry / 连线 points）。
+ * 业务/布局分离：坐标仅由前端 HTTP（LayoutDiagram）消费，MCP 只返回纯语义。
+ * 仅 MCP 读接口调用，存储与 HTTP 层保持完整数据，不影响前端渲染。
+ */
+function stripVisual<T extends { nodes?: unknown[]; edges?: unknown[] }>(data: T): T {
+  return {
+    ...data,
+    nodes: data.nodes?.map((n) => {
+      const copy = { ...(n as Record<string, unknown>) };
+      delete copy.geometry;
+      return copy;
+    }),
+    edges: data.edges?.map((e) => {
+      const copy = { ...(e as Record<string, unknown>) };
+      delete copy.points;
+      return copy;
+    })
+  } as T;
+}
+
 /** 注册图元操作类工具 */
 export function registerDiagramTools(server: McpServer): void {
   server.registerTool(
@@ -93,11 +114,13 @@ export function registerDiagramTools(server: McpServer): void {
     async (args) =>
       safeCall(async () => {
         const ws = await getWorkspace();
-        return getDiagramPartial(ws, args.diagramId, {
+        const raw = await getDiagramPartial(ws, args.diagramId, {
           nodeIds: args.nodeIds,
           edgeIds: args.edgeIds,
           groupIds: args.groupIds
         });
+        // 剔除坐标（geometry/points）：MCP 读侧只返回语义，坐标走 HTTP
+        return stripVisual(raw);
       })
   );
 
@@ -178,7 +201,8 @@ export function registerDiagramTools(server: McpServer): void {
     async (args) =>
       safeCall(async () => {
         const ws = await getWorkspace();
-        return getDiagramGroup(ws, args.diagramId, args.groupId);
+        // 剔除坐标（geometry/points）：MCP 读侧只返回语义，坐标走 HTTP
+        return stripVisual(await getDiagramGroup(ws, args.diagramId, args.groupId));
       })
   );
 

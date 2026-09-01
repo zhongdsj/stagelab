@@ -3,7 +3,7 @@
   "requirementId": "de14234b-8eae-4371-ab0d-d3c6696a6c37",
   "title": "T47 布局间距上调：减少连线重叠",
   "description": "## 任务描述\n\n服务端布局参数调整（减少连线重叠）：\n- params.ts 增大 nodeNodeSpacing / layerSpacing（架构/类/流程分别合理上调）\n- 必要时同步放大 engine.ts 中 CELL_PADDING / COL_GAP / ROW_GAP，给跨单元格/跨模块连线留出空间\n- 连线路由通道间距（channelCounter 槽位）适当拉开\n- 不改变业务语义数据，仅影响布局输出\n\n## 涉及文件\n- packages/server/src/layout/params.ts（修改）\n- packages/server/src/layout/engine.ts（修改，如需要）\n\n## 变更类型\n修改\n\n## 验收标准\n1. 三类图布局 spacing 上调，连线重叠减少\n2. 布局输出节点/连线坐标仍正确，无负坐标越界\n3. 回归：折叠/聚焦布局正常",
-  "status": "pending",
+  "status": "done",
   "acceptanceCriteria": "三类图布局间距增大，连线重叠明显减少，布局输出仍正确无越界",
   "files": [
     "packages/server/src/layout/params.ts",
@@ -11,5 +11,5 @@
   ],
   "changeType": "修改",
   "createdAt": 1788168489909,
-  "updatedAt": 1788169838799
+  "updatedAt": 1788170689353
 }

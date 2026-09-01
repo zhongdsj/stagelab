@@ -1,0 +1,15 @@
+{
+  "taskId": "c31e5afb-7333-4796-808e-f053f5f7aeda",
+  "requirementId": "196b2e24-dc60-4f98-80c4-fddaf158ace5",
+  "title": "T67 前端：画布与拖拽禁用文字选中",
+  "description": "DiagramView 画布容器 .canvas-pane 增加 user-select: none；DiagramSvg 中 .node/.edge/.class-line/.edge-label 等 SVG 文本元素增加 user-select: none，避免拖拽时误选中文字。",
+  "status": "done",
+  "acceptanceCriteria": "1) 画布容器与节点/连线/文本元素均 user-select: none；2) 拖拽连线/节点时浏览器不选中文字；3) 不影响其他页面文本选择；4) 编译通过。",
+  "files": [
+    "packages/web/src/components/diagram/DiagramView.vue",
+    "packages/web/src/components/diagram/DiagramSvg.vue"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788228738816,
+  "updatedAt": 1788229049458
+}

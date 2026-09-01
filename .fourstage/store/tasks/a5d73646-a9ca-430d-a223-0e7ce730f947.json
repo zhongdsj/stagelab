@@ -1,0 +1,15 @@
+{
+  "taskId": "a5d73646-a9ca-430d-a223-0e7ce730f947",
+  "requirementId": "196b2e24-dc60-4f98-80c4-fddaf158ace5",
+  "title": "T69 前端：节点悬停气泡扩展所有类型",
+  "description": "DiagramSvg onNodeHover 去掉仅 architecture 的限制：所有类型节点（非聚合）有 description 时上抛 node-hover；DiagramView 气泡展示逻辑已通用读取 description，微调即可。",
+  "status": "done",
+  "acceptanceCriteria": "1) 类图节点 hover 显示 description（类职责说明）气泡；2) 架构/流程图原有 hover 气泡回归正常；3) 聚合节点/无 description 节点不显示气泡；4) 编译通过。",
+  "files": [
+    "packages/web/src/components/diagram/DiagramSvg.vue",
+    "packages/web/src/components/diagram/DiagramView.vue"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788228741772,
+  "updatedAt": 1788229050321
+}

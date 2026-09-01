@@ -1,0 +1,15 @@
+{
+  "taskId": "1925e241-f08f-4caf-aa84-b5972b485ce7",
+  "requirementId": "e7e0ac7a-f714-4ea3-8b56-d20210b8d5d7",
+  "title": "T80 前端：非正交路径自动补最小折点",
+  "description": "在 DiagramSvg 渲染层（renderEdges 或 effectiveEdges）增加正交化兜底：当连线路径存在斜线段时，自动插入最小折点展开为正交路径（以两端锚点为基准的 Z 形），保证渲染与保存的连线严格横平竖直；与 DiagramView orthogonalPath 共用同一几何工具。",
+  "status": "done",
+  "acceptanceCriteria": "1) 连线任何状态下相邻点斜线（非水平非垂直）时自动补最小正交折点（Z 形展开）；2) 端点始终在节点四边；3) 补点后无斜线；4) 渲染/保存均输出正交路径；5) 编译通过。",
+  "files": [
+    "packages/web/src/components/diagram/DiagramSvg.vue",
+    "packages/web/src/components/diagram/DiagramView.vue"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788231047133,
+  "updatedAt": 1788231731253
+}
