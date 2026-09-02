@@ -5,18 +5,26 @@
       <span v-if="diagrams.length" class="lib-count">{{ diagrams.length }} 张图</span>
     </div>
 
-    <!-- T24：图 tab 列表（点击跳转独立图查看页面，详情页不再内嵌渲染整图） -->
-    <div v-if="diagrams.length" class="diagram-tabs">
-      <span
-        v-for="d in diagrams"
-        :key="d.diagramId"
-        class="diagram-tab"
-        @click="openDiagram(d.diagramId)"
-      >
-        {{ d.title }}
-        <span class="diagram-type">{{ typeLabel(d.type) }}</span>
-      </span>
-    </div>
+    <!-- T24：图列表按类型分块展示（类图 / 架构图 / 流程图，点击跳转独立图查看页面） -->
+    <template v-if="diagrams.length">
+      <div v-for="group in groups" :key="group.key" class="diagram-block">
+        <div class="block-head">
+          <span class="block-title">{{ group.label }}</span>
+          <span class="block-count">{{ group.items.length }} 张</span>
+        </div>
+        <div class="diagram-tabs">
+          <span
+            v-for="d in group.items"
+            :key="d.diagramId"
+            class="diagram-tab"
+            @click="openDiagram(d.diagramId)"
+          >
+            {{ d.title }}
+            <span class="diagram-type">{{ typeLabel(d.type) }}</span>
+          </span>
+        </div>
+      </div>
+    </template>
     <p v-else class="hint">暂无图，可通过 MCP 工具创建（create_diagram）。</p>
 
     <p v-if="error" class="hint error">{{ error }}</p>
@@ -29,7 +37,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { getProjectIndex, ApiError } from "../../api/index";
 import type { ProjectIndexResult } from "../../api/projects";
@@ -43,6 +51,31 @@ type DiagramItem = ProjectIndexResult["diagrams"][number];
 const diagrams = ref<DiagramItem[]>([]);
 const loading = ref(false);
 const error = ref("");
+
+/** 图类型分组顺序与中文标签 */
+const typeGroups: Array<{ key: string; label: string }> = [
+  { key: "class", label: "类图" },
+  { key: "architecture", label: "架构图" },
+  { key: "flow", label: "流程图" }
+];
+
+/** 按类型分块分组：仅保留有图的块，未知类型归入「其他」块 */
+const groups = computed(() => {
+  const known = typeGroups
+    .map(({ key, label }) => ({
+      key,
+      label,
+      items: diagrams.value.filter((d) => d.type === key)
+    }))
+    .filter((g) => g.items.length);
+  const others = diagrams.value.filter(
+    (d) => !typeGroups.some((t) => t.key === d.type)
+  );
+  if (others.length) {
+    known.push({ key: "other", label: "其他", items: others });
+  }
+  return known;
+});
 
 /** 图类型中文标签 */
 function typeLabel(type: string): string {
@@ -97,12 +130,36 @@ watch(() => props.projectId, load);
   font-size: 12px;
   color: #909399;
 }
+/* 按类型分块的层级展示 */
+.diagram-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed #e4e7ed;
+}
+.diagram-block:last-of-type {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.block-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.block-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #606266;
+}
+.block-count {
+  font-size: 12px;
+  color: #909399;
+}
 .diagram-tabs {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  border-bottom: 1px solid #e4e7ed;
-  padding-bottom: 10px;
 }
 .diagram-tab {
   display: inline-flex;

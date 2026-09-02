@@ -1,0 +1,496 @@
+{
+  "diagramId": "layout-engine-class",
+  "type": "class",
+  "metadata": {
+    "title": "布局引擎 - 类图",
+    "version": 24,
+    "description": "基于 packages/server/src/layout 源码：computeLayout 引擎 + 参数 + Worker 封装"
+  },
+  "nodes": [
+    {
+      "nodeId": "LayoutEngine",
+      "label": "LayoutEngine",
+      "kind": "class",
+      "methods": [
+        {
+          "name": "computeLayout",
+          "params": [
+            {
+              "name": "diagram",
+              "type": "Diagram"
+            },
+            {
+              "name": "options",
+              "type": "LayoutOptions"
+            }
+          ],
+          "returnType": "LayoutDiagram"
+        },
+        {
+          "name": "estimateNodeSize"
+        },
+        {
+          "name": "routeEdge"
+        }
+      ],
+      "description": "布局计算核心：Diagram→LayoutDiagram",
+      "geometry": {
+        "x": 12,
+        "y": 368,
+        "width": 250,
+        "height": 104
+      }
+    },
+    {
+      "nodeId": "LayoutOptions",
+      "label": "LayoutOptions",
+      "kind": "interface",
+      "attributes": [
+        {
+          "name": "focusModuleId",
+          "type": "string"
+        },
+        {
+          "name": "params",
+          "type": "LayoutOverrides"
+        }
+      ],
+      "description": "布局选项（聚焦模块+参数覆盖）",
+      "geometry": {
+        "x": -9.756294194996372,
+        "y": 571.2086830108332,
+        "width": 250,
+        "height": 96
+      }
+    },
+    {
+      "nodeId": "LayoutOverrides",
+      "label": "LayoutOverrides",
+      "kind": "interface",
+      "attributes": [
+        {
+          "name": "nodeNodeSpacing",
+          "type": "number"
+        },
+        {
+          "name": "layerSpacing",
+          "type": "number"
+        },
+        {
+          "name": "edgeChannelSpread",
+          "type": "number"
+        }
+      ],
+      "description": "前端可覆盖布局参数",
+      "geometry": {
+        "x": 12,
+        "y": 802,
+        "width": 250,
+        "height": 104
+      }
+    },
+    {
+      "nodeId": "LayoutParams",
+      "label": "LayoutParams",
+      "kind": "interface",
+      "attributes": [
+        {
+          "name": "algorithm",
+          "type": "string"
+        },
+        {
+          "name": "direction",
+          "type": "DOWN|RIGHT|..."
+        },
+        {
+          "name": "edgeRouting",
+          "type": "ORTHOGONAL|POLYLINE"
+        }
+      ],
+      "description": "三种图类型布局参数预设",
+      "geometry": {
+        "x": 12,
+        "y": 1186,
+        "width": 250,
+        "height": 104
+      }
+    },
+    {
+      "nodeId": "LayoutWorker",
+      "label": "LayoutWorker",
+      "kind": "class",
+      "methods": [
+        {
+          "name": "layoutInWorker",
+          "params": [
+            {
+              "name": "diagram",
+              "type": "Diagram"
+            },
+            {
+              "name": "options",
+              "type": "LayoutOptions"
+            },
+            {
+              "name": "signal",
+              "type": "AbortSignal"
+            }
+          ],
+          "returnType": "Promise<LayoutDiagram>"
+        }
+      ],
+      "description": "Worker Thread 封装（防阻塞主线程）",
+      "geometry": {
+        "x": 12,
+        "y": 1388,
+        "width": 250,
+        "height": 96
+      }
+    },
+    {
+      "nodeId": "ElkEngine",
+      "label": "ElkEngine",
+      "kind": "interface",
+      "methods": [
+        {
+          "name": "layout",
+          "returnType": "ElkNode"
+        }
+      ],
+      "description": "ELK 布局库（@dagrejs/elk 外部依赖）",
+      "geometry": {
+        "x": 12,
+        "y": 1582,
+        "width": 250,
+        "height": 96
+      }
+    },
+    {
+      "nodeId": "VModule",
+      "label": "VModule",
+      "kind": "interface",
+      "attributes": [
+        {
+          "name": "groupId",
+          "type": "string"
+        },
+        {
+          "name": "nodeIds",
+          "type": "Set<string>"
+        }
+      ],
+      "description": "纵向模块（行）内部结构",
+      "geometry": {
+        "x": 419.18552172956055,
+        "y": 598.4040507545786,
+        "width": 250,
+        "height": 96
+      }
+    },
+    {
+      "nodeId": "HLane",
+      "label": "HLane",
+      "kind": "interface",
+      "attributes": [
+        {
+          "name": "groupId",
+          "type": "string"
+        },
+        {
+          "name": "nodeIds",
+          "type": "Set<string>"
+        }
+      ],
+      "description": "横向泳道（列）内部结构",
+      "geometry": {
+        "x": 12,
+        "y": 686,
+        "width": 250,
+        "height": 96
+      }
+    },
+    {
+      "nodeId": "CollapsePlan",
+      "label": "CollapsePlan",
+      "kind": "interface",
+      "attributes": [
+        {
+          "name": "collapsed",
+          "type": "Set<string>"
+        },
+        {
+          "name": "aggregates",
+          "type": "Map<string, NodeMeta>"
+        }
+      ],
+      "description": "折叠计划（聚焦模块→聚合节点）",
+      "geometry": {
+        "x": 360.56439570415364,
+        "y": 802.0335690399809,
+        "width": 250,
+        "height": 96
+      }
+    }
+  ],
+  "edges": [
+    {
+      "edgeId": "e01",
+      "from": "LayoutEngine",
+      "to": "LayoutOptions",
+      "label": "读取",
+      "points": [
+        {
+          "x": 115.24370580500363,
+          "y": 472
+        },
+        {
+          "x": 115.24370580500363,
+          "y": 521.6043415054166
+        },
+        {
+          "x": 137,
+          "y": 521.6043415054166
+        },
+        {
+          "x": 137,
+          "y": 571.2086830108332
+        }
+      ]
+    },
+    {
+      "edgeId": "e02",
+      "from": "LayoutEngine",
+      "to": "LayoutParams",
+      "label": "getLayoutParams",
+      "points": [
+        {
+          "x": 262,
+          "y": 420
+        },
+        {
+          "x": 272,
+          "y": 420
+        },
+        {
+          "x": 272,
+          "y": 170
+        },
+        {
+          "x": -40.90824688457627,
+          "y": 170
+        },
+        {
+          "x": -40.90824688457627,
+          "y": 1238
+        },
+        {
+          "x": 12,
+          "y": 1238
+        }
+      ]
+    },
+    {
+      "edgeId": "e03",
+      "from": "LayoutEngine",
+      "to": "VModule",
+      "label": "构建",
+      "points": [
+        {
+          "x": 262,
+          "y": 472
+        },
+        {
+          "x": 262,
+          "y": 442.13343354313804
+        },
+        {
+          "x": 419.18552172956055,
+          "y": 442.13343354313804
+        },
+        {
+          "x": 419.18552172956055,
+          "y": 598.4040507545786
+        }
+      ]
+    },
+    {
+      "edgeId": "e04",
+      "from": "LayoutEngine",
+      "to": "HLane",
+      "label": "构建",
+      "points": [
+        {
+          "x": 262,
+          "y": 420
+        },
+        {
+          "x": 272,
+          "y": 420
+        },
+        {
+          "x": 272,
+          "y": 102
+        },
+        {
+          "x": -60.851516563322946,
+          "y": 102
+        },
+        {
+          "x": -60.851516563322946,
+          "y": 734
+        },
+        {
+          "x": 12,
+          "y": 734
+        }
+      ]
+    },
+    {
+      "edgeId": "e05",
+      "from": "LayoutEngine",
+      "to": "CollapsePlan",
+      "label": "折叠",
+      "points": [
+        {
+          "x": 129.6492103137718,
+          "y": 472
+        },
+        {
+          "x": 129.6492103137718,
+          "y": 524.609264512509
+        },
+        {
+          "x": 360.56439570415364,
+          "y": 524.609264512509
+        },
+        {
+          "x": 360.56439570415364,
+          "y": 802.0335690399809
+        }
+      ]
+    },
+    {
+      "edgeId": "e06",
+      "from": "LayoutEngine",
+      "to": "ElkEngine",
+      "label": "elk.layout",
+      "points": [
+        {
+          "x": 262,
+          "y": 420
+        },
+        {
+          "x": 272,
+          "y": 420
+        },
+        {
+          "x": 272,
+          "y": 34
+        },
+        {
+          "x": -89.4900518220033,
+          "y": 34
+        },
+        {
+          "x": -89.4900518220033,
+          "y": 1630
+        },
+        {
+          "x": 12,
+          "y": 1630
+        }
+      ]
+    },
+    {
+      "edgeId": "e07",
+      "from": "LayoutWorker",
+      "to": "LayoutEngine",
+      "label": "computeLayout",
+      "points": [
+        {
+          "x": 262,
+          "y": 1436
+        },
+        {
+          "x": 322.1603449495751,
+          "y": 1436
+        },
+        {
+          "x": 322.1603449495751,
+          "y": 0
+        },
+        {
+          "x": -115.63084363879679,
+          "y": 0
+        },
+        {
+          "x": -115.63084363879679,
+          "y": 420
+        },
+        {
+          "x": 12,
+          "y": 420
+        }
+      ]
+    },
+    {
+      "edgeId": "e08",
+      "from": "LayoutOverrides",
+      "to": "LayoutParams",
+      "label": "覆盖预设",
+      "points": [
+        {
+          "x": 137,
+          "y": 906
+        },
+        {
+          "x": 137,
+          "y": 1186
+        }
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "groupId": "g-core",
+      "title": "计算核心",
+      "axis": "vertical",
+      "nodeIds": [
+        "LayoutEngine"
+      ],
+      "collapsible": true
+    },
+    {
+      "groupId": "g-types",
+      "title": "类型与参数",
+      "axis": "vertical",
+      "nodeIds": [
+        "LayoutOptions",
+        "LayoutOverrides",
+        "LayoutParams",
+        "VModule",
+        "HLane",
+        "CollapsePlan"
+      ],
+      "collapsible": true
+    },
+    {
+      "groupId": "g-worker",
+      "title": "异步封装",
+      "axis": "vertical",
+      "nodeIds": [
+        "LayoutWorker"
+      ],
+      "collapsible": true
+    },
+    {
+      "groupId": "g-ext",
+      "title": "外部依赖",
+      "axis": "vertical",
+      "nodeIds": [
+        "ElkEngine"
+      ],
+      "collapsible": true
+    }
+  ]
+}

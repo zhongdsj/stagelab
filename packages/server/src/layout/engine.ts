@@ -366,7 +366,56 @@ async function layoutCell(
 
 let channelCounter = 0;
 
-function routeEdge(from: NodeBox, to: NodeBox, p: LayoutParams): Point[] {
+/**
+ * 检测水平线段 (x1,y)-(x2,y) 是否与任一阻挡节点相交（避让用）
+ */
+function horizontalClear(y: number, x1: number, x2: number, blockers: NodeBox[]): boolean {
+  const minX = Math.min(x1, x2);
+  const maxX = Math.max(x1, x2);
+  return !blockers.some(
+    (b) => y > b.y && y < b.y + b.height && maxX > b.x && minX < b.x + b.width
+  );
+}
+
+/**
+ * 检测竖直线段 (x,y1)-(x,y2) 是否与任一阻挡节点相交（避让用）
+ */
+function verticalClear(x: number, y1: number, y2: number, blockers: NodeBox[]): boolean {
+  const minY = Math.min(y1, y2);
+  const maxY = Math.max(y1, y2);
+  return !blockers.some(
+    (b) => x > b.x && x < b.x + b.width && maxY > b.y && minY < b.y + b.height
+  );
+}
+
+/** 竖直直连通道 x：在 from/to 水平重叠区间内按序号错开；被节点阻挡返回 null（改走绕行） */
+function verticalChannelX(
+  from: NodeBox,
+  to: NodeBox,
+  p: LayoutParams,
+  seq: number,
+  blockers: NodeBox[]
+): number | null {
+  const lo = Math.max(from.x, to.x);
+  const hi = Math.min(from.x + from.width, to.x + to.width);
+  if (hi - lo < 8) return null; // 重叠区间过窄，无法容纳竖线
+  const slots = Math.max(1, Math.round(p.edgeChannelSlots));
+  const spread = Math.min(hi - lo - 8, Math.max(0, p.edgeChannelSpread));
+  const mid = (lo + hi) / 2;
+  const off = ((seq % slots) - (slots >> 1)) * (spread / slots);
+  const x = mid + off;
+  const y1 = from.y + from.height;
+  const y2 = to.y;
+  if (!verticalClear(x, y1, y2, blockers)) return null; // 竖直段穿过中间节点
+  return x;
+}
+
+function routeEdge(
+  from: NodeBox,
+  to: NodeBox,
+  p: LayoutParams,
+  blockers: NodeBox[] = []
+): Point[] {
   // 每条跨格连线分配唯一序号，用于把各边横/纵通道互相错开（减少竖直挤一根、水平重叠，T47 收尾）
   const seq = channelCounter++;
   const sx = from.x + from.width;
@@ -384,23 +433,106 @@ function routeEdge(from: NodeBox, to: NodeBox, p: LayoutParams): Point[] {
       { x: sx, y: sy }
     ];
   }
+
+  const xOverlap = Math.min(from.x + from.width, to.x + to.width) - Math.max(from.x, to.x);
+
+  // 1) 竖直直连：from 与 to 水平投影重叠，且 from 在 to 上方 → 直接竖线连接（多条竖线在重叠区间内错开）
+  if (xOverlap > 8 && from.y + from.height <= to.y) {
+    const cx = verticalChannelX(from, to, p, seq, blockers);
+    if (cx !== null) {
+      return [
+        { x: cx, y: from.y + from.height },
+        { x: cx, y: to.y }
+      ];
+    }
+  }
+  // 2) 竖直直连：from 在 to 下方 → 向上直连
+  if (xOverlap > 8 && to.y + to.height <= from.y) {
+    const cx = verticalChannelX(to, from, p, seq, blockers);
+    if (cx !== null) {
+      return [
+        { x: cx, y: from.y },
+        { x: cx, y: to.y + to.height }
+      ];
+    }
+  }
+
+  // 3) from 在 to 左侧：Z 形正交路径。令竖直通道在节点水平间隙内按序号错开，
+  //    避免多条边共用同一根 midX 竖线导致"竖直挤一根"。spread/slots 可经面板调整（T47 收尾）。
   if (sx <= ex + 1) {
-    // 起点在终点左侧：Z 形正交路径。令竖直通道在节点水平间隙内按序号错开，
-    // 避免多条边共用同一根 midX 竖线导致"竖直挤一根"。spread/slots 可经面板调整（T47 收尾）。
     const gap = ex - sx;
     const slots = Math.max(1, Math.round(p.edgeChannelSlots)); // 参与错开的通道槽位数
     const spread = Math.min(gap * 0.4, Math.max(0, p.edgeChannelSpread)); // 允许错开总宽度（受间隙约束）
     const off = ((seq % slots) - (slots >> 1)) * (spread / slots);
     const midX = (sx + ex) / 2 + off;
-    return [
-      { x: sx, y: sy },
-      { x: midX, y: sy },
-      { x: midX, y: ey },
-      { x: ex, y: ey }
-    ];
+    if (verticalClear(midX, sy, ey, blockers)) {
+      return [
+        { x: sx, y: sy },
+        { x: midX, y: sy },
+        { x: midX, y: ey },
+        { x: ex, y: ey }
+      ];
+    }
   }
-  // 起点在终点右侧：向上绕行（通道随边序号错开避免重叠，step 可经面板调整，T47 收尾）
-  const channel = Math.min(from.y, to.y) - p.layerSpacing - 24 - (seq % 8) * Math.max(0, p.edgeChannelStep);
+
+  // 4) 绕行（from 在 to 右侧，或竖直直连被中间节点阻挡）：
+  //    出线到右侧空白通道（竖线避让节点），绕到 to 顶部/底部之上的空白带，
+  //    再垂直进入 to 顶边/底边中点；通道竖线按序号错开避免多条竖线重叠。
+  const step = Math.max(0, p.edgeChannelStep);
+  const toBottom = to.y + to.height;
+  const toCx = to.x + to.width / 2;
+  // 右侧通道基准：从两节点右侧较远者之外开始，竖线被节点阻挡时逐段右移，
+  // 尽量贴近节点（避免像"全局最右"那样绕行过远），同时按序号错开。
+  const baseX = Math.max(from.x + from.width, to.x + to.width) + 14 + (seq % 4) * 10;
+
+  // 出线点候选：from 右边缘上均匀采样多个 y（含中点），
+  // 避免出线水平段被 from 右侧的邻居节点（如自由画布中水平相邻节点）挡住。
+  const outYs: number[] = [];
+  const SAMPLES = 6;
+  for (let i = 0; i < SAMPLES; i++) {
+    outYs.push(from.y + (from.height * (i + 0.5)) / SAMPLES);
+  }
+  outYs.push(from.y + from.height / 2);
+
+  // 逐个通道 x（右移避让）→ 出线点 → 顶部/底部进线组合尝试
+  for (let r = 0; r < 20; r++) {
+    const rX = baseX + r * 16;
+    for (const oy of outYs) {
+      // 出线水平段 (sx,oy) → (rX,oy) 不能穿过任何节点
+      if (!horizontalClear(oy, sx, rX, blockers)) continue;
+      // 4a) 从 to 顶部进入：水平带在 to 顶边之上，逐段上移找不穿节点的空白带
+      for (let i = 0; i < 12; i++) {
+        const channelY = to.y - 12 - i * step;
+        if (!horizontalClear(channelY, rX, toCx, blockers)) continue;
+        if (!verticalClear(rX, oy, channelY, blockers)) continue; // 右侧竖线
+        if (!verticalClear(toCx, channelY, to.y, blockers)) continue; // 进线竖线
+        return [
+          { x: sx, y: oy },
+          { x: rX, y: oy },
+          { x: rX, y: channelY },
+          { x: toCx, y: channelY },
+          { x: toCx, y: to.y }
+        ];
+      }
+      // 4b) 从 to 底部进入：水平带在 to 底边之下，逐段下移找空白带
+      for (let i = 0; i < 12; i++) {
+        const channelY = toBottom + 12 + i * step;
+        if (!horizontalClear(channelY, rX, toCx, blockers)) continue;
+        if (!verticalClear(rX, oy, channelY, blockers)) continue;
+        if (!verticalClear(toCx, channelY, toBottom, blockers)) continue;
+        return [
+          { x: sx, y: oy },
+          { x: rX, y: oy },
+          { x: rX, y: channelY },
+          { x: toCx, y: channelY },
+          { x: toCx, y: toBottom }
+        ];
+      }
+    }
+  }
+
+  // 4c) 兜底：原"向上绕行"逻辑（通道随边序号错开，T47 收尾）
+  const channel = Math.min(from.y, to.y) - p.layerSpacing - 24 - (seq % 8) * step;
   return [
     { x: sx, y: sy },
     { x: sx + 10, y: sy },
@@ -608,7 +740,11 @@ export async function computeLayout(
     const from = nodePos.get(e.from);
     const to = nodePos.get(e.to);
     if (!from || !to) continue;
-    laidEdges.set(e.edgeId, routeEdge(from, to, p));
+    // 所有节点盒子作为避让参考（排除端点自身，routeEdge 内部会检测阻挡）
+    const blockers = Array.from(nodePos.values()).filter(
+      (b) => b.nodeId !== e.from && b.nodeId !== e.to
+    );
+    laidEdges.set(e.edgeId, routeEdge(from, to, p, blockers));
   }
 
   const edges: LayoutDiagram["edges"] = activeEdges

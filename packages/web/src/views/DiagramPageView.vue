@@ -9,18 +9,27 @@
 
       <template v-if="!collapsed">
         <button class="back-btn" type="button" @click="goBack">← 返回项目</button>
-        <div v-if="diagrams.length" class="diagram-tabs">
-          <span
-            v-for="d in diagrams"
-            :key="d.diagramId"
-            class="diagram-tab"
-            :class="{ active: d.diagramId === props.diagramId }"
-            @click="openDiagram(d.diagramId)"
-          >
-            <span class="tab-title">{{ d.title }}</span>
-            <span class="diagram-type">{{ typeLabel(d.type) }}</span>
-          </span>
-        </div>
+        <!-- 按类型分块展示图列表（类图 / 架构图 / 流程图） -->
+        <template v-if="diagrams.length">
+          <div v-for="group in groups" :key="group.key" class="diagram-block">
+            <div class="block-head">
+              <span class="block-title">{{ group.label }}</span>
+              <span class="block-count">{{ group.items.length }} 张</span>
+            </div>
+            <div class="diagram-tabs">
+              <span
+                v-for="d in group.items"
+                :key="d.diagramId"
+                class="diagram-tab"
+                :class="{ active: d.diagramId === props.diagramId }"
+                @click="openDiagram(d.diagramId)"
+              >
+                <span class="tab-title">{{ d.title }}</span>
+                <span class="diagram-type">{{ typeLabel(d.type) }}</span>
+              </span>
+            </div>
+          </div>
+        </template>
         <p v-else class="hint">暂无图</p>
       </template>
     </aside>
@@ -58,6 +67,31 @@ const error = ref("");
 const diagrams = ref<DiagramItem[]>([]);
 /** 侧边导航栏折叠状态：false 展开（宽），true 折叠（窄条） */
 const collapsed = ref(false);
+
+/** 图类型分组顺序与中文标签 */
+const typeGroups: Array<{ key: string; label: string }> = [
+  { key: "class", label: "类图" },
+  { key: "architecture", label: "架构图" },
+  { key: "flow", label: "流程图" }
+];
+
+/** 按类型分块分组：仅保留有图的块，未知类型归入「其他」块 */
+const groups = computed(() => {
+  const known = typeGroups
+    .map(({ key, label }) => ({
+      key,
+      label,
+      items: diagrams.value.filter((d) => d.type === key)
+    }))
+    .filter((g) => g.items.length);
+  const others = diagrams.value.filter(
+    (d) => !typeGroups.some((t) => t.key === d.type)
+  );
+  if (others.length) {
+    known.push({ key: "other", label: "其他", items: others });
+  }
+  return known;
+});
 
 /** 当前 URL 对应的图（列表中查找，不存在则为 undefined） */
 const activeDiagram = computed(() =>
@@ -167,6 +201,32 @@ onMounted(load);
 }
 .back-btn:hover {
   color: #409eff;
+}
+/* 按类型分块的层级展示 */
+.diagram-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed #e4e7ed;
+}
+.diagram-block:last-of-type {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.block-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.block-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #606266;
+}
+.block-count {
+  font-size: 12px;
+  color: #909399;
 }
 .diagram-tabs {
   display: flex;

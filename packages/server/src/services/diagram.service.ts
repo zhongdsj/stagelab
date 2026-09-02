@@ -223,7 +223,9 @@ export async function updateDiagramElements(
       case "updateNode": {
         const idx = nodes.findIndex((n) => n.nodeId === patch.node.nodeId);
         if (idx === -1) nodes.push(patch.node);
-        else nodes[idx] = patch.node;
+        // 字段合并（与 updateEdge 一致）：仅覆盖传入字段，保留存储中其余字段（如 geometry 坐标），
+        // 避免 MCP updateNode 只改 label/payload 时把 geometry 整体替换丢失。
+        else nodes[idx] = { ...nodes[idx], ...patch.node };
         break;
       }
       case "removeNode": {

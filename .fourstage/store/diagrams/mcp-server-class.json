@@ -1,0 +1,490 @@
+{
+  "diagramId": "mcp-server-class",
+  "type": "class",
+  "metadata": {
+    "title": "MCP Server - 类图",
+    "version": 4,
+    "description": "基于 packages/server/src/mcp 源码：MCP Server(stdin/stdout) + 五类工具注册层"
+  },
+  "nodes": [
+    {
+      "nodeId": "McpServer",
+      "label": "McpServer",
+      "kind": "class",
+      "methods": [
+        {
+          "name": "createMcpServer",
+          "returnType": "McpServer"
+        },
+        {
+          "name": "startMcpServer",
+          "returnType": "Promise<void>"
+        }
+      ],
+      "description": "MCP Server（stdio 模式）入口",
+      "geometry": {
+        "x": 12,
+        "y": 164,
+        "width": 250,
+        "height": 96
+      }
+    },
+    {
+      "nodeId": "StdioTransport",
+      "label": "StdioServerTransport",
+      "kind": "interface",
+      "methods": [
+        {
+          "name": "connect",
+          "params": [
+            {
+              "name": "server",
+              "type": "McpServer"
+            }
+          ]
+        }
+      ],
+      "description": "stdio 传输通道（@modelcontextprotocol/sdk）",
+      "geometry": {
+        "x": 12,
+        "y": 540,
+        "width": 250,
+        "height": 96
+      }
+    },
+    {
+      "nodeId": "ToolsIndex",
+      "label": "ToolsIndex",
+      "kind": "class",
+      "methods": [
+        {
+          "name": "registerAllTools",
+          "params": [
+            {
+              "name": "server",
+              "type": "McpServer"
+            }
+          ]
+        },
+        {
+          "name": "registerAllToolsWithLog",
+          "params": [
+            {
+              "name": "server",
+              "type": "McpServer"
+            },
+            {
+              "name": "scopePrefix",
+              "type": "string"
+            },
+            {
+              "name": "hooks",
+              "type": "object"
+            }
+          ]
+        }
+      ],
+      "description": "工具注册汇总：五类工具统一注册",
+      "geometry": {
+        "x": 95,
+        "y": 734,
+        "width": 250,
+        "height": 96
+      }
+    },
+    {
+      "nodeId": "ProjectTools",
+      "label": "ProjectTools",
+      "kind": "class",
+      "methods": [
+        {
+          "name": "registerProjectTools"
+        }
+      ],
+      "description": "项目管理类工具（7 个）",
+      "geometry": {
+        "x": 342,
+        "y": 1110,
+        "width": 250,
+        "height": 96
+      }
+    },
+    {
+      "nodeId": "DocumentTools",
+      "label": "DocumentTools",
+      "kind": "class",
+      "methods": [
+        {
+          "name": "registerDocumentTools"
+        }
+      ],
+      "description": "文档操作类工具（4 个）",
+      "geometry": {
+        "x": 672,
+        "y": 1110,
+        "width": 250,
+        "height": 96
+      }
+    },
+    {
+      "nodeId": "RequirementTools",
+      "label": "RequirementTools",
+      "kind": "class",
+      "methods": [
+        {
+          "name": "registerRequirementTools"
+        }
+      ],
+      "description": "需求任务类工具（7 个）",
+      "geometry": {
+        "x": 1002,
+        "y": 1110,
+        "width": 250,
+        "height": 96
+      }
+    },
+    {
+      "nodeId": "DiagramTools",
+      "label": "DiagramTools",
+      "kind": "class",
+      "methods": [
+        {
+          "name": "registerDiagramTools"
+        }
+      ],
+      "description": "图元操作类工具（5 个）",
+      "geometry": {
+        "x": 1332,
+        "y": 1110,
+        "width": 250,
+        "height": 96
+      }
+    },
+    {
+      "nodeId": "SearchTools",
+      "label": "SearchTools",
+      "kind": "class",
+      "methods": [
+        {
+          "name": "registerSearchTools"
+        }
+      ],
+      "description": "索引查询类工具（2 个）",
+      "geometry": {
+        "x": 12,
+        "y": 1110,
+        "width": 250,
+        "height": 96
+      }
+    },
+    {
+      "nodeId": "SafeCall",
+      "label": "SafeCall",
+      "kind": "interface",
+      "description": "工具统一错误包装（safeCall）",
+      "geometry": {
+        "x": 692,
+        "y": 1486,
+        "width": 210,
+        "height": 96
+      }
+    }
+  ],
+  "edges": [
+    {
+      "edgeId": "e01",
+      "from": "McpServer",
+      "to": "StdioTransport",
+      "label": "connect",
+      "points": [
+        {
+          "x": 137,
+          "y": 260
+        },
+        {
+          "x": 137,
+          "y": 540
+        }
+      ]
+    },
+    {
+      "edgeId": "e02",
+      "from": "McpServer",
+      "to": "ToolsIndex",
+      "label": "registerAllTools",
+      "points": [
+        {
+          "x": 262,
+          "y": 172
+        },
+        {
+          "x": 359,
+          "y": 172
+        },
+        {
+          "x": 359,
+          "y": 722
+        },
+        {
+          "x": 220,
+          "y": 722
+        },
+        {
+          "x": 220,
+          "y": 734
+        }
+      ]
+    },
+    {
+      "edgeId": "e03",
+      "from": "ToolsIndex",
+      "to": "ProjectTools",
+      "label": "注册",
+      "points": [
+        {
+          "x": 178.66666666666669,
+          "y": 830
+        },
+        {
+          "x": 178.66666666666669,
+          "y": 870
+        },
+        {
+          "x": 467,
+          "y": 870
+        },
+        {
+          "x": 467,
+          "y": 1110
+        }
+      ]
+    },
+    {
+      "edgeId": "e04",
+      "from": "ToolsIndex",
+      "to": "DocumentTools",
+      "label": "注册",
+      "points": [
+        {
+          "x": 220.33333333333334,
+          "y": 830
+        },
+        {
+          "x": 220.33333333333334,
+          "y": 860
+        },
+        {
+          "x": 797,
+          "y": 860
+        },
+        {
+          "x": 797,
+          "y": 1110
+        }
+      ]
+    },
+    {
+      "edgeId": "e05",
+      "from": "ToolsIndex",
+      "to": "RequirementTools",
+      "label": "注册",
+      "points": [
+        {
+          "x": 262,
+          "y": 830
+        },
+        {
+          "x": 262,
+          "y": 850
+        },
+        {
+          "x": 1127,
+          "y": 850
+        },
+        {
+          "x": 1127,
+          "y": 1110
+        }
+      ]
+    },
+    {
+      "edgeId": "e06",
+      "from": "ToolsIndex",
+      "to": "DiagramTools",
+      "label": "注册",
+      "points": [
+        {
+          "x": 303.6666666666667,
+          "y": 830
+        },
+        {
+          "x": 303.6666666666667,
+          "y": 840
+        },
+        {
+          "x": 1457,
+          "y": 840
+        },
+        {
+          "x": 1457,
+          "y": 1110
+        }
+      ]
+    },
+    {
+      "edgeId": "e07",
+      "from": "ToolsIndex",
+      "to": "SearchTools",
+      "label": "注册",
+      "points": [
+        {
+          "x": 137,
+          "y": 830
+        },
+        {
+          "x": 137,
+          "y": 1110
+        }
+      ]
+    },
+    {
+      "edgeId": "e08",
+      "from": "ProjectTools",
+      "to": "SafeCall",
+      "label": "错误包装",
+      "points": [
+        {
+          "x": 467,
+          "y": 1206
+        },
+        {
+          "x": 467,
+          "y": 1356
+        },
+        {
+          "x": 762,
+          "y": 1356
+        },
+        {
+          "x": 762,
+          "y": 1486
+        }
+      ]
+    },
+    {
+      "edgeId": "e09",
+      "from": "DocumentTools",
+      "to": "SafeCall",
+      "label": "错误包装",
+      "points": [
+        {
+          "x": 797,
+          "y": 1206
+        },
+        {
+          "x": 797,
+          "y": 1486
+        }
+      ]
+    },
+    {
+      "edgeId": "e10",
+      "from": "RequirementTools",
+      "to": "SafeCall",
+      "label": "错误包装",
+      "points": [
+        {
+          "x": 1127,
+          "y": 1206
+        },
+        {
+          "x": 1127,
+          "y": 1356
+        },
+        {
+          "x": 832,
+          "y": 1356
+        },
+        {
+          "x": 832,
+          "y": 1486
+        }
+      ]
+    },
+    {
+      "edgeId": "e11",
+      "from": "DiagramTools",
+      "to": "SafeCall",
+      "label": "错误包装",
+      "points": [
+        {
+          "x": 1457,
+          "y": 1206
+        },
+        {
+          "x": 1457,
+          "y": 1366
+        },
+        {
+          "x": 867,
+          "y": 1366
+        },
+        {
+          "x": 867,
+          "y": 1486
+        }
+      ]
+    },
+    {
+      "edgeId": "e12",
+      "from": "SearchTools",
+      "to": "SafeCall",
+      "label": "错误包装",
+      "points": [
+        {
+          "x": 137,
+          "y": 1206
+        },
+        {
+          "x": 137,
+          "y": 1366
+        },
+        {
+          "x": 727,
+          "y": 1366
+        },
+        {
+          "x": 727,
+          "y": 1486
+        }
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "groupId": "g-entry",
+      "title": "服务入口",
+      "axis": "vertical",
+      "nodeIds": [
+        "McpServer",
+        "StdioTransport"
+      ],
+      "collapsible": true
+    },
+    {
+      "groupId": "g-tools",
+      "title": "工具注册层",
+      "axis": "vertical",
+      "nodeIds": [
+        "ToolsIndex",
+        "ProjectTools",
+        "DocumentTools",
+        "RequirementTools",
+        "DiagramTools",
+        "SearchTools",
+        "SafeCall"
+      ],
+      "collapsible": true
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "requirementId": "24176d00-fff5-4bab-9eae-aeb2b2b4a6d2",
+  "title": "连线箭头方向修正：端点沿节点边移动时箭头应垂直于边",
+  "description": "问题现象：编辑态拖动连线端点/箭头在节点边框上滑动时，箭头方向与节点边不垂直（SVG marker orient 使用 auto-start-reverse，但终点段方向可能与吸附后的最后一段不一致）。\n\n期望：无论端点在节点四条边的哪个位置，箭头始终垂直指向该边，且最后一段连线垂直于该边进入。\n\n相关文件：packages/web/src/components/diagram/useEdgeGeometry.ts（端点吸附）、packages/web/src/components/diagram/DiagramSvg.vue（箭头渲染 marker）、packages/web/src/components/diagram/DiagramView.vue（端点重布线）",
+  "branchName": "feature/edge-arrow-orient",
+  "status": "done",
+  "taskIds": [
+    "3774b6ff-1d61-4b74-b5a1-9be1aa3814e4",
+    "8e557a2f-b2ba-436a-aed5-2dc6f07ad96f",
+    "13b780f2-09e8-4804-848b-d4849345bb3a",
+    "0ec294a3-bd17-46de-b8d3-094ea33a0ddc"
+  ],
+  "createdAt": 1788255860886,
+  "updatedAt": 1788314678440
+}

@@ -3,7 +3,7 @@
   "type": "flow",
   "metadata": {
     "title": "Web 前端 - 核心交互流程图",
-    "version": 4,
+    "version": 5,
     "description": "基于 packages/web 源码：项目总览→项目详情→四阶段内容（文档/图/需求任务）的交互流程；后端依赖统一以 BackendService 占位（横向泳道）"
   },
   "nodes": [
@@ -11,303 +11,955 @@
       "nodeId": "start",
       "label": "启动 Web 应用",
       "nodeKind": "start",
-      "description": "浏览器打开 SPA，Vue3 挂载"
+      "description": "浏览器打开 SPA，Vue3 挂载",
+      "geometry": {
+        "x": 212,
+        "y": 320,
+        "width": 152,
+        "height": 56
+      }
     },
     {
       "nodeId": "load-projects",
       "label": "加载项目列表\nGET /api/projects",
       "nodeKind": "process",
-      "description": "listProjects() 拉取全部项目"
+      "description": "listProjects() 拉取全部项目",
+      "geometry": {
+        "x": 186,
+        "y": 476,
+        "width": 204,
+        "height": 56
+      }
     },
     {
       "nodeId": "render-overview",
       "label": "渲染项目总览",
       "nodeKind": "process",
-      "description": "项目卡片网格 + 阶段标签 + 修改/删除按钮"
+      "description": "项目卡片网格 + 阶段标签 + 修改/删除按钮",
+      "geometry": {
+        "x": 51,
+        "y": 632,
+        "width": 152,
+        "height": 56
+      }
     },
     {
       "nodeId": "decision-op",
       "label": "用户操作？",
       "nodeKind": "decision",
-      "description": "总览页操作分支"
+      "description": "总览页操作分支",
+      "geometry": {
+        "x": 114,
+        "y": 64,
+        "width": 152,
+        "height": 56
+      }
     },
     {
       "nodeId": "create-project",
       "label": "新建项目\nPOST /api/projects",
       "nodeKind": "process",
-      "description": "createProject(name, repoRoot)"
+      "description": "createProject(name, repoRoot)",
+      "geometry": {
+        "x": 1220,
+        "y": 320,
+        "width": 196,
+        "height": 56
+      }
     },
     {
       "nodeId": "project-op",
       "label": "修改/删除项目\nPUT/DELETE",
       "nodeKind": "process",
-      "description": "renameProject / deleteProject"
+      "description": "renameProject / deleteProject",
+      "geometry": {
+        "x": 12,
+        "y": 320,
+        "width": 153,
+        "height": 56
+      }
     },
     {
       "nodeId": "enter-detail",
       "label": "进入项目详情\nGET /projects/:id + /index",
       "nodeKind": "process",
-      "description": "getProject + getProjectIndex 并行加载"
+      "description": "getProject + getProjectIndex 并行加载",
+      "geometry": {
+        "x": 1116,
+        "y": 476,
+        "width": 281,
+        "height": 56
+      }
     },
     {
       "nodeId": "render-stage",
       "label": "渲染四阶段导航与统计",
       "nodeKind": "process",
-      "description": "StageNav + 文档/图/需求/任务计数"
+      "description": "StageNav + 文档/图/需求/任务计数",
+      "geometry": {
+        "x": 1155,
+        "y": 632,
+        "width": 152,
+        "height": 56
+      }
     },
     {
       "nodeId": "decision-stage",
       "label": "当前阶段？",
       "nodeKind": "decision",
-      "description": "按 currentStage 渲染内容区"
+      "description": "按 currentStage 渲染内容区",
+      "geometry": {
+        "x": 470,
+        "y": 476,
+        "width": 152,
+        "height": 56
+      }
     },
     {
       "nodeId": "view-doc",
       "label": "文档查看\nGET /documents/:docId/full",
       "nodeKind": "process",
-      "description": "s1 文档库：选择文档，加载全文"
+      "description": "s1 文档库：选择文档，加载全文",
+      "geometry": {
+        "x": 675,
+        "y": 788,
+        "width": 264,
+        "height": 56
+      }
     },
     {
       "nodeId": "render-md",
       "label": "只读渲染\nmarked + DOMPurify",
       "nodeKind": "process",
-      "description": "markdown 渲染 + XSS 消毒，展示摘要栏"
+      "description": "markdown 渲染 + XSS 消毒，展示摘要栏",
+      "geometry": {
+        "x": 758,
+        "y": 944,
+        "width": 196,
+        "height": 56
+      }
     },
     {
       "nodeId": "edit-doc",
       "label": "编辑保存\nPUT full + meta",
       "nodeKind": "process",
-      "description": "renameDocument(标题/摘要) + updateFullDocument(正文)"
+      "description": "renameDocument(标题/摘要) + updateFullDocument(正文)",
+      "geometry": {
+        "x": 935,
+        "y": 632,
+        "width": 170,
+        "height": 56
+      }
     },
     {
       "nodeId": "view-diagram",
       "label": "图查看\nGET /diagrams/:id + /layout",
       "nodeKind": "process",
-      "description": "getDiagram 语义模型 + getLayout 布局"
+      "description": "getDiagram 语义模型 + getLayout 布局",
+      "geometry": {
+        "x": 124,
+        "y": 788,
+        "width": 264,
+        "height": 56
+      }
     },
     {
       "nodeId": "render-svg",
       "label": "SVG 渲染",
       "nodeKind": "process",
-      "description": "DiagramSvg 按类型渲染节点/连线/分组"
+      "description": "DiagramSvg 按类型渲染节点/连线/分组",
+      "geometry": {
+        "x": 180,
+        "y": 944,
+        "width": 152,
+        "height": 56
+      }
     },
     {
       "nodeId": "fold-module",
       "label": "折叠/展开模块\n重新布局",
       "nodeKind": "process",
-      "description": "setFocus(moduleId) → getLayout 重算"
+      "description": "setFocus(moduleId) → getLayout 重算",
+      "geometry": {
+        "x": 154,
+        "y": 1256,
+        "width": 152,
+        "height": 56
+      }
     },
     {
       "nodeId": "view-req",
       "label": "需求任务\nGET /requirements",
       "nodeKind": "process",
-      "description": "s2/s3 需求清单：展开需求懒加载任务"
+      "description": "s2/s3 需求清单：展开需求懒加载任务",
+      "geometry": {
+        "x": 438,
+        "y": 788,
+        "width": 187,
+        "height": 56
+      }
     },
     {
       "nodeId": "task-op",
       "label": "任务操作\nPUT/POST/DELETE /tasks",
       "nodeKind": "process",
-      "description": "状态切换 / 创建 / 修改 / 删除"
+      "description": "状态切换 / 创建 / 修改 / 删除",
+      "geometry": {
+        "x": 423,
+        "y": 1100,
+        "width": 230,
+        "height": 56
+      }
     },
     {
       "nodeId": "backend",
       "label": "BackendService (占位)",
       "nodeKind": "subprocess",
-      "description": "外部模块统一占位：HTTP API 层 + 业务服务层 + 布局引擎 + 本地文件存储"
+      "description": "外部模块统一占位：HTTP API 层 + 业务服务层 + 布局引擎 + 本地文件存储",
+      "geometry": {
+        "x": 1536,
+        "y": 64,
+        "width": 162,
+        "height": 56
+      }
     },
     {
       "nodeId": "end",
       "label": "结束",
       "nodeKind": "end",
-      "description": "页面交互完成"
+      "description": "页面交互完成",
+      "geometry": {
+        "x": 356,
+        "y": 1256,
+        "width": 152,
+        "height": 56
+      }
     }
   ],
   "edges": [
     {
       "edgeId": "e-start-load",
       "from": "start",
-      "to": "load-projects"
+      "to": "load-projects",
+      "points": [
+        {
+          "x": 288,
+          "y": 376
+        },
+        {
+          "x": 288,
+          "y": 476
+        }
+      ]
     },
     {
       "edgeId": "e-load-render",
       "from": "load-projects",
-      "to": "render-overview"
+      "to": "render-overview",
+      "points": [
+        {
+          "x": 288,
+          "y": 532
+        },
+        {
+          "x": 288,
+          "y": 552
+        },
+        {
+          "x": 164.5,
+          "y": 552
+        },
+        {
+          "x": 164.5,
+          "y": 632
+        }
+      ]
     },
     {
       "edgeId": "e-render-op",
       "from": "render-overview",
-      "to": "decision-op"
+      "to": "decision-op",
+      "points": [
+        {
+          "x": 126.5,
+          "y": 632
+        },
+        {
+          "x": 126.5,
+          "y": 542
+        },
+        {
+          "x": 175,
+          "y": 542
+        },
+        {
+          "x": 175,
+          "y": 120
+        }
+      ]
     },
     {
       "edgeId": "e-op-create",
       "from": "decision-op",
       "to": "create-project",
-      "label": "新建"
+      "label": "新建",
+      "points": [
+        {
+          "x": 235.8,
+          "y": 120
+        },
+        {
+          "x": 235.8,
+          "y": 130
+        },
+        {
+          "x": 1318.3333333333335,
+          "y": 130
+        },
+        {
+          "x": 1318.3333333333335,
+          "y": 320
+        }
+      ]
     },
     {
       "edgeId": "e-create-detail",
       "from": "create-project",
-      "to": "enter-detail"
+      "to": "enter-detail",
+      "points": [
+        {
+          "x": 1318.3333333333335,
+          "y": 376
+        },
+        {
+          "x": 1318.3333333333335,
+          "y": 386
+        },
+        {
+          "x": 1303,
+          "y": 386
+        },
+        {
+          "x": 1303,
+          "y": 476
+        }
+      ]
     },
     {
       "edgeId": "e-op-project",
       "from": "decision-op",
       "to": "project-op",
-      "label": "修改/删除"
+      "label": "修改/删除",
+      "points": [
+        {
+          "x": 144.6,
+          "y": 120
+        },
+        {
+          "x": 144.6,
+          "y": 130
+        },
+        {
+          "x": 88.5,
+          "y": 130
+        },
+        {
+          "x": 88.5,
+          "y": 320
+        }
+      ]
     },
     {
       "edgeId": "e-project-refresh",
       "from": "project-op",
       "to": "render-overview",
-      "label": "刷新"
+      "label": "刷新",
+      "points": [
+        {
+          "x": 88.5,
+          "y": 376
+        },
+        {
+          "x": 88.5,
+          "y": 632
+        }
+      ]
     },
     {
       "edgeId": "e-op-detail",
       "from": "decision-op",
       "to": "enter-detail",
-      "label": "进入项目"
+      "label": "进入项目",
+      "points": [
+        {
+          "x": 205.39999999999998,
+          "y": 120
+        },
+        {
+          "x": 205.39999999999998,
+          "y": 140
+        },
+        {
+          "x": 1209.3333333333335,
+          "y": 140
+        },
+        {
+          "x": 1209.3333333333335,
+          "y": 476
+        }
+      ]
     },
     {
       "edgeId": "e-detail-stage",
       "from": "enter-detail",
-      "to": "render-stage"
+      "to": "render-stage",
+      "points": [
+        {
+          "x": 1256.1666666666667,
+          "y": 532
+        },
+        {
+          "x": 1256.1666666666665,
+          "y": 632
+        }
+      ]
     },
     {
       "edgeId": "e-stage-decision",
       "from": "render-stage",
-      "to": "decision-stage"
+      "to": "decision-stage",
+      "points": [
+        {
+          "x": 1205.5,
+          "y": 632
+        },
+        {
+          "x": 1205.5,
+          "y": 542
+        },
+        {
+          "x": 591.8,
+          "y": 542
+        },
+        {
+          "x": 591.8000000000001,
+          "y": 532
+        }
+      ]
     },
     {
       "edgeId": "e-decision-doc",
       "from": "decision-stage",
       "to": "view-doc",
-      "label": "s1 文档"
+      "label": "s1 文档",
+      "points": [
+        {
+          "x": 561.4000000000001,
+          "y": 532
+        },
+        {
+          "x": 561.4000000000001,
+          "y": 552
+        },
+        {
+          "x": 806.5,
+          "y": 552
+        },
+        {
+          "x": 806.5,
+          "y": 788
+        }
+      ]
     },
     {
       "edgeId": "e-decision-req",
       "from": "decision-stage",
       "to": "view-req",
-      "label": "s2/s3 需求"
+      "label": "s2/s3 需求",
+      "points": [
+        {
+          "x": 531,
+          "y": 532
+        },
+        {
+          "x": 531,
+          "y": 788
+        }
+      ]
     },
     {
       "edgeId": "e-decision-diagram",
       "from": "decision-stage",
       "to": "view-diagram",
-      "label": "图库"
+      "label": "图库",
+      "points": [
+        {
+          "x": 500.6,
+          "y": 532
+        },
+        {
+          "x": 500.6,
+          "y": 562
+        },
+        {
+          "x": 255.5,
+          "y": 562
+        },
+        {
+          "x": 255.5,
+          "y": 788
+        }
+      ]
     },
     {
       "edgeId": "e-doc-md",
       "from": "view-doc",
-      "to": "render-md"
+      "to": "render-md",
+      "points": [
+        {
+          "x": 806.5,
+          "y": 844
+        },
+        {
+          "x": 806.5,
+          "y": 944
+        }
+      ]
     },
     {
       "edgeId": "e-md-edit",
       "from": "render-md",
       "to": "edit-doc",
-      "label": "编辑"
+      "label": "编辑",
+      "points": [
+        {
+          "x": 904.5,
+          "y": 944
+        },
+        {
+          "x": 904.5,
+          "y": 864
+        },
+        {
+          "x": 1002.5,
+          "y": 864
+        },
+        {
+          "x": 1002.5,
+          "y": 698
+        },
+        {
+          "x": 1048.1666666666667,
+          "y": 698
+        },
+        {
+          "x": 1048.1666666666665,
+          "y": 688
+        }
+      ]
     },
     {
       "edgeId": "e-edit-md",
       "from": "edit-doc",
       "to": "render-md",
-      "label": "保存刷新"
+      "label": "保存刷新",
+      "points": [
+        {
+          "x": 991.4999999999999,
+          "y": 688
+        },
+        {
+          "x": 991.5,
+          "y": 854
+        },
+        {
+          "x": 855.5,
+          "y": 854
+        },
+        {
+          "x": 855.5,
+          "y": 944
+        }
+      ]
     },
     {
       "edgeId": "e-md-end",
       "from": "render-md",
-      "to": "end"
+      "to": "end",
+      "points": [
+        {
+          "x": 855.5,
+          "y": 1000
+        },
+        {
+          "x": 855.5,
+          "y": 1176
+        },
+        {
+          "x": 470.1666666666667,
+          "y": 1176
+        },
+        {
+          "x": 470.1666666666667,
+          "y": 1256
+        }
+      ]
     },
     {
       "edgeId": "e-req-task",
       "from": "view-req",
-      "to": "task-op"
+      "to": "task-op",
+      "points": [
+        {
+          "x": 562.1666666666666,
+          "y": 844
+        },
+        {
+          "x": 562.1666666666667,
+          "y": 854
+        },
+        {
+          "x": 576.5,
+          "y": 854
+        },
+        {
+          "x": 576.5,
+          "y": 1100
+        }
+      ]
     },
     {
       "edgeId": "e-task-req",
       "from": "task-op",
       "to": "view-req",
-      "label": "刷新"
+      "label": "刷新",
+      "points": [
+        {
+          "x": 499.83333333333337,
+          "y": 1100
+        },
+        {
+          "x": 499.8333333333333,
+          "y": 844
+        }
+      ]
     },
     {
       "edgeId": "e-task-end",
       "from": "task-op",
-      "to": "end"
+      "to": "end",
+      "points": [
+        {
+          "x": 538.1666666666667,
+          "y": 1156
+        },
+        {
+          "x": 538.1666666666667,
+          "y": 1166
+        },
+        {
+          "x": 432.1666666666667,
+          "y": 1166
+        },
+        {
+          "x": 432.1666666666667,
+          "y": 1256
+        }
+      ]
     },
     {
       "edgeId": "e-diagram-svg",
       "from": "view-diagram",
-      "to": "render-svg"
+      "to": "render-svg",
+      "points": [
+        {
+          "x": 255.5,
+          "y": 844
+        },
+        {
+          "x": 255.5,
+          "y": 944
+        }
+      ]
     },
     {
       "edgeId": "e-svg-fold",
       "from": "render-svg",
       "to": "fold-module",
-      "label": "折叠/展开"
+      "label": "折叠/展开",
+      "points": [
+        {
+          "x": 255.5,
+          "y": 1000
+        },
+        {
+          "x": 255.5,
+          "y": 1256
+        }
+      ]
     },
     {
       "edgeId": "e-fold-svg",
       "from": "fold-module",
       "to": "render-svg",
-      "label": "重新布局"
+      "label": "重新布局",
+      "points": [
+        {
+          "x": 204.83333333333334,
+          "y": 1256
+        },
+        {
+          "x": 204.83333333333334,
+          "y": 1010
+        },
+        {
+          "x": 217.5,
+          "y": 1010
+        },
+        {
+          "x": 217.5,
+          "y": 1000
+        }
+      ]
     },
     {
       "edgeId": "e-svg-end",
       "from": "render-svg",
-      "to": "end"
+      "to": "end",
+      "points": [
+        {
+          "x": 293.5,
+          "y": 1000
+        },
+        {
+          "x": 293.5,
+          "y": 1010
+        },
+        {
+          "x": 394.1666666666667,
+          "y": 1010
+        },
+        {
+          "x": 394.1666666666667,
+          "y": 1256
+        }
+      ]
     },
     {
       "edgeId": "e-http-load",
       "from": "load-projects",
       "to": "backend",
-      "label": "HTTP"
+      "label": "HTTP",
+      "points": [
+        {
+          "x": 390,
+          "y": 504
+        },
+        {
+          "x": 927.1666666666667,
+          "y": 504
+        },
+        {
+          "x": 927.1666666666667,
+          "y": 92
+        },
+        {
+          "x": 1536.3333333333335,
+          "y": 92
+        }
+      ]
     },
     {
       "edgeId": "e-http-create",
       "from": "create-project",
       "to": "backend",
-      "label": "HTTP"
+      "label": "HTTP",
+      "points": [
+        {
+          "x": 1416.3333333333335,
+          "y": 348
+        },
+        {
+          "x": 1466.7333333333336,
+          "y": 348
+        },
+        {
+          "x": 1466.7333333333336,
+          "y": 92
+        },
+        {
+          "x": 1536.3333333333335,
+          "y": 92
+        }
+      ]
     },
     {
       "edgeId": "e-http-project",
       "from": "project-op",
       "to": "backend",
-      "label": "HTTP"
+      "label": "HTTP",
+      "points": [
+        {
+          "x": 165,
+          "y": 348
+        },
+        {
+          "x": 850.6666666666667,
+          "y": 348
+        },
+        {
+          "x": 850.6666666666667,
+          "y": 92
+        },
+        {
+          "x": 1536.3333333333335,
+          "y": 92
+        }
+      ]
     },
     {
       "edgeId": "e-http-detail",
       "from": "enter-detail",
       "to": "backend",
-      "label": "HTTP"
+      "label": "HTTP",
+      "points": [
+        {
+          "x": 1396.6666666666667,
+          "y": 504
+        },
+        {
+          "x": 1477.6733333333334,
+          "y": 504
+        },
+        {
+          "x": 1477.6733333333334,
+          "y": 92
+        },
+        {
+          "x": 1536.3333333333335,
+          "y": 92
+        }
+      ]
     },
     {
       "edgeId": "e-http-doc",
       "from": "view-doc",
       "to": "backend",
-      "label": "HTTP"
+      "label": "HTTP",
+      "points": [
+        {
+          "x": 938.5,
+          "y": 816
+        },
+        {
+          "x": 1273.4166666666667,
+          "y": 816
+        },
+        {
+          "x": 1273.4166666666667,
+          "y": 92
+        },
+        {
+          "x": 1536.3333333333335,
+          "y": 92
+        }
+      ]
     },
     {
       "edgeId": "e-http-edit",
       "from": "edit-doc",
       "to": "backend",
-      "label": "HTTP"
+      "label": "HTTP",
+      "points": [
+        {
+          "x": 1104.8333333333333,
+          "y": 660
+        },
+        {
+          "x": 1284.5833333333335,
+          "y": 660
+        },
+        {
+          "x": 1284.5833333333335,
+          "y": 92
+        },
+        {
+          "x": 1536.3333333333335,
+          "y": 92
+        }
+      ]
     },
     {
       "edgeId": "e-http-diagram",
       "from": "view-diagram",
       "to": "backend",
-      "label": "HTTP"
+      "label": "HTTP",
+      "points": [
+        {
+          "x": 387.5,
+          "y": 816
+        },
+        {
+          "x": 943.9166666666667,
+          "y": 816
+        },
+        {
+          "x": 943.9166666666667,
+          "y": 92
+        },
+        {
+          "x": 1536.3333333333335,
+          "y": 92
+        }
+      ]
     },
     {
       "edgeId": "e-http-req",
       "from": "view-req",
       "to": "backend",
-      "label": "HTTP"
+      "label": "HTTP",
+      "points": [
+        {
+          "x": 624.5,
+          "y": 816
+        },
+        {
+          "x": 1080.4166666666667,
+          "y": 816
+        },
+        {
+          "x": 1080.4166666666667,
+          "y": 92
+        },
+        {
+          "x": 1536.3333333333335,
+          "y": 92
+        }
+      ]
     },
     {
       "edgeId": "e-http-task",
       "from": "task-op",
       "to": "backend",
-      "label": "HTTP"
+      "label": "HTTP",
+      "points": [
+        {
+          "x": 653.1666666666667,
+          "y": 1128
+        },
+        {
+          "x": 1112.75,
+          "y": 1128
+        },
+        {
+          "x": 1112.75,
+          "y": 92
+        },
+        {
+          "x": 1536.3333333333335,
+          "y": 92
+        }
+      ]
     }
   ],
   "groups": [

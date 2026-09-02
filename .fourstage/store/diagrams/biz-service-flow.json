@@ -1,0 +1,617 @@
+{
+  "diagramId": "biz-service-flow",
+  "type": "flow",
+  "metadata": {
+    "title": "业务服务层 - 核心流程图",
+    "version": 3,
+    "description": "基于 packages/server/src/services 源码：项目初始化、文档分片、需求-任务、索引查询 服务调用流程"
+  },
+  "nodes": [
+    {
+      "nodeId": "f1-start",
+      "label": "初始化项目",
+      "nodeKind": "start",
+      "description": "WorkspaceService.initRepoProject",
+      "geometry": {
+        "x": 12,
+        "y": 64,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "f1-gen",
+      "label": "生成入口元文件",
+      "nodeKind": "process",
+      "description": "project.meta.json + store 目录树",
+      "geometry": {
+        "x": 12,
+        "y": 320,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "f1-meta",
+      "label": "创建项目元数据",
+      "nodeKind": "process",
+      "description": "ProjectService.createProject",
+      "geometry": {
+        "x": 12,
+        "y": 576,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "f1-done",
+      "label": "进入阶段1",
+      "nodeKind": "end",
+      "description": "默认 s1",
+      "geometry": {
+        "x": 12,
+        "y": 832,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "f2-start",
+      "label": "文档写入",
+      "nodeKind": "start",
+      "description": "DocumentService.writeDocumentFragment",
+      "geometry": {
+        "x": 284,
+        "y": 64,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "f2-split",
+      "label": "超长分片？",
+      "nodeKind": "decision",
+      "description": "超 2000 字自动拆分",
+      "payload": {
+        "condition": "len > 2000"
+      },
+      "geometry": {
+        "x": 284,
+        "y": 320,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "f2-save",
+      "label": "保存分片+meta",
+      "nodeKind": "process",
+      "description": "写分片 + upsertDocumentMeta",
+      "geometry": {
+        "x": 284,
+        "y": 576,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "f2-clean",
+      "label": "清理孤儿分片",
+      "nodeKind": "process",
+      "description": "删除多余尾分片",
+      "geometry": {
+        "x": 284,
+        "y": 832,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "f2-done",
+      "label": "返回分片列表",
+      "nodeKind": "end",
+      "geometry": {
+        "x": 284,
+        "y": 1088,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "f3-start",
+      "label": "需求任务操作",
+      "nodeKind": "start",
+      "description": "RequirementService.createTask",
+      "geometry": {
+        "x": 585,
+        "y": 64,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "f3-save",
+      "label": "持久化任务",
+      "nodeKind": "process",
+      "description": "写入 task 实体",
+      "geometry": {
+        "x": 585,
+        "y": 320,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "f3-sync",
+      "label": "同步需求 taskIds",
+      "nodeKind": "process",
+      "description": "syncRequirementIds",
+      "geometry": {
+        "x": 585,
+        "y": 576,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "f3-status",
+      "label": "全部任务 done？",
+      "nodeKind": "decision",
+      "description": "需求状态自动流转",
+      "payload": {
+        "condition": "全部 done"
+      },
+      "geometry": {
+        "x": 585,
+        "y": 832,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "f3-flow",
+      "label": "需求流转 done",
+      "nodeKind": "process",
+      "description": "三态流转",
+      "geometry": {
+        "x": 610,
+        "y": 1088,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "f3-done",
+      "label": "返回需求摘要",
+      "nodeKind": "end",
+      "geometry": {
+        "x": 585,
+        "y": 1344,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "f4-start",
+      "label": "索引查询",
+      "nodeKind": "start",
+      "description": "IndexService.getProjectIndex",
+      "geometry": {
+        "x": 911,
+        "y": 64,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "f4-check",
+      "label": "索引有效？",
+      "nodeKind": "decision",
+      "description": "index.json 存在且未过期",
+      "payload": {
+        "condition": "有效"
+      },
+      "geometry": {
+        "x": 911,
+        "y": 320,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "f4-rebuild",
+      "label": "rebuildIndex",
+      "nodeKind": "process",
+      "description": "重建索引",
+      "geometry": {
+        "x": 936,
+        "y": 576,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "f4-return",
+      "label": "返回两级索引",
+      "nodeKind": "end",
+      "description": "需求→任务 轻量摘要",
+      "geometry": {
+        "x": 911,
+        "y": 832,
+        "width": 152,
+        "height": 56
+      }
+    }
+  ],
+  "edges": [
+    {
+      "edgeId": "e01",
+      "from": "f1-start",
+      "to": "f1-gen",
+      "label": "初始化",
+      "points": [
+        {
+          "x": 88,
+          "y": 120
+        },
+        {
+          "x": 88,
+          "y": 320
+        }
+      ]
+    },
+    {
+      "edgeId": "e02",
+      "from": "f1-gen",
+      "to": "f1-meta",
+      "label": "创建项目",
+      "points": [
+        {
+          "x": 88,
+          "y": 376
+        },
+        {
+          "x": 88,
+          "y": 576
+        }
+      ]
+    },
+    {
+      "edgeId": "e03",
+      "from": "f1-meta",
+      "to": "f1-done",
+      "label": "完成",
+      "points": [
+        {
+          "x": 88,
+          "y": 632
+        },
+        {
+          "x": 88,
+          "y": 832
+        }
+      ]
+    },
+    {
+      "edgeId": "e04",
+      "from": "f2-start",
+      "to": "f2-split",
+      "label": "长度判定",
+      "points": [
+        {
+          "x": 360,
+          "y": 120
+        },
+        {
+          "x": 360,
+          "y": 320
+        }
+      ]
+    },
+    {
+      "edgeId": "e05",
+      "from": "f2-split",
+      "to": "f2-save",
+      "label": "是",
+      "points": [
+        {
+          "x": 385.3333333333333,
+          "y": 376
+        },
+        {
+          "x": 385.3333333333333,
+          "y": 576
+        }
+      ]
+    },
+    {
+      "edgeId": "e06",
+      "from": "f2-split",
+      "to": "f2-save",
+      "label": "否",
+      "points": [
+        {
+          "x": 334.6666666666667,
+          "y": 376
+        },
+        {
+          "x": 334.6666666666667,
+          "y": 576
+        }
+      ]
+    },
+    {
+      "edgeId": "e07",
+      "from": "f2-save",
+      "to": "f2-clean",
+      "label": "清理",
+      "points": [
+        {
+          "x": 360,
+          "y": 632
+        },
+        {
+          "x": 360,
+          "y": 832
+        }
+      ]
+    },
+    {
+      "edgeId": "e08",
+      "from": "f2-clean",
+      "to": "f2-done",
+      "label": "返回",
+      "points": [
+        {
+          "x": 360,
+          "y": 888
+        },
+        {
+          "x": 360,
+          "y": 1088
+        }
+      ]
+    },
+    {
+      "edgeId": "e09",
+      "from": "f3-start",
+      "to": "f3-save",
+      "label": "写入",
+      "points": [
+        {
+          "x": 660.6666666666666,
+          "y": 120
+        },
+        {
+          "x": 660.6666666666666,
+          "y": 320
+        }
+      ]
+    },
+    {
+      "edgeId": "e10",
+      "from": "f3-save",
+      "to": "f3-sync",
+      "label": "同步",
+      "points": [
+        {
+          "x": 660.6666666666666,
+          "y": 376
+        },
+        {
+          "x": 660.6666666666666,
+          "y": 576
+        }
+      ]
+    },
+    {
+      "edgeId": "e11",
+      "from": "f3-sync",
+      "to": "f3-status",
+      "label": "判定",
+      "points": [
+        {
+          "x": 660.6666666666666,
+          "y": 632
+        },
+        {
+          "x": 660.6666666666666,
+          "y": 832
+        }
+      ]
+    },
+    {
+      "edgeId": "e12",
+      "from": "f3-status",
+      "to": "f3-flow",
+      "label": "是",
+      "points": [
+        {
+          "x": 686,
+          "y": 888
+        },
+        {
+          "x": 686,
+          "y": 1088
+        }
+      ]
+    },
+    {
+      "edgeId": "e13",
+      "from": "f3-flow",
+      "to": "f3-done",
+      "label": "完成",
+      "points": [
+        {
+          "x": 686,
+          "y": 1144
+        },
+        {
+          "x": 686,
+          "y": 1344
+        }
+      ]
+    },
+    {
+      "edgeId": "e14",
+      "from": "f3-status",
+      "to": "f3-done",
+      "label": "否",
+      "points": [
+        {
+          "x": 635.3333333333334,
+          "y": 888
+        },
+        {
+          "x": 635.3333333333334,
+          "y": 898
+        },
+        {
+          "x": 559,
+          "y": 898
+        },
+        {
+          "x": 559,
+          "y": 1254
+        },
+        {
+          "x": 635.3333333333334,
+          "y": 1254
+        },
+        {
+          "x": 635.3333333333334,
+          "y": 1344
+        }
+      ]
+    },
+    {
+      "edgeId": "e15",
+      "from": "f4-start",
+      "to": "f4-check",
+      "label": "查询",
+      "points": [
+        {
+          "x": 986.6666666666666,
+          "y": 120
+        },
+        {
+          "x": 986.6666666666666,
+          "y": 320
+        }
+      ]
+    },
+    {
+      "edgeId": "e16",
+      "from": "f4-check",
+      "to": "f4-rebuild",
+      "label": "否",
+      "points": [
+        {
+          "x": 1012,
+          "y": 376
+        },
+        {
+          "x": 1012,
+          "y": 576
+        }
+      ]
+    },
+    {
+      "edgeId": "e17",
+      "from": "f4-rebuild",
+      "to": "f4-return",
+      "label": "重建",
+      "points": [
+        {
+          "x": 1012,
+          "y": 632
+        },
+        {
+          "x": 1012,
+          "y": 832
+        }
+      ]
+    },
+    {
+      "edgeId": "e18",
+      "from": "f4-check",
+      "to": "f4-return",
+      "label": "是",
+      "points": [
+        {
+          "x": 961.3333333333334,
+          "y": 376
+        },
+        {
+          "x": 961.3333333333334,
+          "y": 386
+        },
+        {
+          "x": 885,
+          "y": 386
+        },
+        {
+          "x": 885,
+          "y": 742
+        },
+        {
+          "x": 961.3333333333334,
+          "y": 742
+        },
+        {
+          "x": 961.3333333333334,
+          "y": 832
+        }
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "groupId": "lane-pj",
+      "title": "项目初始化",
+      "axis": "horizontal",
+      "nodeIds": [
+        "f1-start",
+        "f1-gen",
+        "f1-meta",
+        "f1-done"
+      ]
+    },
+    {
+      "groupId": "lane-doc",
+      "title": "文档分片",
+      "axis": "horizontal",
+      "nodeIds": [
+        "f2-start",
+        "f2-split",
+        "f2-save",
+        "f2-clean",
+        "f2-done"
+      ]
+    },
+    {
+      "groupId": "lane-req",
+      "title": "需求任务",
+      "axis": "horizontal",
+      "nodeIds": [
+        "f3-start",
+        "f3-save",
+        "f3-sync",
+        "f3-status",
+        "f3-flow",
+        "f3-done"
+      ]
+    },
+    {
+      "groupId": "lane-idx",
+      "title": "索引查询",
+      "axis": "horizontal",
+      "nodeIds": [
+        "f4-start",
+        "f4-check",
+        "f4-rebuild",
+        "f4-return"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,531 @@
+{
+  "diagramId": "http-api-class",
+  "type": "class",
+  "metadata": {
+    "title": "HTTP API - 类图",
+    "version": 133,
+    "description": "基于 packages/server/src/http 源码：Fastify 路由层（项目/文档/图/需求）+ 错误工具"
+  },
+  "nodes": [
+    {
+      "nodeId": "HttpServer",
+      "label": "HttpServer",
+      "kind": "class",
+      "methods": [
+        {
+          "name": "createHttpServer",
+          "returnType": "FastifyInstance"
+        },
+        {
+          "name": "startHttpServer",
+          "params": [
+            {
+              "name": "options",
+              "type": "{port?}"
+            }
+          ],
+          "returnType": "Promise<FastifyInstance>"
+        }
+      ],
+      "description": "Fastify 服务入口",
+      "geometry": {
+        "x": 12,
+        "y": 266,
+        "width": 250,
+        "height": 96
+      }
+    },
+    {
+      "nodeId": "ProjectRoutes",
+      "label": "ProjectRoutes",
+      "kind": "class",
+      "methods": [
+        {
+          "name": "registerProjectRoutes"
+        }
+      ],
+      "description": "项目路由：列表/创建/详情/改名/删除/切阶段/索引",
+      "geometry": {
+        "x": -202.2907019737562,
+        "y": 510.79483306044597,
+        "width": 250,
+        "height": 96
+      }
+    },
+    {
+      "nodeId": "DocumentRoutes",
+      "label": "DocumentRoutes",
+      "kind": "class",
+      "methods": [
+        {
+          "name": "registerDocumentRoutes"
+        }
+      ],
+      "description": "文档路由：创建/重命名/删除/全文/分片读写",
+      "geometry": {
+        "x": 663.7491181956893,
+        "y": 507.5316740106665,
+        "width": 250,
+        "height": 96
+      }
+    },
+    {
+      "nodeId": "DiagramRoutes",
+      "label": "DiagramRoutes",
+      "kind": "class",
+      "methods": [
+        {
+          "name": "registerDiagramRoutes"
+        }
+      ],
+      "description": "图路由：读取图/计算布局",
+      "geometry": {
+        "x": 96.1289422563633,
+        "y": 556.282555416621,
+        "width": 250,
+        "height": 96
+      }
+    },
+    {
+      "nodeId": "RequirementRoutes",
+      "label": "RequirementRoutes",
+      "kind": "class",
+      "methods": [
+        {
+          "name": "registerRequirementRoutes"
+        }
+      ],
+      "description": "需求任务路由：CRUD/状态/任务管理",
+      "geometry": {
+        "x": -511.8217159358484,
+        "y": 788.9519376023328,
+        "width": 250,
+        "height": 96
+      }
+    },
+    {
+      "nodeId": "HttpError",
+      "label": "HttpError",
+      "kind": "class",
+      "attributes": [
+        {
+          "name": "status",
+          "type": "number"
+        }
+      ],
+      "description": "HTTP 层错误（携带状态码）",
+      "geometry": {
+        "x": 119.29780035325928,
+        "y": 1361.3329454020413,
+        "width": 250,
+        "height": 96
+      }
+    },
+    {
+      "nodeId": "ErrorStatus",
+      "label": "ErrorStatus",
+      "kind": "interface",
+      "methods": [
+        {
+          "name": "errorStatus",
+          "returnType": "number"
+        },
+        {
+          "name": "messageOf",
+          "returnType": "string"
+        }
+      ],
+      "description": "错误→HTTP 状态码映射",
+      "geometry": {
+        "x": 667.7232635527612,
+        "y": 1128.1934133845455,
+        "width": 250,
+        "height": 96
+      }
+    },
+    {
+      "nodeId": "WorkspaceResolver",
+      "label": "WorkspaceResolver",
+      "kind": "interface",
+      "methods": [
+        {
+          "name": "requireWorkspaceByProjectId"
+        },
+        {
+          "name": "requireCurrentWorkspace"
+        }
+      ],
+      "description": "工作区解析工具",
+      "geometry": {
+        "x": 4.856976600874759,
+        "y": 998.8253229337222,
+        "width": 250,
+        "height": 96
+      }
+    }
+  ],
+  "edges": [
+    {
+      "edgeId": "e01",
+      "from": "HttpServer",
+      "to": "ProjectRoutes",
+      "label": "register",
+      "points": [
+        {
+          "x": 12,
+          "y": 362
+        },
+        {
+          "x": 12,
+          "y": 436.397416530223
+        },
+        {
+          "x": 47.7092980262438,
+          "y": 436.397416530223
+        },
+        {
+          "x": 47.7092980262438,
+          "y": 510.79483306044597
+        }
+      ]
+    },
+    {
+      "edgeId": "e02",
+      "from": "HttpServer",
+      "to": "DocumentRoutes",
+      "label": "register",
+      "points": [
+        {
+          "x": 262,
+          "y": 362
+        },
+        {
+          "x": 262,
+          "y": 476.18552829196983
+        },
+        {
+          "x": 663.7491181956893,
+          "y": 476.18552829196983
+        },
+        {
+          "x": 663.7491181956893,
+          "y": 576.1700195713786
+        }
+      ]
+    },
+    {
+      "edgeId": "e03",
+      "from": "HttpServer",
+      "to": "DiagramRoutes",
+      "label": "register",
+      "points": [
+        {
+          "x": 221.1289422563633,
+          "y": 362
+        },
+        {
+          "x": 221.1289422563633,
+          "y": 459.1412777083105
+        },
+        {
+          "x": 137,
+          "y": 459.1412777083105
+        },
+        {
+          "x": 137,
+          "y": 556.282555416621
+        }
+      ]
+    },
+    {
+      "edgeId": "e04",
+      "from": "HttpServer",
+      "to": "RequirementRoutes",
+      "label": "register",
+      "points": [
+        {
+          "x": 12,
+          "y": 362
+        },
+        {
+          "x": 12,
+          "y": 575.4759688011663
+        },
+        {
+          "x": -395.95182198608836,
+          "y": 575.4759688011663
+        },
+        {
+          "x": -395.95182198608836,
+          "y": 788.9519376023328
+        }
+      ]
+    },
+    {
+      "edgeId": "e05",
+      "from": "ProjectRoutes",
+      "to": "HttpError",
+      "label": "抛出",
+      "points": [
+        {
+          "x": -104.67520115509387,
+          "y": 606.794833060446
+        },
+        {
+          "x": -104.67520115509387,
+          "y": 1428.5186785101453
+        },
+        {
+          "x": 119.29780035325928,
+          "y": 1428.5186785101453
+        },
+        {
+          "x": 119.29780035325928,
+          "y": 1423.2391481944596
+        }
+      ]
+    },
+    {
+      "edgeId": "e06",
+      "from": "DocumentRoutes",
+      "to": "HttpError",
+      "label": "抛出",
+      "points": [
+        {
+          "x": 888.5988708945739,
+          "y": 603.5316740106665
+        },
+        {
+          "x": 888.5988708945739,
+          "y": 1051.0706552670658
+        },
+        {
+          "x": 369.2978003532593,
+          "y": 1051.0706552670658
+        },
+        {
+          "x": 369.2978003532593,
+          "y": 1361.3329454020413
+        }
+      ]
+    },
+    {
+      "edgeId": "e07",
+      "from": "DiagramRoutes",
+      "to": "HttpError",
+      "label": "抛出",
+      "points": [
+        {
+          "x": 346.1289422563633,
+          "y": 652.282555416621
+        },
+        {
+          "x": 345.73501710776964,
+          "y": 1361.3329454020413
+        }
+      ]
+    },
+    {
+      "edgeId": "e08",
+      "from": "RequirementRoutes",
+      "to": "HttpError",
+      "label": "抛出",
+      "points": [
+        {
+          "x": -261.8217159358484,
+          "y": 884.9519376023328
+        },
+        {
+          "x": -261.8217159358484,
+          "y": 1123.142441502187
+        },
+        {
+          "x": 236.76085180554037,
+          "y": 1123.142441502187
+        },
+        {
+          "x": 236.76085180554037,
+          "y": 1361.3329454020413
+        }
+      ]
+    },
+    {
+      "edgeId": "e09",
+      "from": "ProjectRoutes",
+      "to": "WorkspaceResolver",
+      "label": "解析工作区",
+      "points": [
+        {
+          "x": -61.81706076034271,
+          "y": 606.794833060446
+        },
+        {
+          "x": -61.81706076034271,
+          "y": 802.8100779970841
+        },
+        {
+          "x": 108.03398125490548,
+          "y": 802.8100779970841
+        },
+        {
+          "x": 108.03398125490548,
+          "y": 998.8253229337222
+        }
+      ]
+    },
+    {
+      "edgeId": "e10",
+      "from": "DocumentRoutes",
+      "to": "WorkspaceResolver",
+      "label": "解析工作区",
+      "points": [
+        {
+          "x": 778.935307297574,
+          "y": 603.5316740106665
+        },
+        {
+          "x": 778.935307297574,
+          "y": 801.1784984721944
+        },
+        {
+          "x": 254.85697660087476,
+          "y": 801.1784984721944
+        },
+        {
+          "x": 254.85697660087476,
+          "y": 998.8253229337222
+        }
+      ]
+    },
+    {
+      "edgeId": "e11",
+      "from": "DiagramRoutes",
+      "to": "WorkspaceResolver",
+      "label": "解析工作区",
+      "points": [
+        {
+          "x": 129.85697660087476,
+          "y": 652.282555416621
+        },
+        {
+          "x": 129.85697660087476,
+          "y": 825.5539391751715
+        },
+        {
+          "x": 221.1289422563633,
+          "y": 825.5539391751715
+        },
+        {
+          "x": 221.1289422563633,
+          "y": 998.8253229337222
+        }
+      ]
+    },
+    {
+      "edgeId": "e12",
+      "from": "RequirementRoutes",
+      "to": "WorkspaceResolver",
+      "label": "解析工作区",
+      "points": [
+        {
+          "x": -261.8217159358484,
+          "y": 884.9519376023328
+        },
+        {
+          "x": -261.8217159358484,
+          "y": 1053.0023275877527
+        },
+        {
+          "x": 4.856976600874759,
+          "y": 1053.0023275877527
+        },
+        {
+          "x": 4.856976600874759,
+          "y": 1062.3188642592797
+        }
+      ]
+    },
+    {
+      "edgeId": "e13",
+      "from": "HttpServer",
+      "to": "ErrorStatus",
+      "label": "统一错误处理",
+      "points": [
+        {
+          "x": 262,
+          "y": 362
+        },
+        {
+          "x": 262,
+          "y": 745.0967066922727
+        },
+        {
+          "x": 667.7232635527612,
+          "y": 745.0967066922727
+        },
+        {
+          "x": 667.7232635527612,
+          "y": 1128.1934133845455
+        }
+      ]
+    },
+    {
+      "edgeId": "e14",
+      "from": "ErrorStatus",
+      "to": "HttpError",
+      "label": "分类",
+      "points": [
+        {
+          "x": 667.7232635527612,
+          "y": 1185.3036193226415
+        },
+        {
+          "x": 667.7232635527612,
+          "y": 1177.284301107436
+        },
+        {
+          "x": 297.0738970954377,
+          "y": 1177.284301107436
+        },
+        {
+          "x": 297.0738970954377,
+          "y": 1361.3329454020413
+        }
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "groupId": "g-entry",
+      "title": "服务入口",
+      "axis": "vertical",
+      "nodeIds": [
+        "HttpServer"
+      ],
+      "collapsible": true
+    },
+    {
+      "groupId": "g-routes",
+      "title": "路由层",
+      "axis": "vertical",
+      "nodeIds": [
+        "ProjectRoutes",
+        "DocumentRoutes",
+        "DiagramRoutes",
+        "RequirementRoutes"
+      ],
+      "collapsible": true
+    },
+    {
+      "groupId": "g-util",
+      "title": "公共工具",
+      "axis": "vertical",
+      "nodeIds": [
+        "HttpError",
+        "ErrorStatus",
+        "WorkspaceResolver"
+      ],
+      "collapsible": true
+    }
+  ]
+}
