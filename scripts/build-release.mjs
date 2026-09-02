@@ -25,7 +25,7 @@ run("npm run build -w @stagelab/shared");
 console.log("[build:release] 构建 web ...");
 run("npm run build -w @stagelab/web");
 
-console.log("[build:release] bundle server+shared -> dist/cli.js ...");
+console.log("[build:release] bundle server+shared -> dist/cli.mjs ...");
 await build({
   entryPoints: [path.join(root, "packages/server/src/cli.ts")],
   bundle: true,
@@ -36,6 +36,22 @@ await build({
   external: ["fastify", "@fastify/static", "@modelcontextprotocol/sdk", "elkjs", "zod"],
   outfile: path.join(root, "dist/cli.mjs"),
   // 入口 cli.ts 首行 shebang 由 esbuild 自动保留到 bundle 顶部，无需 banner
+  logLevel: "info"
+});
+
+// 布局 Worker 独立产物：worker.ts 被 cli.mjs 内联后，运行时按相对路径 new Worker
+// 加载独立脚本（esbuild 单文件 bundle 不会产出分文件），故单独打包出 dist/worker.mjs。
+// cli.mjs 内通过 import.meta.url 后缀(.mjs) 定位到同目录的 worker.mjs。
+console.log("[build:release] bundle layout worker -> dist/worker.mjs ...");
+await build({
+  entryPoints: [path.join(root, "packages/server/src/layout/worker.ts")],
+  bundle: true,
+  platform: "node",
+  format: "esm",
+  target: "node18",
+  // elkjs 外部化，由根 package.json dependencies 提供（Worker 内运行时解析 node_modules）
+  external: ["elkjs"],
+  outfile: path.join(root, "dist/worker.mjs"),
   logLevel: "info"
 });
 

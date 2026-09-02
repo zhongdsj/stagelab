@@ -1,6 +1,6 @@
 {
   "name": "stagelab",
-  "version": "0.3",
+  "version": "0.3.1",
   "private": false,
   "description": "源库 - 四阶段MCP项目管理工具",
   "workspaces": [
@@ -11,7 +11,8 @@
   },
   "main": "./dist/cli.mjs",
   "files": [
-    "dist"
+    "dist",
+    "CHANGELOG.md"
   ],
   "scripts": {
     "build": "npm run build -w @stagelab/shared && npm run build -w @stagelab/server && npm run build -w @stagelab/web",

@@ -15,14 +15,14 @@
 
 ## 快速开始（发布包 stagelab）
 
-> 项目可打包为**一个 npm CLI 包 `stagelab`**。装好后一条命令即可同时获得后端 HTTP(+Web 界面) 与 MCP 能力，数据会持久化到本地。当前这一节描述发布包形态；下面的「零、快速启动」是 monorepo 本地开发模式，二选一使用。
+> 项目已打包为**一个 npm CLI 包 `stagelab`**。装好后一条命令即可同时获得后端 HTTP(+Web 界面) 与 MCP 能力，数据会持久化到本地。当前这一节描述发布包形态；下面的「零、快速启动」是 monorepo 本地开发模式，二选一使用。
 
 ### 安装
 
 发布到 npm 后，全局安装即可获得 `stagelab` 命令：
 
 ```powershell
-npm install -g stagelab
+npm install -g stagelab@latest
 # 或用 npx 免安装：npx stagelab <命令>
 ```
 
