@@ -1,0 +1,16 @@
+{
+  "taskId": "f2c4e0ee-1ad2-4139-b698-034ebdf00689",
+  "requirementId": "ed976849-7163-4396-bacb-bb527b0132b2",
+  "title": "T3 单包构建与发布配置：esbuild bundle + bin/files/main + 去 private",
+  "description": "新增根（或发布包）构建脚本（build-release.mjs 或 package.json 脚本）：esbuild bundle shared+server 为 dist/cli.js（外部化运行时依赖 fastify/mcp sdk/zod/elkjs/@fastify/static），并运行 web 生产构建后拷贝 dist 进发布目录。配置发布用 package.json 字段：name fourstage、bin {fourstage: dist/cli.js}、files、main、去 private、prepublishOnly=build。根 scripts 增加 build:release。",
+  "status": "done",
+  "acceptanceCriteria": "构建脚本可一键产出单包 dist：server+shared 经 esbuild bundle 为 dist/cli.js，web 构建产物并入发布目录；package.json 具备 bin/main/files 且非 private；第三方 install 后 fourstage 命令可用；npm pack --dry-run 内容正确不含源码/测试/本地 저장소。",
+  "files": [
+    "package.json",
+    "scripts/build-release.mjs",
+    "packages/server/package.json"
+  ],
+  "changeType": "新增",
+  "createdAt": 1788339103082,
+  "updatedAt": 1788340474726
+}

@@ -1,0 +1,15 @@
+{
+  "taskId": "d0dbc29a-b797-446a-b109-44303da6ca2c",
+  "requirementId": "ed976849-7163-4396-bacb-bb527b0132b2",
+  "title": "T2 web 静态托管：@fastify/static 挂载 web 产物 + SPA fallback",
+  "description": "http/server.ts 用 @fastify/static 挂载 web 构建产物目录（路径默认可由 --data/web-dist 或环境变量指定），注册/ 根路径静态服务及 SPA history fallback（非 /api 且未命中静态文件时回退 index.html）。因 web 已用相对路径 /api 调接口，托管后同源无需跨域变更。包依赖增加 @fastify/static。",
+  "status": "done",
+  "acceptanceCriteria": "HTTP 端口同时提供 /api 接口与 web 静态页面；SPA 路由刷新不 404（history fallback 到 index.html）；静态目录缺失时降级为仅 API 并告警；不配置静态目录时不影响纯 MCP/http 场景。",
+  "files": [
+    "packages/server/src/http/server.ts",
+    "packages/server/package.json"
+  ],
+  "changeType": "新增",
+  "createdAt": 1788339098505,
+  "updatedAt": 1788340473671
+}

@@ -1,0 +1,17 @@
+{
+  "taskId": "de0791d8-a63e-491e-8f45-45212fbc8eb6",
+  "requirementId": "ed976849-7163-4396-bacb-bb527b0132b2",
+  "title": "T6 HTTP 默认端口改为 6327",
+  "description": "约定 HTTP server 默认端口为 6327（替代原 3000）。影响点：http/server.ts 默认端口常量、CLI --port 默认值、README 启动说明、web/vite.config.ts 代理 target。统一以 6327 为默认，保留 --port/PORT 可覆盖能力。",
+  "status": "done",
+  "acceptanceCriteria": "fourstage start / http 默认监听 6327，可用 --port 或 PORT 覆盖；README 中的启动端口写为 6327；web vite dev 代理 target 相应指向 6327；与旧默认 3000 冲突时以新值 6327 为准。",
+  "files": [
+    "packages/server/src/http/server.ts",
+    "packages/server/src/cli.ts",
+    "packages/web/vite.config.ts",
+    "README.md"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788339200001,
+  "updatedAt": 1788340477971
+}

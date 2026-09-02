@@ -1,6 +1,7 @@
 # 四阶段工作流 vs AI直接生成代码：结果质量、Token开销对比
 
 ## 目录
+- [快速开始（发布包 fourstage）](#快速开始发布包-fourstage)
 - [一、项目解决的核心痛点](#一项目解决的核心痛点)
 - [二、项目终极设计哲学](#二项目终极设计哲学)
 - [三、背景：两种工作模式](#三背景两种工作模式)
@@ -11,6 +12,61 @@
 - [八、与 CodeGraph 的对比（定位边界）](#八与-codegraph-的对比定位边界)
 
 ------
+
+## 快速开始（发布包 fourstage）
+
+> 项目可打包为**一个 npm CLI 包 `fourstage`**。装好后一条命令即可同时获得后端 HTTP(+Web 界面) 与 MCP 能力，数据会持久化到本地。当前这一节描述发布包形态；下面的「零、快速启动」是 monorepo 本地开发模式，二选一使用。
+
+### 安装
+
+发布到 npm 后，全局安装即可获得 `fourstage` 命令：
+
+```powershell
+npm install -g fourstage
+# 或用 npx 免安装：npx fourstage <命令>
+```
+
+### 启动：server + web 一体（`fourstage start`）
+
+`fourstage start` 默认只启动 **HTTP server 并托管 Web 界面**（不启动 MCP），数据写入本地（注册表与项目存储，见下）：
+
+```powershell
+fourstage start
+# 默认监听 0.0.0.0:6327，Web 界面与 /api 接口同源：
+#   - 浏览器打开 http://localhost:6327  → Web 管理界面
+#   - API 基础路径                       → http://localhost:6327/api
+```
+
+可选参数：
+
+```text
+fourstage start --port 8080        # 改端口（也可用环境变量 PORT）
+fourstage start --data    D:\data   # 指定数据根目录（注册表 JSON 所在处）
+fourstage start --repo    D:\some\repo  # 预加载指定仓库
+```
+
+> 仅想暴露 API、不要 Web 界面时用 `fourstage http`。数据目录默认为 `%APPDATA%/fourstage`（Windows），可用 `--data` 或环境变量 `FOURSTAGE_DATA_DIR` 覆盖；项目级文档/图/需求等仍存于各仓库根下的 `.fourstage/`。
+
+### 配置 MCP（AI 客户端接入）
+
+MCP 是独立子命令（stdio 模式），在 AI 客户端的 MCP 服务器配置里把命令指向它即可。以下图适用于 Trae 等任意支持 stdio MCP 的客户端：
+
+```
+命令：   fourstage mcp
+（或）   npx fourstage mcp
+可加参数： --data <dir>  --repo <path>
+```
+
+因为 MCP 自带存储访问，**即使 HTTP server 未启动，MCP 也能正常读写本地数据**；需要「Web 给开发者看」时再用 `fourstage start` 起界面，二者指向同一份数据（`--data` 需一致）。
+
+### 发布包形态 与 dev 三窗模式的区别
+
+| 模式 | 命令 | 说明 |
+| ---- | ---- | ---- |
+| **发布包（生产）** | `fourstage start` / `fourstage http` / `fourstage mcp` | 单包安装即用，HTTP 托管 Web 同源，MCP 独立子命令 |
+| **dev 三窗模式** | `npm run dev:http` + `dev:mcp` + `dev:web` | monorepo 源码开发，Web 走 vite（5173）代理 `/api` 到 `:6327`，需自行构建 |
+
+---
 
 ## 零、快速启动
 
@@ -24,7 +80,7 @@ npm install
 
 ### 0.2 启动后端
 
-#### HTTP 服务（Web 前端用，默认端口 3000）
+#### HTTP 服务（Web 前端用，默认端口 6327）
 
 ```powershell
 # 开发模式（tsx 直跑，免构建）
@@ -35,7 +91,7 @@ npm run build -w @fourstage/server
 node packages/server/dist/http/server.js
 ```
 
-> 默认监听 `0.0.0.0:3000`，可用环境变量 `PORT` 修改端口。
+> 默认监听 `0.0.0.0:6327`，可用环境变量 `PORT` 修改端口。
 
 #### MCP 服务（AI 客户端接入，stdio 模式）
 
@@ -51,14 +107,14 @@ node packages/server/dist/mcp/server.js
 npm run dev:web
 ```
 
-> vite 已配置将 `/api` 代理到 `http://localhost:3000`，浏览器打开 `http://localhost:5173`，点「新建项目」创建项目后进入详情页。
+> vite 已配置将 `/api` 代理到 `http://localhost:6327`，浏览器打开 `http://localhost:5173`，点「新建项目」创建项目后进入详情页。
 
 ### 0.4 常用脚本（根 package.json）
 
 | 命令 | 作用 |
 | ---- | ---- |
 | `dev.bat` | 一键开启 3 个 cmd 窗口（MCP + HTTP + 前端） |
-| `npm run dev:http` | 开发模式启动后端 HTTP 服务（端口 3000） |
+| `npm run dev:http` | 开发模式启动后端 HTTP 服务（端口 6327） |
 | `npm run dev:mcp` | 开发模式启动 MCP 服务（stdio 模式） |
 | `npm run dev:web` | 开发模式启动前端（vite，端口 5173） |
 | `npm run build` | 依次构建 shared → server → web |
@@ -68,7 +124,7 @@ npm run dev:web
 
 **方式一：双击 `dev.bat`**，自动开启 3 个窗口：
 - `fourstage-mcp` → MCP 服务（stdio，日志走 stderr）
-- `fourstage-http` → HTTP server（3000）
+- `fourstage-http` → HTTP server（6327）
 - `fourstage-web` → 前端（5173，代理 `/api`）
 
 **方式二：手动分终端启动**

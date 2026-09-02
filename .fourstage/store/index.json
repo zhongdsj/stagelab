@@ -1,6 +1,6 @@
 {
   "projectId": "34a29cd8-790c-43c4-8ce9-e2c25573cfa0",
-  "version": 1788338200,
+  "version": 1788340478,
   "documentIndex": [
     {
       "docId": "dev-doc",
@@ -327,6 +327,13 @@
       "status": "done",
       "branchName": "feature/edge-anchor-constraint",
       "taskCount": 8
+    },
+    {
+      "requirementId": "ed976849-7163-4396-bacb-bb527b0132b2",
+      "title": "打包发布：单一 npm CLI 包（server+web 一体，MCP 独立子命令）",
+      "status": "test",
+      "branchName": "release/npm-package",
+      "taskCount": 6
     }
   ],
   "taskIndex": [
@@ -571,6 +578,12 @@
       "requirementId": "196b2e24-dc60-4f98-80c4-fddaf158ace5"
     },
     {
+      "taskId": "4afe5b89-8121-410d-bae8-b34dfe7de433",
+      "title": "T5 构建验证与联调",
+      "status": "done",
+      "requirementId": "ed976849-7163-4396-bacb-bb527b0132b2"
+    },
+    {
       "taskId": "527548c3-5dd4-4363-8842-2f62bc5a946e",
       "title": "T88 构建验证与联调",
       "status": "done",
@@ -769,6 +782,12 @@
       "requirementId": "196b2e24-dc60-4f98-80c4-fddaf158ace5"
     },
     {
+      "taskId": "a696ad7f-7d92-4f1a-acbb-997c5a4a5215",
+      "title": "T1 server 统一 CLI：start/http/mcp 子命令 + 参数解析",
+      "status": "done",
+      "requirementId": "ed976849-7163-4396-bacb-bb527b0132b2"
+    },
+    {
       "taskId": "ace1ade1-bc56-4e3f-9f1e-6bda7c783583",
       "title": "T31 MCP 写操作只返回 meta",
       "status": "done",
@@ -859,6 +878,12 @@
       "requirementId": "36c53c3a-5666-4ed4-942b-d0a148c4d306"
     },
     {
+      "taskId": "d0dbc29a-b797-446a-b109-44303da6ca2c",
+      "title": "T2 web 静态托管：@fastify/static 挂载 web 产物 + SPA fallback",
+      "status": "done",
+      "requirementId": "ed976849-7163-4396-bacb-bb527b0132b2"
+    },
+    {
       "taskId": "d17d77d5-a0f9-45c5-8c2f-8a4edcf94051",
       "title": "T74 前端：线段平移端点跨边滑动",
       "status": "done",
@@ -895,6 +920,12 @@
       "requirementId": "bbe72970-1124-4675-ab51-1500a8d4aeb5"
     },
     {
+      "taskId": "d512675a-83c9-4214-bfb6-ea6f084b78e5",
+      "title": "T4 README：发布包安装/启动(server+web)/MCP 配置说明",
+      "status": "done",
+      "requirementId": "ed976849-7163-4396-bacb-bb527b0132b2"
+    },
+    {
       "taskId": "d8a995fc-ef4d-414c-8830-f1a7fccc1cca",
       "title": "T28 前端：折叠改单模块本地折叠",
       "status": "done",
@@ -917,6 +948,12 @@
       "title": "T35 构建验证与联调",
       "status": "done",
       "requirementId": "23a5d5d0-4d16-42e7-a8da-614df27d783a"
+    },
+    {
+      "taskId": "de0791d8-a63e-491e-8f45-45212fbc8eb6",
+      "title": "T6 HTTP 默认端口改为 6327",
+      "status": "done",
+      "requirementId": "ed976849-7163-4396-bacb-bb527b0132b2"
     },
     {
       "taskId": "deef6501-e74d-4d5a-aaea-06fc794b6868",
@@ -947,6 +984,12 @@
       "title": "T79 前端：线段平移共线合并（去冗余折点）",
       "status": "done",
       "requirementId": "e7e0ac7a-f714-4ea3-8b56-d20210b8d5d7"
+    },
+    {
+      "taskId": "f2c4e0ee-1ad2-4139-b698-034ebdf00689",
+      "title": "T3 单包构建与发布配置：esbuild bundle + bin/files/main + 去 private",
+      "status": "done",
+      "requirementId": "ed976849-7163-4396-bacb-bb527b0132b2"
     },
     {
       "taskId": "f619f86f-6932-416e-8d5f-63ae2d777ab7",

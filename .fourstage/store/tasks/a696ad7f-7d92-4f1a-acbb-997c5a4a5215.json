@@ -1,0 +1,18 @@
+{
+  "taskId": "a696ad7f-7d92-4f1a-acbb-997c5a4a5215",
+  "requirementId": "ed976849-7163-4396-bacb-bb527b0132b2",
+  "title": "T1 server 统一 CLI：start/http/mcp 子命令 + 参数解析",
+  "description": "server 新增统一 CLI 入口 cli.ts（可用 commander）：start→启动 HTTP 并托管 web、不启动 MCP；http→仅 HTTP；mcp→启动 stdio MCP。统一解析 --data/--port/--repo 等参数（替代各处 initFromArgs(process.argv) 的内联解析，改为显式 options 传入），并导出可复用的 startHttpServer/startMcpServer 供 cli 调用。",
+  "status": "done",
+  "acceptanceCriteria": "fourstage CLI 可运行；fourstage start 只起 server+web（不含 MCP）；fourstage mcp 走 stdio；--data/--port 参数可覆盖默认数据目录与端口；直接执行旧入口兼容不回归。",
+  "files": [
+    "packages/server/src/cli.ts",
+    "packages/server/src/index.ts",
+    "packages/server/src/http/server.ts",
+    "packages/server/src/mcp/server.ts",
+    "packages/server/src/services/workspace.service.ts"
+  ],
+  "changeType": "新增",
+  "createdAt": 1788339095221,
+  "updatedAt": 1788340472563
+}

@@ -7,7 +7,6 @@
  */
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { pathToFileURL } from "node:url";
 import { registerAllTools } from "./tools/index.js";
 import { initFromArgs } from "../services/workspace.service.js";
 import { errLog } from "../logger.js";
@@ -28,16 +27,4 @@ export async function startMcpServer(): Promise<void> {
   const transport = new StdioServerTransport();
   await server.connect(transport);
   errLog("mcp", "MCP server 已连接（stdio 模式），等待客户端调用…");
-}
-
-/** 被直接执行时自动启动 */
-const isDirectRun =
-  process.argv[1] !== undefined &&
-  import.meta.url === pathToFileURL(process.argv[1]).href;
-
-if (isDirectRun) {
-  startMcpServer().catch((err) => {
-    errLog("mcp", `启动失败: ${err instanceof Error ? err.message : String(err)}`);
-    process.exit(1);
-  });
 }

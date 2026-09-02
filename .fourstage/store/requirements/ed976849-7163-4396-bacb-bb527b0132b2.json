@@ -1,0 +1,17 @@
+{
+  "requirementId": "ed976849-7163-4396-bacb-bb527b0132b2",
+  "title": "打包发布：单一 npm CLI 包（server+web 一体，MCP 独立子命令）",
+  "description": "目标：将 monorepo（shared+server+web）打包为一个单一 npm CLI 包 fourstage，他人 npm i -g 后即可使用。启动时只启动 server+web（HTTP 托管 web 界面，同源无跨域），MCP 作为独立子命令 fourstage mcp（stdio）供 AI 客户端拉起。改造点：server 新增统一 CLI（start/mcp/http 子命令 + --data/--port/--repo 参数）；http 用 @fastify/static 托管 web 构建产物并做 SPA fallback；单包构建（esbuild bundle shared+server 为 dist/cli.js，构建 web 并入包）；package.json 配 bin/files/main、去 private；README 补发布包安装/启动/MCP 配置说明。",
+  "branchName": "release/npm-package",
+  "status": "test",
+  "taskIds": [
+    "a696ad7f-7d92-4f1a-acbb-997c5a4a5215",
+    "d0dbc29a-b797-446a-b109-44303da6ca2c",
+    "f2c4e0ee-1ad2-4139-b698-034ebdf00689",
+    "d512675a-83c9-4214-bfb6-ea6f084b78e5",
+    "4afe5b89-8121-410d-bae8-b34dfe7de433",
+    "de0791d8-a63e-491e-8f45-45212fbc8eb6"
+  ],
+  "createdAt": 1788339085799,
+  "updatedAt": 1788340478006
+}

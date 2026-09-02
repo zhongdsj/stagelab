@@ -32,8 +32,12 @@ export interface RegistryRepo {
   openedAt: number;
 }
 
-/** 注册表文件路径（优先 %APPDATA%，回退用户主目录） */
+/** 注册表文件路径（优先 --data/FOURSTAGE_DATA_DIR，其次 %APPDATA%，回退用户主目录） */
 export function registryFilePath(): string {
+  const dataDir = process.env.FOURSTAGE_DATA_DIR;
+  if (dataDir && dataDir.length > 0) {
+    return path.join(dataDir, REGISTRY_FILE);
+  }
   const base =
     process.env.APPDATA && process.env.APPDATA.length > 0
       ? path.join(process.env.APPDATA, REGISTRY_DIR)
