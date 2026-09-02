@@ -1,0 +1,16 @@
+{
+  "taskId": "d3f660ab-fbf7-4a6d-9432-6e764cd04e85",
+  "requirementId": "78d8e8b4-bbcd-4562-99ed-b748ad9e494b",
+  "title": "前端：节点按 structuralRisk 分级着色",
+  "description": "DiagramView/DiagramSvg 加载图时并行拉取风险分映射，节点按 structuralRisk 渲染边框/描边风险色：low→绿、medium→橙、high→红；无 impact 数据节点保持默认。数据驱动，非类型编码；纯视觉态不写回 Diagram。",
+  "status": "done",
+  "acceptanceCriteria": "悬停/静态视图下高/中风险节点着色明显可辨；无数据节点无着色；不修改 Diagram 存储",
+  "files": [
+    "packages/web/src/components/diagram/DiagramView.vue",
+    "packages/web/src/components/diagram/DiagramSvg.vue",
+    "packages/web/src/api/index.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788330728300,
+  "updatedAt": 1788330938799
+}

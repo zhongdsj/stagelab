@@ -1,0 +1,92 @@
+{
+  "ProjectService": {
+    "upstream": [
+      "WorkspaceService"
+    ],
+    "downstream": [
+      "WorkspaceService"
+    ],
+    "upstreamHops": 1,
+    "downstreamHops": 1,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": true,
+    "cycleIds": [
+      "WorkspaceService",
+      "ProjectService"
+    ],
+    "structuralRisk": "high"
+  },
+  "DocumentService": {
+    "upstream": [],
+    "downstream": [
+      "IndexService"
+    ],
+    "upstreamHops": 0,
+    "downstreamHops": 1,
+    "fanIn": 0,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "DiagramService": {
+    "upstream": [],
+    "downstream": [
+      "IndexService"
+    ],
+    "upstreamHops": 0,
+    "downstreamHops": 1,
+    "fanIn": 0,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "IndexService": {
+    "upstream": [
+      "DiagramService",
+      "DocumentService",
+      "RequirementService"
+    ],
+    "downstream": [],
+    "upstreamHops": 1,
+    "downstreamHops": 0,
+    "fanIn": 3,
+    "fanOut": 0,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "medium"
+  },
+  "RequirementService": {
+    "upstream": [],
+    "downstream": [
+      "IndexService"
+    ],
+    "upstreamHops": 0,
+    "downstreamHops": 1,
+    "fanIn": 0,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "WorkspaceService": {
+    "upstream": [
+      "ProjectService"
+    ],
+    "downstream": [
+      "ProjectService"
+    ],
+    "upstreamHops": 1,
+    "downstreamHops": 1,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": true,
+    "cycleIds": [
+      "WorkspaceService",
+      "ProjectService"
+    ],
+    "structuralRisk": "high"
+  }
+}

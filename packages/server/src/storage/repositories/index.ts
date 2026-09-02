@@ -20,7 +20,8 @@ import {
   BugRecordSchema,
   DiagramSchema,
   DocumentFragmentSchema,
-  DocumentMetaSchema
+  DocumentMetaSchema,
+  VerificationRecordSchema
 } from "@fourstage/shared";
 import fs from "node:fs";
 import {
@@ -28,7 +29,9 @@ import {
   storeSubdir,
   documentDir,
   documentFragmentPath,
-  documentMetaPath
+  documentMetaPath,
+  verificationDir,
+  verificationPath
 } from "../paths.js";
 import {
   readJsonFile,
@@ -45,7 +48,8 @@ import type {
   BugRecord,
   Diagram,
   DocumentFragment,
-  DocumentMeta
+  DocumentMeta,
+  VerificationRecord
 } from "@fourstage/shared";
 
 /** Project 仓储（meta.json 单文件） */
@@ -287,6 +291,131 @@ export class DocumentMetaRepository extends EntityRepository<DocumentMeta> {
       }
     }
     return result;
+  }
+}
+
+/**
+ * VerificationRecord 验证历史仓储
+ *
+ * 存储形态：store/verifications/{diagramId}/{verificationId}.json（按图子目录组织）
+ * - 每次显式 verify_diagram 追加一条，独立于 Diagram 存储，防止图随校验次数膨胀
+ * - save/delete 由记录自身的 diagramId 定位目录
+ */
+export class VerificationRecordRepository extends EntityRepository<VerificationRecord> {
+  constructor(workspace: RepoWorkspace) {
+    super(workspace, {
+      // 占位路径（get/save/delete 已 override，按 diagramId 目录定位）
+      filePath: (repoRoot, id) => verificationPath(repoRoot, "unknown", id),
+      schema: VerificationRecordSchema,
+      idField: "verificationId"
+    });
+  }
+
+  /** 确保某图的验证目录存在 */
+  private async ensureDir(diagramId: string): Promise<void> {
+    await fs.promises.mkdir(verificationDir(this.repoRoot, diagramId), {
+      recursive: true
+    });
+  }
+
+  override async get(verificationId: string): Promise<VerificationRecord> {
+    // 记录内携带 diagramId，先读定位文件（校验失败时给出可读错误）
+    const records = await this.findRecord(verificationId);
+    if (!records) {
+      throw new FileNotFoundError(
+        verificationPath(this.repoRoot, "unknown", verificationId)
+      );
+    }
+    return records;
+  }
+
+  /** 定位单条记录（按 verificationId 全图扫描，仅用于 get/exists，记录数量有限） */
+  private async findRecord(
+    verificationId: string
+  ): Promise<VerificationRecord | null> {
+    const dir = storeSubdir(this.repoRoot, "verifications");
+    if (!fs.existsSync(dir)) return null;
+    const diagrams = await fs.promises.readdir(dir, { withFileTypes: true });
+    for (const d of diagrams) {
+      if (!d.isDirectory()) continue;
+      const fp = verificationPath(this.repoRoot, d.name, verificationId);
+      if (!fs.existsSync(fp)) continue;
+      const raw = await readJsonFile<unknown>(fp);
+      const parsed = this.schema.safeParse(raw);
+      if (!parsed.success) {
+        throw new Error(
+          `实体数据校验失败(${fp}): ${parsed.error.issues
+            .map((i) => `${i.path.join(".")}: ${i.message}`)
+            .join("; ")}`
+        );
+      }
+      return parsed.data;
+    }
+    return null;
+  }
+
+  override async exists(verificationId: string): Promise<boolean> {
+    return (await this.findRecord(verificationId)) !== null;
+  }
+
+  override async save(
+    entity: VerificationRecord,
+    baseMtime?: number
+  ): Promise<void> {
+    await this.ensureDir(entity.diagramId);
+    const fp = verificationPath(
+      this.repoRoot,
+      entity.diagramId,
+      entity.verificationId
+    );
+    await writeJsonFile(fp, entity, { baseMtime });
+    await notifyChanged(this.repoRoot);
+  }
+
+  override async delete(verificationId: string): Promise<void> {
+    const rec = await this.findRecord(verificationId);
+    if (!rec) {
+      throw new FileNotFoundError(
+        verificationPath(this.repoRoot, "unknown", verificationId)
+      );
+    }
+    const fp = verificationPath(
+      this.repoRoot,
+      rec.diagramId,
+      verificationId
+    );
+    await fs.promises.unlink(fp);
+    invalidateCache(fp);
+    await notifyChanged(this.repoRoot);
+  }
+
+  /** 按图列出全部验证记录（按 verifiedAt 升序，形成可回放链式轨迹） */
+  async listByDiagram(diagramId: string): Promise<VerificationRecord[]> {
+    const dir = verificationDir(this.repoRoot, diagramId);
+    if (!fs.existsSync(dir)) return [];
+    const files = await fs.promises.readdir(dir);
+    const result: VerificationRecord[] = [];
+    for (const f of files) {
+      if (!f.endsWith(".json")) continue;
+      try {
+        const raw = await readJsonFile<unknown>(
+          verificationPath(this.repoRoot, diagramId, f.replace(/\.json$/, ""))
+        );
+        const parsed = this.schema.safeParse(raw);
+        if (parsed.success) result.push(parsed.data);
+      } catch {
+        // 单条损坏跳过
+      }
+    }
+    return result.sort((a, b) => a.verifiedAt - b.verifiedAt);
+  }
+
+  /** 级联删除某图全部验证记录（deleteDiagram 联动调用）；目录不存在则忽略 */
+  async deleteByDiagram(diagramId: string): Promise<void> {
+    const dir = verificationDir(this.repoRoot, diagramId);
+    if (!fs.existsSync(dir)) return;
+    await fs.promises.rm(dir, { recursive: true, force: true });
+    // 目录内缓存失效（整目录 rm，逐文件无关紧要，清相关缓存避免残留）
   }
 }
 

@@ -1,0 +1,15 @@
+{
+  "taskId": "9c461764-ba6d-41f5-aedd-9847ff8d8b86",
+  "requirementId": "34e3589b-32e7-4f28-b710-15794560e4c3",
+  "title": "T81 共享层：impactIndex 类型与 Schema",
+  "description": "shared 层新增影响范围索引类型：ImpactIndexEntry（upstream/downstream/upstreamHops/downstreamHops/fanIn/fanOut/inCycle/cycleIds/structuralRisk）+ ImpactIndexMap（nodeId→entry）+ 对应 Zod schema",
+  "status": "done",
+  "acceptanceCriteria": "types.ts 新增 ImpactIndexEntry/ImpactIndexMap 类型并导出；schemas.ts 新增 ImpactIndexSchema；structuralRisk 枚举 low|medium|high；nodeId→entry 映射可序列化",
+  "files": [
+    "packages/shared/src/types.ts",
+    "packages/shared/src/schemas.ts"
+  ],
+  "changeType": "新增",
+  "createdAt": 1788321904648,
+  "updatedAt": 1788329615341
+}

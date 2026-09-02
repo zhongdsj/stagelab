@@ -3,7 +3,7 @@
   "type": "class",
   "metadata": {
     "title": "HTTP API - 类图",
-    "version": 133,
+    "version": 134,
     "description": "基于 packages/server/src/http 源码：Fastify 路由层（项目/文档/图/需求）+ 错误工具"
   },
   "nodes": [
@@ -33,6 +33,16 @@
         "y": 266,
         "width": 250,
         "height": 96
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/http/server.ts",
+            "symbols": [
+              "HttpServer"
+            ]
+          }
+        ]
       }
     },
     {
@@ -50,6 +60,16 @@
         "y": 510.79483306044597,
         "width": 250,
         "height": 96
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/http/routes/projects.ts",
+            "symbols": [
+              "ProjectRoutes"
+            ]
+          }
+        ]
       }
     },
     {
@@ -67,6 +87,16 @@
         "y": 507.5316740106665,
         "width": 250,
         "height": 96
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/http/routes/documents.ts",
+            "symbols": [
+              "DocumentRoutes"
+            ]
+          }
+        ]
       }
     },
     {
@@ -84,6 +114,16 @@
         "y": 556.282555416621,
         "width": 250,
         "height": 96
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/http/routes/diagrams.ts",
+            "symbols": [
+              "DiagramRoutes"
+            ]
+          }
+        ]
       }
     },
     {
@@ -101,6 +141,16 @@
         "y": 788.9519376023328,
         "width": 250,
         "height": 96
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/http/routes/requirements.ts",
+            "symbols": [
+              "RequirementRoutes"
+            ]
+          }
+        ]
       }
     },
     {
@@ -119,6 +169,16 @@
         "y": 1361.3329454020413,
         "width": 250,
         "height": 96
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/http/routes/_util.ts",
+            "symbols": [
+              "HttpError"
+            ]
+          }
+        ]
       }
     },
     {
@@ -141,6 +201,16 @@
         "y": 1128.1934133845455,
         "width": 250,
         "height": 96
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/http/routes/_util.ts",
+            "symbols": [
+              "errorStatus"
+            ]
+          }
+        ]
       }
     },
     {
@@ -161,6 +231,16 @@
         "y": 998.8253229337222,
         "width": 250,
         "height": 96
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/http/routes/_util.ts",
+            "symbols": [
+              "requireWorkspaceByProjectId"
+            ]
+          }
+        ]
       }
     }
   ],

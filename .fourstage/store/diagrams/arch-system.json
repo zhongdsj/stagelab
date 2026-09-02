@@ -3,7 +3,7 @@
   "type": "architecture",
   "metadata": {
     "title": "四阶段MCP项目管理工具 - 系统架构",
-    "version": 120,
+    "version": 122,
     "description": "基于开发文档 5.1 整体架构：MCP Client(AI) 与 Web 前端通过 stdio/HTTP 接入 Node.js 后端，经业务服务层与布局引擎，落盘到本地文件存储层"
   },
   "nodes": [
@@ -45,6 +45,16 @@
         "y": 215.85638844867924,
         "width": 168,
         "height": 60
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/web/src/views/DiagramPageView.vue"
+          },
+          {
+            "path": "packages/web/src/components/diagram/DiagramView.vue"
+          }
+        ]
       }
     },
     {
@@ -72,6 +82,16 @@
         "y": 382,
         "width": 168,
         "height": 60
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/mcp/server.ts",
+            "symbols": [
+              "startMcpServer"
+            ]
+          }
+        ]
       }
     },
     {
@@ -99,6 +119,22 @@
         "y": 213.3934068060469,
         "width": 168,
         "height": 60
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/http/server.ts",
+            "symbols": [
+              "startHttpServer"
+            ]
+          },
+          {
+            "path": "packages/server/src/http/routes/diagrams.ts",
+            "symbols": [
+              "diagramRouter"
+            ]
+          }
+        ]
       }
     },
     {
@@ -126,6 +162,22 @@
         "y": 529.7144639903015,
         "width": 168,
         "height": 60
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/services/project.service.ts",
+            "symbols": [
+              "ProjectService"
+            ]
+          },
+          {
+            "path": "packages/server/src/services/document.service.ts",
+            "symbols": [
+              "DocumentService"
+            ]
+          }
+        ]
       }
     },
     {
@@ -153,6 +205,19 @@
         "y": 805.2836293363389,
         "width": 168,
         "height": 60
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/layout/engine.ts",
+            "symbols": [
+              "LayoutEngine"
+            ]
+          },
+          {
+            "path": "packages/server/src/layout/worker.ts"
+          }
+        ]
       }
     },
     {
@@ -180,6 +245,23 @@
         "y": 529.569507553048,
         "width": 168,
         "height": 60
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/storage/io.ts",
+            "symbols": [
+              "writeJsonFile",
+              "readJsonFile"
+            ]
+          },
+          {
+            "path": "packages/server/src/storage/repo.ts",
+            "symbols": [
+              "initRepo"
+            ]
+          }
+        ]
       }
     }
   ],

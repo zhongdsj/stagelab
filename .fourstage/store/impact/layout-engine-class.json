@@ -1,0 +1,127 @@
+{
+  "LayoutEngine": {
+    "upstream": [
+      "LayoutWorker"
+    ],
+    "downstream": [
+      "LayoutOptions",
+      "LayoutParams",
+      "VModule",
+      "HLane",
+      "CollapsePlan",
+      "ElkEngine"
+    ],
+    "upstreamHops": 1,
+    "downstreamHops": 1,
+    "fanIn": 1,
+    "fanOut": 6,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "LayoutOptions": {
+    "upstream": [
+      "LayoutEngine"
+    ],
+    "downstream": [],
+    "upstreamHops": 2,
+    "downstreamHops": 0,
+    "fanIn": 1,
+    "fanOut": 0,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "LayoutOverrides": {
+    "upstream": [],
+    "downstream": [
+      "LayoutParams"
+    ],
+    "upstreamHops": 0,
+    "downstreamHops": 1,
+    "fanIn": 0,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "LayoutParams": {
+    "upstream": [
+      "LayoutEngine",
+      "LayoutOverrides"
+    ],
+    "downstream": [],
+    "upstreamHops": 2,
+    "downstreamHops": 0,
+    "fanIn": 2,
+    "fanOut": 0,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "medium"
+  },
+  "LayoutWorker": {
+    "upstream": [],
+    "downstream": [
+      "LayoutEngine"
+    ],
+    "upstreamHops": 0,
+    "downstreamHops": 2,
+    "fanIn": 0,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "ElkEngine": {
+    "upstream": [
+      "LayoutEngine"
+    ],
+    "downstream": [],
+    "upstreamHops": 2,
+    "downstreamHops": 0,
+    "fanIn": 1,
+    "fanOut": 0,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "VModule": {
+    "upstream": [
+      "LayoutEngine"
+    ],
+    "downstream": [],
+    "upstreamHops": 2,
+    "downstreamHops": 0,
+    "fanIn": 1,
+    "fanOut": 0,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "HLane": {
+    "upstream": [
+      "LayoutEngine"
+    ],
+    "downstream": [],
+    "upstreamHops": 2,
+    "downstreamHops": 0,
+    "fanIn": 1,
+    "fanOut": 0,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "CollapsePlan": {
+    "upstream": [
+      "LayoutEngine"
+    ],
+    "downstream": [],
+    "upstreamHops": 2,
+    "downstreamHops": 0,
+    "fanIn": 1,
+    "fanOut": 0,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  }
+}

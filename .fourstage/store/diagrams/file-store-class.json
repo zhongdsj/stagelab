@@ -3,7 +3,7 @@
   "type": "class",
   "metadata": {
     "title": "本地存储层 - 类图",
-    "version": 8,
+    "version": 9,
     "description": "基于 packages/server/src/storage 源码：IO/路径/锁/注册表/缓存/索引构建/仓储/工作区"
   },
   "nodes": [
@@ -31,6 +31,16 @@
         "y": 266,
         "width": 250,
         "height": 124
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/storage/io.ts",
+            "symbols": [
+              "StorageIO"
+            ]
+          }
+        ]
       }
     },
     {
@@ -57,6 +67,16 @@
         "y": 670,
         "width": 250,
         "height": 124
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/storage/paths.ts",
+            "symbols": [
+              "Paths"
+            ]
+          }
+        ]
       }
     },
     {
@@ -77,6 +97,16 @@
         "y": 892,
         "width": 250,
         "height": 96
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/storage/lock.ts",
+            "symbols": [
+              "Lock"
+            ]
+          }
+        ]
       }
     },
     {
@@ -100,6 +130,16 @@
         "y": 1594,
         "width": 250,
         "height": 104
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/storage/registry.ts",
+            "symbols": [
+              "Registry"
+            ]
+          }
+        ]
       }
     },
     {
@@ -123,6 +163,16 @@
         "y": 1008,
         "width": 250,
         "height": 104
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/storage/cache.ts",
+            "symbols": [
+              "TtlCache"
+            ]
+          }
+        ]
       }
     },
     {
@@ -147,6 +197,16 @@
         "y": 1210,
         "width": 250,
         "height": 104
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/storage/index-builder.ts",
+            "symbols": [
+              "IndexBuilder"
+            ]
+          }
+        ]
       }
     },
     {
@@ -170,6 +230,16 @@
         "y": 1594,
         "width": 250,
         "height": 104
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/storage/repo.ts",
+            "symbols": [
+              "RepositoryFactory"
+            ]
+          }
+        ]
       }
     },
     {
@@ -192,6 +262,16 @@
         "y": 1218,
         "width": 250,
         "height": 96
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/storage/workspace.ts",
+            "symbols": [
+              "RepoWorkspace"
+            ]
+          }
+        ]
       }
     }
   ],

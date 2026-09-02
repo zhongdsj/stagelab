@@ -1,0 +1,275 @@
+{
+  "f1-start": {
+    "upstream": [],
+    "downstream": [
+      "f1-gen"
+    ],
+    "upstreamHops": 0,
+    "downstreamHops": 3,
+    "fanIn": 0,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "f1-gen": {
+    "upstream": [
+      "f1-start"
+    ],
+    "downstream": [
+      "f1-meta"
+    ],
+    "upstreamHops": 1,
+    "downstreamHops": 2,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "f1-meta": {
+    "upstream": [
+      "f1-gen"
+    ],
+    "downstream": [
+      "f1-done"
+    ],
+    "upstreamHops": 2,
+    "downstreamHops": 1,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "f1-done": {
+    "upstream": [
+      "f1-meta"
+    ],
+    "downstream": [],
+    "upstreamHops": 3,
+    "downstreamHops": 0,
+    "fanIn": 1,
+    "fanOut": 0,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "f2-start": {
+    "upstream": [],
+    "downstream": [
+      "f2-split"
+    ],
+    "upstreamHops": 0,
+    "downstreamHops": 4,
+    "fanIn": 0,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "f2-split": {
+    "upstream": [
+      "f2-start"
+    ],
+    "downstream": [
+      "f2-save"
+    ],
+    "upstreamHops": 1,
+    "downstreamHops": 3,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "f2-save": {
+    "upstream": [
+      "f2-split"
+    ],
+    "downstream": [
+      "f2-clean"
+    ],
+    "upstreamHops": 2,
+    "downstreamHops": 2,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "f2-clean": {
+    "upstream": [
+      "f2-save"
+    ],
+    "downstream": [
+      "f2-done"
+    ],
+    "upstreamHops": 3,
+    "downstreamHops": 1,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "f2-done": {
+    "upstream": [
+      "f2-clean"
+    ],
+    "downstream": [],
+    "upstreamHops": 4,
+    "downstreamHops": 0,
+    "fanIn": 1,
+    "fanOut": 0,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "f3-start": {
+    "upstream": [],
+    "downstream": [
+      "f3-save"
+    ],
+    "upstreamHops": 0,
+    "downstreamHops": 4,
+    "fanIn": 0,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "f3-save": {
+    "upstream": [
+      "f3-start"
+    ],
+    "downstream": [
+      "f3-sync"
+    ],
+    "upstreamHops": 1,
+    "downstreamHops": 3,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "f3-sync": {
+    "upstream": [
+      "f3-save"
+    ],
+    "downstream": [
+      "f3-status"
+    ],
+    "upstreamHops": 2,
+    "downstreamHops": 2,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "f3-status": {
+    "upstream": [
+      "f3-sync"
+    ],
+    "downstream": [
+      "f3-flow",
+      "f3-done"
+    ],
+    "upstreamHops": 3,
+    "downstreamHops": 1,
+    "fanIn": 1,
+    "fanOut": 2,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "f3-flow": {
+    "upstream": [
+      "f3-status"
+    ],
+    "downstream": [
+      "f3-done"
+    ],
+    "upstreamHops": 4,
+    "downstreamHops": 1,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "f3-done": {
+    "upstream": [
+      "f3-flow",
+      "f3-status"
+    ],
+    "downstream": [],
+    "upstreamHops": 4,
+    "downstreamHops": 0,
+    "fanIn": 2,
+    "fanOut": 0,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "medium"
+  },
+  "f4-start": {
+    "upstream": [],
+    "downstream": [
+      "f4-check"
+    ],
+    "upstreamHops": 0,
+    "downstreamHops": 2,
+    "fanIn": 0,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "f4-check": {
+    "upstream": [
+      "f4-start"
+    ],
+    "downstream": [
+      "f4-rebuild",
+      "f4-return"
+    ],
+    "upstreamHops": 1,
+    "downstreamHops": 1,
+    "fanIn": 1,
+    "fanOut": 2,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "f4-rebuild": {
+    "upstream": [
+      "f4-check"
+    ],
+    "downstream": [
+      "f4-return"
+    ],
+    "upstreamHops": 2,
+    "downstreamHops": 1,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "f4-return": {
+    "upstream": [
+      "f4-rebuild",
+      "f4-check"
+    ],
+    "downstream": [],
+    "upstreamHops": 2,
+    "downstreamHops": 0,
+    "fanIn": 2,
+    "fanOut": 0,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "medium"
+  }
+}

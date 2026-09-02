@@ -1,0 +1,17 @@
+{
+  "requirementId": "c055a226-b8a6-4d47-b1f6-565762654470",
+  "title": "图漂移标记与验证历史",
+  "description": "Diagram.metadata 扩展 baseBranch/baseCommit/verifiedCommit/lastVerifiedAt/verifiedBy/verifyNote（仅最新快照）；验证历史独立存储 store/verifications/{diagramId}/{verificationId}.json，链式追溯；MCP 提供 verify_diagram 与 get_verification_history。参考 dev-doc-diagram-impact 第四章。",
+  "branchName": "feature/diagram-drift-verify",
+  "status": "done",
+  "taskIds": [
+    "ec27f3d0-54ee-480c-bbb7-c4466511ab3a",
+    "81a69cad-59a0-4a7c-8d8f-9a6b8f85a8a5",
+    "0d2dd208-17e4-49c9-81c9-39cd7e8fb6dc",
+    "79ee7d5e-1141-4aea-bb33-3d876e369043",
+    "d3672d83-1646-4137-ae89-5707187ec047",
+    "cf7679c7-21f6-4cf1-b407-cb41ede82dfd"
+  ],
+  "createdAt": 1788321874384,
+  "updatedAt": 1788337220284
+}

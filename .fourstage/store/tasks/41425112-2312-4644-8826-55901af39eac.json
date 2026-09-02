@@ -3,7 +3,7 @@
   "requirementId": "de14234b-8eae-4371-ab0d-d3c6696a6c37",
   "title": "T50 构建验证与联调",
   "description": "## 任务描述\n\n全量构建与端到端验证：\n- server + web 全量构建通过\n- 浏览器验证：\n  1. 连线标签位于连线中部（对比调整前）\n  2. 连线重叠减少、图更空\n  3. 类图点击连线高亮两端节点+相关连线\n  4. 架构/流程图连线点击无响应\n- 回归：折叠/拖拽/缩放/节点点击高亮正常\n\n## 涉及文件\n- packages/server、packages/web（构建验证）\n\n## 变更类型\n修改（验证）\n\n## 验收标准\n1. server + web 构建通过\n2. 三类改进端到端验证通过\n3. 既有图交互回归正常",
-  "status": "in_progress",
+  "status": "done",
   "acceptanceCriteria": "构建通过；三类交互验证通过；折叠/拖拽/缩放回归正常",
   "files": [
     "packages/server",
@@ -11,5 +11,5 @@
   ],
   "changeType": "修改",
   "createdAt": 1788168494791,
-  "updatedAt": 1788170762388
+  "updatedAt": 1788325464945
 }

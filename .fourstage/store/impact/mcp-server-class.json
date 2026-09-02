@@ -1,0 +1,140 @@
+{
+  "McpServer": {
+    "upstream": [],
+    "downstream": [
+      "StdioTransport",
+      "ToolsIndex"
+    ],
+    "upstreamHops": 0,
+    "downstreamHops": 3,
+    "fanIn": 0,
+    "fanOut": 2,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "StdioTransport": {
+    "upstream": [
+      "McpServer"
+    ],
+    "downstream": [],
+    "upstreamHops": 1,
+    "downstreamHops": 0,
+    "fanIn": 1,
+    "fanOut": 0,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "ToolsIndex": {
+    "upstream": [
+      "McpServer"
+    ],
+    "downstream": [
+      "ProjectTools",
+      "DocumentTools",
+      "RequirementTools",
+      "DiagramTools",
+      "SearchTools"
+    ],
+    "upstreamHops": 1,
+    "downstreamHops": 2,
+    "fanIn": 1,
+    "fanOut": 5,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "ProjectTools": {
+    "upstream": [
+      "ToolsIndex"
+    ],
+    "downstream": [
+      "SafeCall"
+    ],
+    "upstreamHops": 2,
+    "downstreamHops": 1,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "DocumentTools": {
+    "upstream": [
+      "ToolsIndex"
+    ],
+    "downstream": [
+      "SafeCall"
+    ],
+    "upstreamHops": 2,
+    "downstreamHops": 1,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "RequirementTools": {
+    "upstream": [
+      "ToolsIndex"
+    ],
+    "downstream": [
+      "SafeCall"
+    ],
+    "upstreamHops": 2,
+    "downstreamHops": 1,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "DiagramTools": {
+    "upstream": [
+      "ToolsIndex"
+    ],
+    "downstream": [
+      "SafeCall"
+    ],
+    "upstreamHops": 2,
+    "downstreamHops": 1,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "SearchTools": {
+    "upstream": [
+      "ToolsIndex"
+    ],
+    "downstream": [
+      "SafeCall"
+    ],
+    "upstreamHops": 2,
+    "downstreamHops": 1,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "SafeCall": {
+    "upstream": [
+      "ProjectTools",
+      "DocumentTools",
+      "RequirementTools",
+      "DiagramTools",
+      "SearchTools"
+    ],
+    "downstream": [],
+    "upstreamHops": 3,
+    "downstreamHops": 0,
+    "fanIn": 5,
+    "fanOut": 0,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "high"
+  }
+}

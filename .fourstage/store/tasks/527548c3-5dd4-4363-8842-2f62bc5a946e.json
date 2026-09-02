@@ -1,0 +1,12 @@
+{
+  "taskId": "527548c3-5dd4-4363-8842-2f62bc5a946e",
+  "requirementId": "239029a0-5837-40ce-9c53-1b3d08a85635",
+  "title": "T88 构建验证与联调",
+  "description": "R2 构建验证与联调",
+  "status": "done",
+  "acceptanceCriteria": "前后端构建通过；气泡正常展示",
+  "files": [],
+  "changeType": "修改",
+  "createdAt": 1788321922725,
+  "updatedAt": 1788330316224
+}

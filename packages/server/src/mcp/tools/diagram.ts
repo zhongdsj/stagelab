@@ -8,7 +8,13 @@
  */
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { DiagramTypeSchema, EdgeSchema, GroupSchema } from "@fourstage/shared";
+import {
+  DiagramTypeSchema,
+  EdgeSchema,
+  GroupSchema,
+  VerificationActorSchema,
+  VerificationChangeTypeSchema
+} from "@fourstage/shared";
 import { getWorkspace } from "../../storage/workspace.js";
 import {
   createDiagram,
@@ -18,6 +24,9 @@ import {
   deleteDiagram,
   getDiagramGroup,
   getNodeGroups,
+  getDiagramImpact,
+  verifyDiagram,
+  getVerificationHistory,
   toDiagramMeta,
   type DiagramElementPatch
 } from "../../services/diagram.service.js";
@@ -221,6 +230,81 @@ export function registerDiagramTools(server: McpServer): void {
       safeCall(async () => {
         const ws = await getWorkspace();
         return getNodeGroups(ws, args.diagramId, args.nodeIds);
+      })
+  );
+
+  server.registerTool(
+    "get_diagram_impact",
+    {
+      title: "读取图影响范围索引",
+      description:
+        "读取预计算的影响范围索引 impactIndex（直接上游/下游、可达跳数、扇入扇出、是否在环、结构风险分）。" +
+        "支持单节点/批量（nodeIds）或全量读取；默认返回全量。基于图拓扑预计算，AI 直接复用避免每次现算。",
+      inputSchema: {
+        diagramId: z.string().min(1),
+        nodeIds: z.array(z.string().min(1)).optional()
+      }
+    },
+    async (args) =>
+      safeCall(async () => {
+        const ws = await getWorkspace();
+        return getDiagramImpact(ws, args.diagramId, args.nodeIds);
+      })
+  );
+
+  server.registerTool(
+    "verify_diagram",
+    {
+      title: "显式校验图（漂移确认）",
+      description:
+        "显式声明某 commit 下图为可信（人工/AI 显式确认，绝不自动提升到 HEAD）。提升 metadata 最新可信快照并追加一条验证历史。" +
+        "changeType：no_change（无结构变化）/ incremental（局部修订后）/ rebuild（重逆向重建）。",
+      inputSchema: {
+        diagramId: z.string().min(1),
+        commit: z.string().min(1), // 本次显式确认可信的 commit
+        note: z.string().optional(), // 校验备注：为何可信/变更了什么
+        verifiedBy: VerificationActorSchema.optional(), // 确认者，默认 ai
+        changeType: VerificationChangeTypeSchema.optional(), // 校验流程类别，默认 no_change
+        baseCommit: z.string().optional() // 本次校验基线 commit（缺省沿用图当前 baseCommit）
+      }
+    },
+    async (args) =>
+      safeCall(async () => {
+        const ws = await getWorkspace();
+        const d = await verifyDiagram(ws, args.diagramId, {
+          commit: args.commit,
+          note: args.note,
+          verifiedBy: args.verifiedBy,
+          changeType: args.changeType,
+          baseCommit: args.baseCommit
+        });
+        // 写操作只返回 meta + 最新可信快照锚点
+        return {
+          ...toDiagramMeta(d),
+          verifiedCommit: d.metadata.verifiedCommit,
+          lastVerifiedAt: d.metadata.lastVerifiedAt,
+          verifiedBy: d.metadata.verifiedBy,
+          verifyNote: d.metadata.verifyNote
+        };
+      })
+  );
+
+  server.registerTool(
+    "get_verification_history",
+    {
+      title: "读取图验证历史",
+      description:
+        "读取某图的链式验证历史（verifiedAt 升序，含 baseCommit/verifiedCommit/prevVerifiedCommit/changeType/verifiedBy/note）。" +
+        "支持 limit 限制条数；不含整图数据，轻量。",
+      inputSchema: {
+        diagramId: z.string().min(1),
+        limit: z.number().int().positive().optional()
+      }
+    },
+    async (args) =>
+      safeCall(async () => {
+        const ws = await getWorkspace();
+        return getVerificationHistory(ws, args.diagramId, args.limit);
       })
   );
 }

@@ -3,7 +3,7 @@
   "type": "class",
   "metadata": {
     "title": "业务服务层 - 类图",
-    "version": 6,
+    "version": 7,
     "description": "基于 packages/server/src/services 源码：项目/文档/图/索引/需求/工作区 六大服务"
   },
   "nodes": [
@@ -34,6 +34,18 @@
         "y": 266,
         "width": 250,
         "height": 144
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/services/project.service.ts",
+            "symbols": [
+              "ProjectService",
+              "createProject",
+              "listProjects"
+            ]
+          }
+        ]
       }
     },
     {
@@ -63,6 +75,16 @@
         "y": 508,
         "width": 250,
         "height": 144
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/services/document.service.ts",
+            "symbols": [
+              "DocumentService"
+            ]
+          }
+        ]
       }
     },
     {
@@ -92,6 +114,17 @@
         "y": 750,
         "width": 250,
         "height": 144
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/services/diagram.service.ts",
+            "symbols": [
+              "DiagramService",
+              "updateDiagramElements"
+            ]
+          }
+        ]
       }
     },
     {
@@ -118,6 +151,17 @@
         "y": 1174,
         "width": 250,
         "height": 124
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/storage/index-builder.ts",
+            "symbols": [
+              "rebuildIndex",
+              "readIndex"
+            ]
+          }
+        ]
       }
     },
     {
@@ -150,6 +194,16 @@
         "y": 1540,
         "width": 250,
         "height": 164
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/services/requirement.service.ts",
+            "symbols": [
+              "RequirementService"
+            ]
+          }
+        ]
       }
     },
     {
@@ -176,6 +230,17 @@
         "y": 1396,
         "width": 250,
         "height": 124
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/storage/workspace.ts",
+            "symbols": [
+              "openWorkspace",
+              "getWorkspace"
+            ]
+          }
+        ]
       }
     }
   ],

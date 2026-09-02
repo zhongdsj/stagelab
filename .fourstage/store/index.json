@@ -1,10 +1,11 @@
 {
   "projectId": "34a29cd8-790c-43c4-8ce9-e2c25573cfa0",
-  "version": 1788315157,
+  "version": 1788338200,
   "documentIndex": [
     {
       "docId": "dev-doc",
       "title": "四阶段MCP项目管理工具 - 开发文档",
+      "docType": "开发文档",
       "summary": "# 四阶段MCP项目管理工具 - 开发文档\n\n**文档版本**：v1.1\n**阶段**：阶段1 - ",
       "fragmentIds": [
         "dev-doc-f0",
@@ -35,8 +36,21 @@
       ]
     },
     {
+      "docId": "dev-doc-diagram-impact",
+      "title": "FourSeq 图影响面分析与可信度增强",
+      "docType": "开发文档",
+      "summary": "# FourSeq 图影响面分析与可信度增强\n\n**文档版本**：v1.1  **阶段**：阶段1/",
+      "fragmentIds": [
+        "dev-doc-diagram-impact-f0",
+        "dev-doc-diagram-impact-f1",
+        "dev-doc-diagram-impact-f2",
+        "dev-doc-diagram-impact-f3"
+      ]
+    },
+    {
       "docId": "dev-doc-edge-arrow-orient",
       "title": "附录：连线箭头方向修正（端点垂直进入）",
+      "docType": "变更记录",
       "summary": "## 连线箭头方向修正：端点沿节点边移动时箭头垂直于边（变更记录）\n\n### 问题\n- 端点吸附到节",
       "fragmentIds": [
         "dev-doc-edge-arrow-orient-f0"
@@ -159,6 +173,13 @@
       "taskCount": 7
     },
     {
+      "requirementId": "239029a0-5837-40ce-9c53-1b3d08a85635",
+      "title": "节点源码锚点 codeAnchor",
+      "status": "done",
+      "branchName": "feature/diagram-code-anchor",
+      "taskCount": 3
+    },
+    {
       "requirementId": "23a5d5d0-4d16-42e7-a8da-614df27d783a",
       "title": "需求状态三态化与自动流转",
       "status": "done",
@@ -184,6 +205,13 @@
       "title": "基础：工程初始化/数据模型/存储基础设施",
       "status": "done",
       "taskCount": 4
+    },
+    {
+      "requirementId": "34e3589b-32e7-4f28-b710-15794560e4c3",
+      "title": "图影响面分析：impactIndex + 风险结构分",
+      "status": "done",
+      "branchName": "feature/diagram-impact-index",
+      "taskCount": 5
     },
     {
       "requirementId": "36c53c3a-5666-4ed4-942b-d0a148c4d306",
@@ -238,6 +266,13 @@
       "taskCount": 3
     },
     {
+      "requirementId": "78d8e8b4-bbcd-4562-99ed-b748ad9e494b",
+      "title": "前端 impactIndex 风险着色",
+      "status": "done",
+      "branchName": "feature/diagram-risk-color",
+      "taskCount": 3
+    },
+    {
       "requirementId": "af4b430a-b283-49ec-885b-680608580794",
       "title": "图画布改造：Excalidraw 相机无限画布",
       "status": "done",
@@ -266,10 +301,24 @@
       "taskCount": 5
     },
     {
+      "requirementId": "c055a226-b8a6-4d47-b1f6-565762654470",
+      "title": "图漂移标记与验证历史",
+      "status": "done",
+      "branchName": "feature/diagram-drift-verify",
+      "taskCount": 6
+    },
+    {
       "requirementId": "de14234b-8eae-4371-ab0d-d3c6696a6c37",
       "title": "连线优化：标签居中、减少重叠与点击高亮",
       "status": "done",
       "branchName": "feature/edge-interaction",
+      "taskCount": 4
+    },
+    {
+      "requirementId": "e05e619d-4899-4e03-ba58-0e84b965eed5",
+      "title": "类图/流程图跨模块占位节点支持点击跳转",
+      "status": "done",
+      "branchName": "feature/diagram-node-jump",
       "taskCount": 4
     },
     {
@@ -312,6 +361,12 @@
       "requirementId": "36c53c3a-5666-4ed4-942b-d0a148c4d306"
     },
     {
+      "taskId": "0d2dd208-17e4-49c9-81c9-39cd7e8fb6dc",
+      "title": "T91 服务层：verifyDiagram + getVerificationHistory",
+      "status": "done",
+      "requirementId": "c055a226-b8a6-4d47-b1f6-565762654470"
+    },
+    {
       "taskId": "0d317638-67c0-4ed2-aa7d-9e01c96804d0",
       "title": "T61 前端：DiagramView 加载流程改造（首次补默认值 + 固化）",
       "status": "done",
@@ -328,6 +383,12 @@
       "title": "T54 详情页统计按状态细分",
       "status": "done",
       "requirementId": "bbe72970-1124-4675-ab51-1500a8d4aeb5"
+    },
+    {
+      "taskId": "129e5566-2535-4ccb-b172-09219d627a58",
+      "title": "T85 构建验证与联调",
+      "status": "done",
+      "requirementId": "34e3589b-32e7-4f28-b710-15794560e4c3"
     },
     {
       "taskId": "13b780f2-09e8-4804-848b-d4849345bb3a",
@@ -390,6 +451,12 @@
       "requirementId": "af4b430a-b283-49ec-885b-680608580794"
     },
     {
+      "taskId": "31c7d735-e8c7-4195-bbe5-5672a1c7a924",
+      "title": "T4 构建验证与联调",
+      "status": "done",
+      "requirementId": "e05e619d-4899-4e03-ba58-0e84b965eed5"
+    },
+    {
       "taskId": "3368eccd-3a22-4a21-ba7b-108df6b993b6",
       "title": "T78 前端：去除端点/折点圆形手柄",
       "status": "done",
@@ -440,7 +507,7 @@
     {
       "taskId": "41425112-2312-4644-8826-55901af39eac",
       "title": "T50 构建验证与联调",
-      "status": "in_progress",
+      "status": "done",
       "requirementId": "de14234b-8eae-4371-ab0d-d3c6696a6c37"
     },
     {
@@ -460,6 +527,12 @@
       "title": "T57 构建验证与联调",
       "status": "done",
       "requirementId": "b378cfec-8607-4705-95b8-b5ea0ae29db0"
+    },
+    {
+      "taskId": "46bbb419-c22b-4e71-8ca0-f92d5e4ddb38",
+      "title": "T2 前端：DiagramSvg/DiagramView 节点点击跳转气泡支持类图与流程图",
+      "status": "done",
+      "requirementId": "e05e619d-4899-4e03-ba58-0e84b965eed5"
     },
     {
       "taskId": "46c358d9-86f1-4b01-8868-9b69b5c4123d",
@@ -498,6 +571,12 @@
       "requirementId": "196b2e24-dc60-4f98-80c4-fddaf158ace5"
     },
     {
+      "taskId": "527548c3-5dd4-4363-8842-2f62bc5a946e",
+      "title": "T88 构建验证与联调",
+      "status": "done",
+      "requirementId": "239029a0-5837-40ce-9c53-1b3d08a85635"
+    },
+    {
       "taskId": "556bb908-bfbd-4b46-9db6-2f0f374ff9a1",
       "title": "T63 前端：节点整体拖拽 + 连线联动 + 坐标落库",
       "status": "done",
@@ -526,6 +605,12 @@
       "title": "T73 前端：端点吸附几何工具（四边投影 + 跨边）",
       "status": "done",
       "requirementId": "e7e0ac7a-f714-4ea3-8b56-d20210b8d5d7"
+    },
+    {
+      "taskId": "68848e66-a7e9-4ade-8d88-11a6e78cfaa4",
+      "title": "T3 数据固化：FourSeq 图为占位节点补充关联图（MCP 局部增量）",
+      "status": "done",
+      "requirementId": "e05e619d-4899-4e03-ba58-0e84b965eed5"
     },
     {
       "taskId": "6aa5bb95-41cc-4b70-a4ca-e4375bd76380",
@@ -558,10 +643,28 @@
       "requirementId": "b378cfec-8607-4705-95b8-b5ea0ae29db0"
     },
     {
+      "taskId": "79ee7d5e-1141-4aea-bb33-3d876e369043",
+      "title": "T92 MCP：verify_diagram + get_verification_history 工具",
+      "status": "done",
+      "requirementId": "c055a226-b8a6-4d47-b1f6-565762654470"
+    },
+    {
+      "taskId": "7b3106a8-e60e-4b74-9e61-a7487d59a0e1",
+      "title": "T84 MCP：get_diagram_impact 读取工具",
+      "status": "done",
+      "requirementId": "34e3589b-32e7-4f28-b710-15794560e4c3"
+    },
+    {
       "taskId": "7c62575d-e630-4ccd-9bbf-571a1b47fa08",
       "title": "T64 前端：连线线段平移 + 折点增删",
       "status": "done",
       "requirementId": "40822db0-0c50-45b9-9377-164c8b62affa"
+    },
+    {
+      "taskId": "81a69cad-59a0-4a7c-8d8f-9a6b8f85a8a5",
+      "title": "T90 存储层：verifications 独立仓储",
+      "status": "done",
+      "requirementId": "c055a226-b8a6-4d47-b1f6-565762654470"
     },
     {
       "taskId": "825c081a-82e9-4bcf-8114-9b5629f7c72c",
@@ -576,6 +679,12 @@
       "requirementId": "65917ee2-c639-4b2f-9c39-74e5b13a76ec"
     },
     {
+      "taskId": "8403444c-0ad7-45ce-b9a6-d894c863dabb",
+      "title": "T83 服务层：impactIndex 增量维护 + 独立存储",
+      "status": "done",
+      "requirementId": "34e3589b-32e7-4f28-b710-15794560e4c3"
+    },
+    {
       "taskId": "84c6378d-eb3b-437f-96d5-187c7901dc20",
       "title": "T19 任务文档去文档化",
       "status": "done",
@@ -586,6 +695,12 @@
       "title": "节点拖动重布线：最后一段垂直进入端点边",
       "status": "done",
       "requirementId": "24176d00-fff5-4bab-9eae-aeb2b2b4a6d2"
+    },
+    {
+      "taskId": "94cafd0e-6b91-4433-b4b3-5327b0b8a8a6",
+      "title": "T86 共享层：三种节点 Schema 扩展 codeAnchor",
+      "status": "done",
+      "requirementId": "239029a0-5837-40ce-9c53-1b3d08a85635"
     },
     {
       "taskId": "9514ca87-8f37-4a1b-bbd9-dbdfa5f51143",
@@ -604,6 +719,12 @@
       "title": "T52 详情页：内容区改为文档库/需求/图库 Tab 切换",
       "status": "done",
       "requirementId": "0f047e44-d20a-4737-9d99-0dea6eb7b6ea"
+    },
+    {
+      "taskId": "9c461764-ba6d-41f5-aedd-9847ff8d8b86",
+      "title": "T81 共享层：impactIndex 类型与 Schema",
+      "status": "done",
+      "requirementId": "34e3589b-32e7-4f28-b710-15794560e4c3"
     },
     {
       "taskId": "9c76c6d3-fa67-48bf-be05-25eeed57e77e",
@@ -628,6 +749,18 @@
       "title": "T12 前端：图表SVG渲染与交互",
       "status": "done",
       "requirementId": "71b8c0fe-3809-48f2-93b7-a26d50ec0967"
+    },
+    {
+      "taskId": "a1fdb8e5-a746-4974-855f-06f2db8d6a16",
+      "title": "T82 服务层：图拓扑算法模块（可达集/跳数/扇入扇出/环/结构分）",
+      "status": "done",
+      "requirementId": "34e3589b-32e7-4f28-b710-15794560e4c3"
+    },
+    {
+      "taskId": "a42cadac-b6d4-4ba4-93c3-570606c323a6",
+      "title": "服务端：HTTP 透传节点风险分到前端",
+      "status": "done",
+      "requirementId": "78d8e8b4-bbcd-4562-99ed-b748ad9e494b"
     },
     {
       "taskId": "a5d73646-a9ca-430d-a223-0e7ce730f947",
@@ -666,6 +799,12 @@
       "requirementId": "6c85f4f9-8ea2-4281-83c3-954dff6b80ee"
     },
     {
+      "taskId": "c11bfb93-c7da-4148-80dc-bc492c4e13a3",
+      "title": "构建验证与联调",
+      "status": "done",
+      "requirementId": "78d8e8b4-bbcd-4562-99ed-b748ad9e494b"
+    },
+    {
       "taskId": "c27087c7-c14d-404b-beaf-944da1a86aeb",
       "title": "T24 前端：改造图库组件为跳转入口",
       "status": "done",
@@ -702,6 +841,18 @@
       "requirementId": "196b2e24-dc60-4f98-80c4-fddaf158ace5"
     },
     {
+      "taskId": "cf7679c7-21f6-4cf1-b407-cb41ede82dfd",
+      "title": "T94 构建验证与联调",
+      "status": "done",
+      "requirementId": "c055a226-b8a6-4d47-b1f6-565762654470"
+    },
+    {
+      "taskId": "cf8a183f-aaf7-4511-a4ab-efcecc81d8bc",
+      "title": "T1 共享层：LinkedDiagram 类型 + ClassNode.linkedDiagrams 字段 + Schema 扩展",
+      "status": "done",
+      "requirementId": "e05e619d-4899-4e03-ba58-0e84b965eed5"
+    },
+    {
       "taskId": "d0964556-0517-4ddb-8942-377396e3089f",
       "title": "T22 前端：新增图查看路由",
       "status": "done",
@@ -718,6 +869,18 @@
       "title": "T23 前端：新增图查看页面（左右结构）",
       "status": "done",
       "requirementId": "36c53c3a-5666-4ed4-942b-d0a148c4d306"
+    },
+    {
+      "taskId": "d3672d83-1646-4137-ae89-5707187ec047",
+      "title": "T93 前端：图 meta 面板展示可信度快照",
+      "status": "done",
+      "requirementId": "c055a226-b8a6-4d47-b1f6-565762654470"
+    },
+    {
+      "taskId": "d3f660ab-fbf7-4a6d-9432-6e764cd04e85",
+      "title": "前端：节点按 structuralRisk 分级着色",
+      "status": "done",
+      "requirementId": "78d8e8b4-bbcd-4562-99ed-b748ad9e494b"
     },
     {
       "taskId": "d40a9292-ac0a-4488-8863-889dd4efdefc",
@@ -774,6 +937,12 @@
       "requirementId": "6a437b63-f03a-4567-9198-ceccd1d734cc"
     },
     {
+      "taskId": "ec27f3d0-54ee-480c-bbb7-c4466511ab3a",
+      "title": "T89 共享层：metadata 扩展 + VerificationRecord 类型/Schema",
+      "status": "done",
+      "requirementId": "c055a226-b8a6-4d47-b1f6-565762654470"
+    },
+    {
       "taskId": "f103e037-cf79-4680-bd7c-1277951451e0",
       "title": "T79 前端：线段平移共线合并（去冗余折点）",
       "status": "done",
@@ -790,6 +959,12 @@
       "title": "T60 前端：API 客户端新增 saveGeometry 与类型对齐",
       "status": "done",
       "requirementId": "40822db0-0c50-45b9-9377-164c8b62affa"
+    },
+    {
+      "taskId": "f730008d-5996-4b1e-bd7a-531c22f8a8c7",
+      "title": "T87 前端：节点气泡展示 codeAnchor 文件清单",
+      "status": "done",
+      "requirementId": "239029a0-5837-40ce-9c53-1b3d08a85635"
     },
     {
       "taskId": "f9e277c4-af62-47c9-ab78-12886b27d9eb",

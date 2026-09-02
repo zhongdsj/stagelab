@@ -53,7 +53,8 @@
         'node',
         isNodeHighlighted(n.nodeId) ? 'is-highlighted' : '',
         editMode ? 'is-editing' : '',
-        hasNodeOverride(n.nodeId) ? 'has-override' : ''
+        hasNodeOverride(n.nodeId) ? 'has-override' : '',
+        nodeRiskClass(n.nodeId)
       ]"
       :transform="`translate(${n.x}, ${n.y})`"
       @click="onNodeClickSuppressed(n.nodeId)"
@@ -151,6 +152,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import type { Diagram, LayoutDiagram } from "@fourstage/shared";
+import type { ImpactRiskMap } from "../../api/index";
 import type { ManualOverrides } from "./useManualEdit";
 import { dist, snapToNodeBorder, orthogonalizePath, mergeCollinear, ensurePerpendicularEnds, moveEdgeEndpoint, type NodeBox } from "./useEdgeGeometry";
 
@@ -166,6 +168,8 @@ const props = defineProps<{
   editMode?: boolean;
   /** 手动覆盖（T51/T54）：节点位置/连线路径的用户增量，渲染层叠加于引擎结果 */
   overrides?: ManualOverrides;
+  /** 节点风险分映射（feature/diagram-risk-color）：nodeId → structuralRisk，用于节点描边着色 */
+  riskMap?: ImpactRiskMap;
 }>();
 
 const emit = defineEmits<{
@@ -677,6 +681,7 @@ function onEdgeClick(edgeId: string) {
 /**
  * 节点点击分发：
  * - 聚合节点 → 展开折叠模块
+ * - 有关联图节点（类图/流程图/架构图占位或跨模块引用）→ 触发父级关联图跳转气泡（类图/流程图扩展，T2）
  * - 架构图节点 → 触发父级关联图气泡（T39）
  * - 类图节点 → 本节点高亮 + 相连连线高亮，再点同节点取消（T41）
  * - 流程图节点 → 无操作
@@ -686,15 +691,26 @@ function onNodeClick(nodeId: string) {
     onAggregateClick(nodeId);
     return;
   }
+  // 跨图跳转优先：节点存在关联图（直接字段 linkedDiagrams 或 payload.linkedDiagrams）即上抛弹选择框，类图/流程图亦支持
+  const node = nodeById.value.get(nodeId);
+  const payload = (node?.payload ?? {}) as Record<string, unknown>;
+  const hasLinks =
+    (Array.isArray(node?.linkedDiagrams) && (node!.linkedDiagrams as unknown[]).length > 0) ||
+    (Array.isArray(payload.linkedDiagrams) && (payload.linkedDiagrams as unknown[]).length > 0);
+  if (hasLinks) {
+    emit("node-click", nodeId);
+    return;
+  }
   if (props.diagram.type === "architecture") {
+    // 架构图：无关联仍弹气泡提示「无关联图」（T39 原行为）
     emit("node-click", nodeId);
   } else if (props.diagram.type === "class") {
-    // 再点同一节点取消高亮；点其他节点切换高亮（T41）；与连线点击高亮（T49）/方法高亮（T70）互斥
+    // 再点同一节点取消高亮；点其他节点切换高亮（T41）；无关联时与连线点击高亮（T49）/方法高亮（T70）互斥
     highlightNodeId.value = highlightNodeId.value === nodeId ? "" : nodeId;
     highlightEdgeId.value = "";
     highlightMethod.value = null;
   }
-  // flow：无操作
+  // flow：无关联时无操作
 }
 
 /**
@@ -1121,6 +1137,12 @@ function nodeKindClass(nodeId: string): string {
   return `flow-${kind}`;
 }
 
+/** 风险描边 class（feature/diagram-risk-color）：按 structuralRisk 分级，无数据节点返回空 */
+function nodeRiskClass(nodeId: string): string {
+  const risk = props.riskMap?.[nodeId];
+  return risk ? `is-risk-${risk}` : "";
+}
+
 function diamondPath(n: { width: number; height: number }): string {
   const w = n.width;
   const h = n.height;
@@ -1248,9 +1270,9 @@ function classBodyRows(n: { nodeId: string; height: number }): ClassBodyRow[] {
   /* T71：节点 hover 过渡 */
   transition: filter 0.15s;
 }
-/* T71 可交互处标识：节点移入时边框高亮（展示态亦可交互反馈） */
+/* T71 可交互处标识：节点移入时边框高亮（展示态亦可交互反馈）；有风险节点沿用风险色 */
 .node:hover .node-rect:not(.class-header):not(.aggregate) {
-  stroke: #409eff;
+  stroke: var(--risk-color, #409eff);
   stroke-width: 2.5;
   filter: drop-shadow(0 0 4px rgba(64, 158, 255, 0.35));
 }
@@ -1263,10 +1285,10 @@ function classBodyRows(n: { nodeId: string; height: number }): ClassBodyRow[] {
   stroke: #b88230;
   stroke-width: 2;
 }
-/* 类图点击高亮：节点边框提亮 + 阴影（T41，会话态，不影响数据） */
+/* 类图点击高亮：节点边框提亮 + 阴影（T41，会话态，不影响数据）；有风险节点沿用风险色 */
 .node.is-highlighted .node-rect:not(.class-header) {
   stroke-width: 3;
-  stroke: #409eff;
+  stroke: var(--risk-color, #409eff);
   filter: drop-shadow(0 0 6px rgba(64, 158, 255, 0.75));
 }
 .node-rect {
@@ -1343,6 +1365,18 @@ function classBodyRows(n: { nodeId: string; height: number }): ClassBodyRow[] {
 .arch-cache { fill: #f0f9eb; stroke: #67c23a; }
 .arch-external { fill: #f4f4f5; stroke: #909399; }
 .arch-gateway { fill: #fef0f0; stroke: #f56c6c; }
+
+/* feature/diagram-risk-color：节点描边按预计算 structuralRisk 分级着色（数据驱动，覆盖类型描边色）
+   --risk-color 供 hover/点击高亮复用：有风险节点高亮沿用其风险色，无风险节点回退蓝色 */
+.node.is-risk-low { --risk-color: #67c23a; }
+.node.is-risk-medium { --risk-color: #e6a23c; }
+.node.is-risk-high { --risk-color: #f56c6c; }
+.node.is-risk-low .node-rect,
+.node.is-risk-medium .node-rect,
+.node.is-risk-high .node-rect {
+  stroke: var(--risk-color);
+}
+.node.is-risk-high .node-rect { stroke-width: 2.5; }
 
 /* 类图节点类型 */
 .class-class { fill: #ecf5ff; stroke: #409eff; }

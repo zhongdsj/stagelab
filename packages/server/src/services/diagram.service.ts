@@ -15,11 +15,21 @@ import type {
   FlowNode,
   Edge,
   Group,
-  DiagramType
+  DiagramType,
+  VerificationRecord,
+  VerificationActor,
+  VerificationChangeType
 } from "@fourstage/shared";
-import { DiagramSchema } from "@fourstage/shared";
+import { DiagramSchema, VerificationRecordSchema } from "@fourstage/shared";
+import crypto from "node:crypto";
 import type { RepoWorkspace } from "../storage/workspace.js";
 import { createRepositories } from "../storage/repositories/factory.js";
+import {
+  refreshImpactIndex,
+  deleteImpactIndex,
+  getImpactIndex,
+  type ImpactIndexResult
+} from "./impact.service.js";
 
 type NodeOfDiagram = ArchitectureNode | ClassNode | FlowNode;
 
@@ -41,6 +51,8 @@ export async function createDiagram(
     groups: []
   };
   await repos.diagram.save(diagram);
+  // 写图后增量维护影响范围索引（空图 → 空映射，独立存储）
+  await refreshImpactIndex(workspace, diagram);
   return diagram;
 }
 
@@ -281,6 +293,8 @@ export async function updateDiagramElements(
   }
 
   await repos.diagram.save(updated);
+  // 写图后增量维护影响范围索引（拓扑可能变化，重算该图）
+  await refreshImpactIndex(workspace, updated);
   return updated;
 }
 
@@ -291,6 +305,120 @@ export async function deleteDiagram(
 ): Promise<void> {
   const repos = createRepositories(workspace);
   await repos.diagram.delete(diagramId);
+  // 删除图时联动清理独立存储的影响范围索引
+  await deleteImpactIndex(workspace, diagramId);
+  // 级联清理验证历史（独立存储，随图删除一并移除）
+  await repos.verification.deleteByDiagram(diagramId);
+}
+
+/* ========== 图漂移校验与验证历史（P1，T91） ========== */
+
+/** verify_diagram 入参 */
+export interface VerifyDiagramInput {
+  commit: string; // 本次显式确认可信的 commit
+  note?: string; // 校验备注：为何可信/变更了什么
+  verifiedBy?: VerificationActor; // 确认者，默认 ai
+  changeType?: VerificationChangeType; // 校验流程类别，默认 no_change
+  baseCommit?: string; // 本次校验基线 commit（可选，缺省沿用图当前 baseCommit）
+}
+
+/**
+ * 显式校验图（T91）：提升 metadata 最新可信快照 + 追加一条验证历史（链式 prevVerifiedCommit）。
+ * - 仅「人工/AI 显式声明此 commit 图结构没变」时调用，绝不自动提升到 HEAD；
+ * - metadata 仅存最新快照（图保持轻量），完整轨迹独立存储于 store/verifications/。
+ */
+export async function verifyDiagram(
+  workspace: RepoWorkspace,
+  diagramId: string,
+  input: VerifyDiagramInput
+): Promise<Diagram> {
+  const repos = createRepositories(workspace);
+  const d = await repos.diagram.get(diagramId);
+
+  // 读取既有历史，取最新一条作为链式追溯的前驱
+  const history = await repos.verification.listByDiagram(diagramId);
+  const last = history[history.length - 1];
+  const prevVerifiedCommit = last?.verifiedCommit;
+
+  const now = Date.now();
+  const actor: VerificationActor = input.verifiedBy ?? "ai";
+  const changeType: VerificationChangeType = input.changeType ?? "no_change";
+  const baseCommit =
+    input.baseCommit ?? d.metadata.baseCommit ?? input.commit;
+
+  const verificationId = `v-${crypto.randomBytes(3).toString("hex")}`;
+  const record: VerificationRecord = {
+    verificationId,
+    diagramId,
+    changeType,
+    baseCommit,
+    verifiedCommit: input.commit,
+    prevVerifiedCommit,
+    verifiedAt: now,
+    verifiedBy: actor,
+    note: input.note
+  };
+
+  // 校验验证记录
+  const recParsed = VerificationRecordSchema.safeParse(record);
+  if (!recParsed.success) {
+    throw new Error(
+      `验证记录校验失败: ${recParsed.error.issues
+        .map((i) => i.message)
+        .join("; ")}`
+    );
+  }
+
+  // 提升 metadata 最新快照（不递增 version：校验不改图结构语义）
+  // 但为了让前端能感知到快照刷新，仅更新校验锚点字段
+  const updated: Diagram = {
+    ...d,
+    metadata: {
+      ...d.metadata,
+      baseCommit: baseCommit ?? d.metadata.baseCommit,
+      verifiedCommit: input.commit,
+      lastVerifiedAt: now,
+      verifiedBy: actor,
+      verifyNote: input.note
+    }
+  };
+
+  const parsed = DiagramSchema.safeParse(updated);
+  if (!parsed.success) {
+    throw new Error(
+      `图校验更新失败: ${parsed.error.issues.map((i) => i.message).join("; ")}`
+    );
+  }
+
+  await repos.verification.save(record);
+  await repos.diagram.save(updated);
+  return updated;
+}
+
+/** get_verification_history：按图读取链式验证历史（verifiedAt 升序，不含整图） */
+export async function getVerificationHistory(
+  workspace: RepoWorkspace,
+  diagramId: string,
+  limit?: number
+): Promise<VerificationRecord[]> {
+  const repos = createRepositories(workspace);
+  const history = await repos.verification.listByDiagram(diagramId);
+  // 返回最新的 limit 条（从尾部截取），仍按时间升序
+  if (limit && limit > 0 && history.length > limit) {
+    return history.slice(history.length - limit);
+  }
+  return history;
+}
+
+/** 读取某图的影响范围索引（T84）：支持指定 nodeIds 局部读取，未指定返回全量 */
+export async function getDiagramImpact(
+  workspace: RepoWorkspace,
+  diagramId: string,
+  nodeIds?: string[]
+): Promise<ImpactIndexResult> {
+  const repos = createRepositories(workspace);
+  const d = await repos.diagram.get(diagramId);
+  return getImpactIndex(workspace, d, nodeIds);
 }
 
 /* ========== 自由画布坐标（draw.io 改造，T59） ========== */
@@ -377,5 +505,7 @@ export async function saveDiagramGeometry(
   }
 
   await repos.diagram.save(updated);
+  // 坐标保存不改拓扑，但按 T83 统一维护影响范围索引（幂等，成本低）
+  await refreshImpactIndex(workspace, updated);
   return updated;
 }

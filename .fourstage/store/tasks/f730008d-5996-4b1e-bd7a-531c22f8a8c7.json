@@ -1,0 +1,15 @@
+{
+  "taskId": "f730008d-5996-4b1e-bd7a-531c22f8a8c7",
+  "requirementId": "239029a0-5837-40ce-9c53-1b3d08a85635",
+  "title": "T87 前端：节点气泡展示 codeAnchor 文件清单",
+  "description": "前端节点 hover 气泡新增「源码锚点」区块，展示 codeAnchor.files 的 path 与 symbols 清单（web 不做直达跳转）",
+  "status": "done",
+  "acceptanceCriteria": "节点含 codeAnchor 时气泡显示文件清单（path + symbols）；无字段不显示区块；不影响既有气泡内容",
+  "files": [
+    "packages/web/src/components/diagram/DiagramSvg.vue",
+    "packages/web/src/components/diagram/DiagramView.vue"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788321918740,
+  "updatedAt": 1788330315170
+}

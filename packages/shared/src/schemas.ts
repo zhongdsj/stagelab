@@ -71,6 +71,30 @@ export const PointSchema = z.object({
   y: z.number().finite()
 });
 
+/** 源码锚点文件项（codeAnchor） */
+export const CodeAnchorFileSchema = z
+  .object({
+    path: z.string().min(1),
+    symbols: z.array(z.string().min(1)).optional()
+  })
+  .strict();
+
+/** 节点源码锚点：file/symbol 清单 */
+export const CodeAnchorSchema = z
+  .object({
+    files: z.array(CodeAnchorFileSchema)
+  })
+  .strict();
+
+/** 节点关联图（跨图跳转）：占位/跨模块节点点击后跳转目标图 */
+export const LinkedDiagramSchema = z
+  .object({
+    diagramId: z.string().min(1),
+    label: z.string().optional(),
+    type: DiagramTypeSchema.optional()
+  })
+  .strict();
+
 /** 业务语义模型禁止出现坐标/尺寸/颜色等视觉字段——通过仅声明必要字段的 Schema 天然约束 */
 export const ArchitectureNodeSchema = z
   .object({
@@ -82,7 +106,8 @@ export const ArchitectureNodeSchema = z
       .optional(),
     description: z.string().optional(),
     payload: z.record(z.string(), z.unknown()).optional(),
-    geometry: NodeGeometrySchema.optional()
+    geometry: NodeGeometrySchema.optional(),
+    codeAnchor: CodeAnchorSchema.optional()
   })
   .strict();
 
@@ -119,7 +144,9 @@ export const ClassNodeSchema = z
     attributes: z.array(ClassAttributeSchema).optional(),
     methods: z.array(ClassMethodSchema).optional(),
     description: z.string().optional(),
-    geometry: NodeGeometrySchema.optional()
+    geometry: NodeGeometrySchema.optional(),
+    codeAnchor: CodeAnchorSchema.optional(),
+    linkedDiagrams: z.array(LinkedDiagramSchema).optional()
   })
   .strict();
 
@@ -139,7 +166,8 @@ export const FlowNodeSchema = z
       .optional(),
     description: z.string().optional(),
     payload: z.record(z.string(), z.unknown()).optional(),
-    geometry: NodeGeometrySchema.optional()
+    geometry: NodeGeometrySchema.optional(),
+    codeAnchor: CodeAnchorSchema.optional()
   })
   .strict();
 
@@ -162,6 +190,30 @@ export const GroupSchema = z.object({
   collapsible: z.boolean().optional()
 });
 
+/* ========== 6.8 VerificationRecord 图验证历史 ========== */
+
+export const VerificationActorSchema = z.enum(["human", "ai"]);
+
+export const VerificationChangeTypeSchema = z.enum([
+  "no_change",
+  "incremental",
+  "rebuild"
+]);
+
+export const VerificationRecordSchema = z
+  .object({
+    verificationId: z.string().min(1),
+    diagramId: z.string().min(1),
+    changeType: VerificationChangeTypeSchema,
+    baseCommit: z.string().optional(),
+    verifiedCommit: z.string().min(1),
+    prevVerifiedCommit: z.string().optional(),
+    verifiedAt: z.number().int().nonnegative(),
+    verifiedBy: VerificationActorSchema,
+    note: z.string().optional()
+  })
+  .strict();
+
 /**
  * Diagram 图容器：nodes 按 type 用 discriminated union 区分校验
  * 防止跨类型字段混用（如把 class 节点塞进 architecture 图）
@@ -173,7 +225,14 @@ export const DiagramSchema = z
     metadata: z.object({
       title: z.string().min(1),
       version: z.number().int().nonnegative(),
-      description: z.string().optional()
+      description: z.string().optional(),
+      // 图漂移校验锚点（P1）：均 optional，存量图零迁移兼容
+      baseBranch: z.string().optional(),
+      baseCommit: z.string().optional(),
+      verifiedCommit: z.string().optional(),
+      lastVerifiedAt: z.number().int().nonnegative().optional(),
+      verifiedBy: VerificationActorSchema.optional(),
+      verifyNote: z.string().optional()
     }),
     nodes: z.union([
       z.array(ArchitectureNodeSchema),
@@ -291,6 +350,26 @@ export const DocumentFragmentSchema = z.object({
   title: z.string(),
   content: z.string()
 });
+
+/* ========== 6.7 ImpactIndex 影响范围索引（图拓扑预计算） ========== */
+
+export const ImpactRiskLevelSchema = z.enum(["low", "medium", "high"]);
+
+export const ImpactIndexEntrySchema = z
+  .object({
+    upstream: z.array(z.string()),
+    downstream: z.array(z.string()),
+    upstreamHops: z.number().int().nonnegative(),
+    downstreamHops: z.number().int().nonnegative(),
+    fanIn: z.number().int().nonnegative(),
+    fanOut: z.number().int().nonnegative(),
+    inCycle: z.boolean(),
+    cycleIds: z.array(z.string()),
+    structuralRisk: ImpactRiskLevelSchema
+  })
+  .strict();
+
+export const ImpactIndexMapSchema = z.record(z.string(), ImpactIndexEntrySchema);
 
 /* ========== 6.6.1 DocumentMeta 文档元信息 ========== */
 

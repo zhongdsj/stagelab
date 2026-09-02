@@ -1,0 +1,15 @@
+{
+  "taskId": "a42cadac-b6d4-4ba4-93c3-570606c323a6",
+  "requirementId": "78d8e8b4-bbcd-4562-99ed-b748ad9e494b",
+  "title": "服务端：HTTP 透传节点风险分到前端",
+  "description": "新增 HTTP 接口或在既有图接口返回方向嵌入 structuralRisk 映射（nodeId→风险分），供前端渲染。对齐 business/layout 分离：仅透传 structuralRisk 标量，不泄漏可达集/hops 详情。数据源取独立存储 impact 文件（store/impact/{diagramId}.json）。",
+  "status": "done",
+  "acceptanceCriteria": "前端可拉到 {nodeId: structuralRisk} 映射；响应轻量不含可达集详情；无 impact 文件时返回空映射不报错",
+  "files": [
+    "packages/server/src/http/routes/diagrams.ts",
+    "packages/server/src/services/diagram.service.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788330725954,
+  "updatedAt": 1788330937955
+}

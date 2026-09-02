@@ -96,3 +96,25 @@ export function documentFragmentPath(
 export function documentMetaPath(repoRoot: string, docId: string): string {
   return path.join(documentDir(repoRoot, docId), "meta.json");
 }
+
+/** 影响范围索引（独立于 Diagram 存储，随图写后增量维护）：store/impact/{diagramId}.json */
+export function impactPath(repoRoot: string, diagramId: string): string {
+  return path.join(storeSubdir(repoRoot, "impact"), `${diagramId}.json`);
+}
+
+/** 验证历史目录：store/verifications/{diagramId}/（内部分条记录文件，避免平铺散落） */
+export function verificationDir(
+  repoRoot: string,
+  diagramId: string
+): string {
+  return path.join(storeSubdir(repoRoot, "verifications"), diagramId);
+}
+
+/** 单条验证记录文件路径：store/verifications/{diagramId}/{verificationId}.json */
+export function verificationPath(
+  repoRoot: string,
+  diagramId: string,
+  verificationId: string
+): string {
+  return path.join(verificationDir(repoRoot, diagramId), `${verificationId}.json`);
+}

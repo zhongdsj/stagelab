@@ -1,0 +1,14 @@
+{
+  "taskId": "0d2dd208-17e4-49c9-81c9-39cd7e8fb6dc",
+  "requirementId": "c055a226-b8a6-4d47-b1f6-565762654470",
+  "title": "T91 服务层：verifyDiagram + getVerificationHistory",
+  "description": "服务层：verifyDiagram(diagramId, commit, note?, verifiedBy?, changeType?)：读图→提升 metadata 最新快照→追加 VerificationRecord（prevVerifiedCommit 链接上一条）→落盘；getVerificationHistory(diagramId, limit?) 返回链式记录；deleteDiagram 级联清理验证历史",
+  "status": "done",
+  "acceptanceCriteria": "连续多次 verify 后 metadata 为最新快照、历史按链式可追溯；不自动提升 commit（显式传参）；删除图时验证历史级联清理",
+  "files": [
+    "packages/server/src/services/diagram.service.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788321928648,
+  "updatedAt": 1788336073467
+}

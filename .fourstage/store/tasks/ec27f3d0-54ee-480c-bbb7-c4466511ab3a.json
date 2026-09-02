@@ -1,0 +1,15 @@
+{
+  "taskId": "ec27f3d0-54ee-480c-bbb7-c4466511ab3a",
+  "requirementId": "c055a226-b8a6-4d47-b1f6-565762654470",
+  "title": "T89 共享层：metadata 扩展 + VerificationRecord 类型/Schema",
+  "description": "shared 层：Diagram.metadata 扩展 baseBranch/baseCommit/verifiedCommit/lastVerifiedAt/verifiedBy/verifyNote（均 optional）；新增 VerificationRecord（verificationId/diagramId/changeType/baseCommit/verifiedCommit/prevVerifiedCommit/verifiedAt/verifiedBy/note）类型与 schema",
+  "status": "done",
+  "acceptanceCriteria": "旧图 metadata 兼容（新增字段全 optional）；VerificationRecord 类型/schema 校验通过；changeType 枚举 no_change|incremental|rebuild",
+  "files": [
+    "packages/shared/src/types.ts",
+    "packages/shared/src/schemas.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788321924474,
+  "updatedAt": 1788336064258
+}

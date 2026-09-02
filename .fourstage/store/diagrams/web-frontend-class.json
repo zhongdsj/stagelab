@@ -3,7 +3,7 @@
   "type": "class",
   "metadata": {
     "title": "Web 前端 - 类图",
-    "version": 138,
+    "version": 140,
     "description": "基于 packages/web 源码：Vue3 SPA 的视图/组件/API 三层结构；后端 HTTP API 层、业务服务层、布局引擎、本地存储等外部模块统一用 BackendService 占位表示"
   },
   "nodes": [
@@ -23,6 +23,16 @@
         "y": 38,
         "width": 250,
         "height": 96
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/web/src/App.vue",
+            "symbols": [
+              "App"
+            ]
+          }
+        ]
       }
     },
     {
@@ -45,6 +55,16 @@
         "y": 38,
         "width": 250,
         "height": 96
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/web/src/router/index.ts",
+            "symbols": [
+              "Router"
+            ]
+          }
+        ]
       }
     },
     {
@@ -91,6 +111,16 @@
         "y": 414,
         "width": 250,
         "height": 144
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/web/src/views/ProjectListView.vue",
+            "symbols": [
+              "ProjectListView"
+            ]
+          }
+        ]
       }
     },
     {
@@ -123,6 +153,16 @@
         "y": 197.62714764644937,
         "width": 250,
         "height": 104
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/web/src/views/ProjectDetailView.vue",
+            "symbols": [
+              "ProjectDetailView"
+            ]
+          }
+        ]
       }
     },
     {
@@ -157,6 +197,16 @@
         "y": 778.8565346905549,
         "width": 250,
         "height": 104
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/web/src/components/StageNav.vue",
+            "symbols": [
+              "StageNav"
+            ]
+          }
+        ]
       }
     },
     {
@@ -187,6 +237,16 @@
         "y": 693.0252570300303,
         "width": 250,
         "height": 124
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/web/src/components/document/DocumentLibrary.vue",
+            "symbols": [
+              "DocumentLibrary"
+            ]
+          }
+        ]
       }
     },
     {
@@ -213,6 +273,16 @@
         "y": 1060,
         "width": 250,
         "height": 104
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/web/src/components/document/DocumentFragments.vue",
+            "symbols": [
+              "DocumentFragments"
+            ]
+          }
+        ]
       }
     },
     {
@@ -241,6 +311,16 @@
         "y": 659.3798412690822,
         "width": 250,
         "height": 96
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/web/src/components/diagram/DiagramLibrary.vue",
+            "symbols": [
+              "DiagramLibrary"
+            ]
+          }
+        ]
       }
     },
     {
@@ -289,6 +369,16 @@
         "y": 1032,
         "width": 250,
         "height": 164
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/web/src/components/diagram/DiagramView.vue",
+            "symbols": [
+              "DiagramView"
+            ]
+          }
+        ]
       }
     },
     {
@@ -333,6 +423,16 @@
         "y": 1476,
         "width": 250,
         "height": 184
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/web/src/components/diagram/DiagramSvg.vue",
+            "symbols": [
+              "DiagramSvg"
+            ]
+          }
+        ]
       }
     },
     {
@@ -387,6 +487,16 @@
         "y": 796.5276800912512,
         "width": 250,
         "height": 184
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/web/src/components/requirement/RequirementTasks.vue",
+            "symbols": [
+              "RequirementTasks"
+            ]
+          }
+        ]
       }
     },
     {
@@ -449,6 +559,16 @@
         "y": 2378,
         "width": 250,
         "height": 124
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/web/src/api/client.ts",
+            "symbols": [
+              "ApiClient"
+            ]
+          }
+        ]
       }
     },
     {
@@ -482,6 +602,16 @@
         "y": 1758,
         "width": 250,
         "height": 96
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/web/src/api/client.ts",
+            "symbols": [
+              "ApiError"
+            ]
+          }
+        ]
       }
     },
     {
@@ -524,6 +654,16 @@
         "y": 1914,
         "width": 250,
         "height": 184
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/web/src/api/projects.ts",
+            "symbols": [
+              "ProjectsApi"
+            ]
+          }
+        ]
       }
     },
     {
@@ -570,6 +710,16 @@
         "y": 1894,
         "width": 250,
         "height": 204
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/web/src/api/documents.ts",
+            "symbols": [
+              "DocumentsApi"
+            ]
+          }
+        ]
       }
     },
     {
@@ -598,6 +748,16 @@
         "y": 2002,
         "width": 250,
         "height": 96
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/web/src/api/diagrams.ts",
+            "symbols": [
+              "DiagramsApi"
+            ]
+          }
+        ]
       }
     },
     {
@@ -648,6 +808,16 @@
         "y": 1874,
         "width": 250,
         "height": 224
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/web/src/api/requirements.ts",
+            "symbols": [
+              "RequirementsApi"
+            ]
+          }
+        ]
       }
     },
     {
@@ -672,7 +842,39 @@
         "y": 2600,
         "width": 250,
         "height": 96
-      }
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/web/src/api/client.ts",
+            "symbols": [
+              "BackendService"
+            ]
+          }
+        ]
+      },
+      "linkedDiagrams": [
+        {
+          "diagramId": "http-api-class",
+          "label": "HTTP API 层",
+          "type": "class"
+        },
+        {
+          "diagramId": "biz-service-class",
+          "label": "业务服务层",
+          "type": "class"
+        },
+        {
+          "diagramId": "layout-engine-class",
+          "label": "布局引擎",
+          "type": "class"
+        },
+        {
+          "diagramId": "file-store-class",
+          "label": "本地文件存储",
+          "type": "class"
+        }
+      ]
     },
     {
       "nodeId": "useManualEdit",
@@ -827,6 +1029,16 @@
         "y": 2794,
         "width": 250,
         "height": 324
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/web/src/components/diagram/useManualEdit.ts",
+            "symbols": [
+              "useManualEdit"
+            ]
+          }
+        ]
       }
     }
   ],

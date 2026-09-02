@@ -1,0 +1,15 @@
+{
+  "requirementId": "e05e619d-4899-4e03-ba58-0e84b965eed5",
+  "title": "类图/流程图跨模块占位节点支持点击跳转",
+  "description": "现状：类图跨模块节点（如 web-frontend-class 的 BackendService 占位）与流程图 subprocess（如 sys-flow）点击均无法跳转。根因：ClassNode 无关联图字段；前端 DiagramSvg.onNodeClick 仅 architecture 类型触发 node-click 跳转气泡；sys-flow 存的 payload.linkedDiagram 与前端读取的 linkedDiagrams（复数数组）不一致。目标：类图+流程图占位节点支持点击，弹出类似架构图T39的气泡框，列出可跳转的关联图（一个占位可关联多图）。涉及共享层类型/Schema、前端 DiagramSvg/DiagramView、FourSeq 图数据固化。",
+  "branchName": "feature/diagram-node-jump",
+  "status": "done",
+  "taskIds": [
+    "cf8a183f-aaf7-4511-a4ab-efcecc81d8bc",
+    "46bbb419-c22b-4e71-8ca0-f92d5e4ddb38",
+    "68848e66-a7e9-4ade-8d88-11a6e78cfaa4",
+    "31c7d735-e8c7-4195-bbe5-5672a1c7a924"
+  ],
+  "createdAt": 1788337667160,
+  "updatedAt": 1788338200770
+}

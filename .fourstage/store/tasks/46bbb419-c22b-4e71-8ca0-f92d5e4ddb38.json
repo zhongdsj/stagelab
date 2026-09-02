@@ -1,0 +1,15 @@
+{
+  "taskId": "46bbb419-c22b-4e71-8ca0-f92d5e4ddb38",
+  "requirementId": "e05e619d-4899-4e03-ba58-0e84b965eed5",
+  "title": "T2 前端：DiagramSvg/DiagramView 节点点击跳转气泡支持类图与流程图",
+  "description": "DiagramSvg.onNodeClick 扩展：聚合节点仍展开；节点存在关联图（linkedDiagrams，直接字段或 payload.linkedDiagrams 非空）时 emit node-click（弹气泡选择）；无关联时保持原行为（architecture 弹无关联提示、class 走 T41 高亮、flow 无操作）。DiagramView.onNodeClick 统一读取关联图：兼容节点字段 node.linkedDiagrams 与 node.payload.linkedDiagrams（并兼容遗留单数 payload.linkedDiagram），归一为数组；气泡按钮文案按 l.type 显示架构图/类图/流程图；保持 T39 气泡定位与样式。",
+  "status": "done",
+  "acceptanceCriteria": "类图占位节点（BackendService）点击弹出气泡框列出多个关联图按钮，点击跳转到对应图；流程图 subprocess 节点点击同样弹出跳转；架构图 node-click 行为不回归。",
+  "files": [
+    "packages/web/src/components/diagram/DiagramSvg.vue",
+    "packages/web/src/components/diagram/DiagramView.vue"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788337694944,
+  "updatedAt": 1788338067046
+}

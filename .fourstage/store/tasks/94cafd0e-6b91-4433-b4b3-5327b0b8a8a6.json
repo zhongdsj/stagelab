@@ -1,0 +1,15 @@
+{
+  "taskId": "94cafd0e-6b91-4433-b4b3-5327b0b8a8a6",
+  "requirementId": "239029a0-5837-40ce-9c53-1b3d08a85635",
+  "title": "T86 共享层：三种节点 Schema 扩展 codeAnchor",
+  "description": "shared 层新增 CodeAnchor 类型（files: [{path, symbols[]}]）；ArchitectureNodeSchema/ClassNodeSchema/FlowNodeSchema 显式声明 codeAnchor optional（strict 需显式）；types.ts 三种节点接口同步扩展",
+  "status": "done",
+  "acceptanceCriteria": "带 codeAnchor 的 updateNode patch 通过 DiagramSchema 校验；旧数据无 codeAnchor 兼容；strict 模式显式声明字段",
+  "files": [
+    "packages/shared/src/types.ts",
+    "packages/shared/src/schemas.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788321916535,
+  "updatedAt": 1788330314188
+}

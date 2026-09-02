@@ -1,0 +1,141 @@
+{
+  "ext-ai": {
+    "upstream": [],
+    "downstream": [
+      "mcp"
+    ],
+    "upstreamHops": 0,
+    "downstreamHops": 5,
+    "fanIn": 0,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "ext-browser": {
+    "upstream": [],
+    "downstream": [
+      "http"
+    ],
+    "upstreamHops": 0,
+    "downstreamHops": 3,
+    "fanIn": 0,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "mcp": {
+    "upstream": [
+      "ext-ai"
+    ],
+    "downstream": [
+      "biz"
+    ],
+    "upstreamHops": 1,
+    "downstreamHops": 4,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "http": {
+    "upstream": [
+      "ext-browser",
+      "fe",
+      "layout"
+    ],
+    "downstream": [
+      "biz",
+      "fe"
+    ],
+    "upstreamHops": 4,
+    "downstreamHops": 2,
+    "fanIn": 3,
+    "fanOut": 2,
+    "inCycle": true,
+    "cycleIds": [
+      "fe",
+      "http",
+      "layout",
+      "biz"
+    ],
+    "structuralRisk": "high"
+  },
+  "biz": {
+    "upstream": [
+      "mcp",
+      "http"
+    ],
+    "downstream": [
+      "layout",
+      "store"
+    ],
+    "upstreamHops": 2,
+    "downstreamHops": 3,
+    "fanIn": 2,
+    "fanOut": 2,
+    "inCycle": true,
+    "cycleIds": [
+      "fe",
+      "http",
+      "layout",
+      "biz"
+    ],
+    "structuralRisk": "high"
+  },
+  "layout": {
+    "upstream": [
+      "biz"
+    ],
+    "downstream": [
+      "http"
+    ],
+    "upstreamHops": 3,
+    "downstreamHops": 3,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": true,
+    "cycleIds": [
+      "fe",
+      "http",
+      "layout",
+      "biz"
+    ],
+    "structuralRisk": "high"
+  },
+  "store": {
+    "upstream": [
+      "biz"
+    ],
+    "downstream": [],
+    "upstreamHops": 3,
+    "downstreamHops": 0,
+    "fanIn": 1,
+    "fanOut": 0,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "fe": {
+    "upstream": [
+      "http"
+    ],
+    "downstream": [
+      "http"
+    ],
+    "upstreamHops": 5,
+    "downstreamHops": 3,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": true,
+    "cycleIds": [
+      "fe",
+      "http",
+      "layout",
+      "biz"
+    ],
+    "structuralRisk": "high"
+  }
+}
