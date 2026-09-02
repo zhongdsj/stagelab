@@ -22,7 +22,7 @@
 发布到 npm 后，全局安装即可获得 `stagelab` 命令：
 
 ```powershell
-npm install -g stagelab
+npm install -g stagelab@latest
 # 或用 npx 免安装：npx stagelab <命令>
 ```
 

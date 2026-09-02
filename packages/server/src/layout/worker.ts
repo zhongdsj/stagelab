@@ -60,9 +60,17 @@ export function layoutInWorker(
       reject(new DOMException("布局已取消", "AbortError"));
       return;
     }
-    // dev(tsx) 下入口为 .ts，编译产物(dist)下为 .js
-    const isTs = import.meta.url.endsWith(".ts");
-    const worker = new Worker(new URL(`./worker${isTs ? ".ts" : ".js"}`, import.meta.url));
+    // Worker 脚本名按运行形态选择：
+    // - dev(tsx)：入口为 .ts → worker.ts
+    // - esbuild 发布包：cli.mjs 内联本模块，同目录另有独立产物 → worker.mjs（build-release.mjs 单独打包）
+    // - tsc 编译产物(dist)：以 .js 结尾 → worker.js
+    const selfUrl = import.meta.url;
+    const workerName = selfUrl.endsWith(".ts")
+      ? "worker.ts"
+      : selfUrl.endsWith(".mjs")
+        ? "worker.mjs"
+        : "worker.js";
+    const worker = new Worker(new URL(`./${workerName}`, import.meta.url));
     const id = ++requestSeq;
 
     let settled = false;
