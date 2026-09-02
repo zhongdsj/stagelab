@@ -1,0 +1,14 @@
+{
+  "taskId": "3774b6ff-1d61-4b74-b5a1-9be1aa3814e4",
+  "requirementId": "24176d00-fff5-4bab-9eae-aeb2b2b4a6d2",
+  "title": "端点几何工具扩展：按端点所在边生成垂直进入路径",
+  "description": "useEdgeGeometry.ts 新增工具函数：输入端点吸附位置 + 所在边（top/bottom/left/right），返回该端点上方一小段垂直/水平进入点的坐标，使最后一段连线垂直于端点所在边。正交化路径（orthogonalPath/orthogonalizePath）保持兼容。",
+  "status": "done",
+  "acceptanceCriteria": "新增函数可判定端点在节点四边的哪一边，并输出垂直进入的中间折点；正交路径最后一段方向与边垂直；不影响既有端点吸附与共线合并。",
+  "files": [
+    "packages/web/src/components/diagram/useEdgeGeometry.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788255898248,
+  "updatedAt": 1788314663411
+}

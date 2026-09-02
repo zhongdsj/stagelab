@@ -1,0 +1,134 @@
+{
+  "diagramId": "sys-flow",
+  "type": "flow",
+  "metadata": {
+    "title": "系统流程概览",
+    "version": 2,
+    "description": "全链路系统流程概览：各模块流程入口概览图（MCP Server / HTTP API / 业务服务层 / 布局引擎 / 本地存储层 / Web 前端），详细流程见各模块流程图。"
+  },
+  "nodes": [
+    {
+      "nodeId": "ext-ai",
+      "label": "AI 客户端",
+      "nodeKind": "start",
+      "description": "[占位] MCP 调用入口，后续支持跳转"
+    },
+    {
+      "label": "Web 浏览器",
+      "nodeId": "ext-browser",
+      "nodeKind": "start",
+      "description": "[占位] 前端访问入口，后续支持跳转"
+    },
+    {
+      "nodeId": "mcp",
+      "label": "MCP Server 流程",
+      "description": "工具调用→服务层→存储层（详见 mcp-server-flow）",
+      "nodeKind": "subprocess",
+      "payload": {
+        "linkedDiagram": "mcp-server-flow"
+      }
+    },
+    {
+      "nodeId": "http",
+      "label": "HTTP API 流程",
+      "description": "请求→路由→服务/布局→响应（详见 http-api-flow）",
+      "nodeKind": "subprocess",
+      "payload": {
+        "linkedDiagram": "http-api-flow"
+      }
+    },
+    {
+      "label": "业务服务层流程",
+      "nodeId": "biz",
+      "nodeKind": "subprocess",
+      "description": "项目/文档/需求/索引（详见 biz-service-flow）",
+      "payload": {
+        "linkedDiagram": "biz-service-flow"
+      }
+    },
+    {
+      "label": "布局引擎流程",
+      "nodeId": "layout",
+      "nodeKind": "subprocess",
+      "description": "Diagram→LayoutDiagram（详见 layout-engine-flow）",
+      "payload": {
+        "linkedDiagram": "layout-engine-flow"
+      }
+    },
+    {
+      "label": "本地存储层流程",
+      "nodeId": "store",
+      "nodeKind": "subprocess",
+      "description": "读写安全+索引重建（详见 file-store-flow）",
+      "payload": {
+        "linkedDiagram": "file-store-flow"
+      }
+    },
+    {
+      "nodeId": "fe",
+      "label": "Web 前端流程",
+      "description": "项目总览→详情→图/文档/需求（详见 web-frontend-flow）",
+      "nodeKind": "subprocess",
+      "payload": {
+        "linkedDiagram": "web-frontend-flow"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "edgeId": "e01",
+      "from": "ext-ai",
+      "to": "mcp",
+      "label": "stdio"
+    },
+    {
+      "edgeId": "e02",
+      "from": "mcp",
+      "to": "biz",
+      "label": "调用服务"
+    },
+    {
+      "edgeId": "e03",
+      "from": "ext-browser",
+      "to": "http",
+      "label": "HTTP"
+    },
+    {
+      "edgeId": "e04",
+      "from": "http",
+      "to": "biz",
+      "label": "调用服务"
+    },
+    {
+      "edgeId": "e05",
+      "from": "biz",
+      "to": "layout",
+      "label": "布局计算"
+    },
+    {
+      "edgeId": "e06",
+      "from": "biz",
+      "to": "store",
+      "label": "读写持久化"
+    },
+    {
+      "edgeId": "e07",
+      "from": "http",
+      "to": "fe",
+      "label": "返回渲染"
+    },
+    {
+      "edgeId": "e08",
+      "from": "fe",
+      "to": "http",
+      "label": "交互请求"
+    },
+    {
+      "edgeId": "e09",
+      "from": "layout",
+      "to": "http",
+      "label": "布局结果"
+    }
+  ],
+  "groups": []
+}

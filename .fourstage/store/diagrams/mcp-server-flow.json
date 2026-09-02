@@ -1,0 +1,442 @@
+{
+  "diagramId": "mcp-server-flow",
+  "type": "flow",
+  "metadata": {
+    "title": "MCP Server - 核心流程图",
+    "version": 3,
+    "description": "基于 packages/server/src/mcp 源码：MCP 工具调用→服务层→存储层 的请求处理流程"
+  },
+  "nodes": [
+    {
+      "nodeId": "start",
+      "label": "启动 MCP Server",
+      "nodeKind": "start",
+      "description": "startMcpServer()，--repo 预加载",
+      "geometry": {
+        "x": 12,
+        "y": 64,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "init-ws",
+      "label": "initFromArgs",
+      "nodeKind": "process",
+      "description": "解析参数并加载工作区",
+      "payload": {
+        "layer": "工作区服务"
+      },
+      "geometry": {
+        "x": 12,
+        "y": 320,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "connect",
+      "label": "连接 stdio 传输",
+      "nodeKind": "process",
+      "description": "StdioServerTransport.connect",
+      "geometry": {
+        "x": 12,
+        "y": 576,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "recv",
+      "label": "接收工具调用",
+      "nodeKind": "process",
+      "description": "AI 客户端发起 tool call",
+      "geometry": {
+        "x": 12,
+        "y": 832,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "dispatch",
+      "label": "工具分发",
+      "nodeKind": "decision",
+      "description": "按工具名分发到五类工具注册层",
+      "payload": {
+        "condition": "project/document/requirement/diagram/search"
+      },
+      "geometry": {
+        "x": 284,
+        "y": 64,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "call-svc",
+      "label": "调用业务服务",
+      "nodeKind": "process",
+      "description": "ProjectService / DocumentService / DiagramService / IndexService / RequirementService",
+      "payload": {
+        "layer": "服务层"
+      },
+      "geometry": {
+        "x": 930,
+        "y": 64,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "validate",
+      "label": "Zod 参数校验",
+      "nodeKind": "decision",
+      "description": "输入 schema 校验",
+      "payload": {
+        "condition": "schema 合法"
+      },
+      "geometry": {
+        "x": 481,
+        "y": 64,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "err",
+      "label": "safeCall 错误处理",
+      "nodeKind": "process",
+      "description": "异常捕获返回错误信息",
+      "geometry": {
+        "x": 658,
+        "y": 320,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "meta",
+      "label": "写操作只返回 meta",
+      "nodeKind": "process",
+      "description": "返回元数据（不返回大对象）",
+      "geometry": {
+        "x": 456,
+        "y": 320,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "end",
+      "label": "返回结果给客户端",
+      "nodeKind": "end",
+      "description": "stdio 协议返回",
+      "geometry": {
+        "x": 481,
+        "y": 576,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "storage",
+      "label": "存储层读写",
+      "nodeKind": "subprocess",
+      "description": "仓储/IO 持久化",
+      "payload": {
+        "layer": "存储层"
+      },
+      "geometry": {
+        "x": 930,
+        "y": 320,
+        "width": 152,
+        "height": 56
+      }
+    }
+  ],
+  "edges": [
+    {
+      "edgeId": "e01",
+      "from": "start",
+      "to": "init-ws",
+      "label": "启动",
+      "points": [
+        {
+          "x": 88,
+          "y": 120
+        },
+        {
+          "x": 88,
+          "y": 320
+        }
+      ]
+    },
+    {
+      "edgeId": "e02",
+      "from": "init-ws",
+      "to": "connect",
+      "label": "就绪",
+      "points": [
+        {
+          "x": 88,
+          "y": 376
+        },
+        {
+          "x": 88,
+          "y": 576
+        }
+      ]
+    },
+    {
+      "edgeId": "e03",
+      "from": "connect",
+      "to": "recv",
+      "label": "等待",
+      "points": [
+        {
+          "x": 88,
+          "y": 632
+        },
+        {
+          "x": 88,
+          "y": 832
+        }
+      ]
+    },
+    {
+      "edgeId": "e04",
+      "from": "recv",
+      "to": "dispatch",
+      "label": "tool call",
+      "points": [
+        {
+          "x": 164,
+          "y": 860
+        },
+        {
+          "x": 204.8,
+          "y": 860
+        },
+        {
+          "x": 204.8,
+          "y": 92
+        },
+        {
+          "x": 284,
+          "y": 92
+        }
+      ]
+    },
+    {
+      "edgeId": "e05",
+      "from": "dispatch",
+      "to": "call-svc",
+      "label": "匹配工具",
+      "points": [
+        {
+          "x": 436,
+          "y": 92
+        },
+        {
+          "x": 665,
+          "y": 92
+        },
+        {
+          "x": 665,
+          "y": 92
+        },
+        {
+          "x": 930,
+          "y": 92
+        }
+      ]
+    },
+    {
+      "edgeId": "e06",
+      "from": "call-svc",
+      "to": "validate",
+      "label": "校验",
+      "points": [
+        {
+          "x": 1082,
+          "y": 68.66666666666667
+        },
+        {
+          "x": 1116,
+          "y": 68.66666666666667
+        },
+        {
+          "x": 1116,
+          "y": 52
+        },
+        {
+          "x": 557.3333333333334,
+          "y": 52
+        },
+        {
+          "x": 557.3333333333334,
+          "y": 64
+        }
+      ]
+    },
+    {
+      "edgeId": "e07",
+      "from": "validate",
+      "to": "err",
+      "label": "非法",
+      "points": [
+        {
+          "x": 582.6666666666667,
+          "y": 120
+        },
+        {
+          "x": 582.6666666666666,
+          "y": 130
+        },
+        {
+          "x": 734,
+          "y": 130
+        },
+        {
+          "x": 734,
+          "y": 320
+        }
+      ]
+    },
+    {
+      "edgeId": "e08",
+      "from": "err",
+      "to": "end",
+      "label": "返回错误",
+      "points": [
+        {
+          "x": 734,
+          "y": 376
+        },
+        {
+          "x": 734,
+          "y": 486
+        },
+        {
+          "x": 582.6666666666666,
+          "y": 486
+        },
+        {
+          "x": 582.6666666666667,
+          "y": 576
+        }
+      ]
+    },
+    {
+      "edgeId": "e09",
+      "from": "validate",
+      "to": "meta",
+      "label": "合法",
+      "points": [
+        {
+          "x": 532,
+          "y": 120
+        },
+        {
+          "x": 532,
+          "y": 320
+        }
+      ]
+    },
+    {
+      "edgeId": "e10",
+      "from": "meta",
+      "to": "end",
+      "label": "返回 meta",
+      "points": [
+        {
+          "x": 532,
+          "y": 376
+        },
+        {
+          "x": 532,
+          "y": 576
+        }
+      ]
+    },
+    {
+      "edgeId": "e11",
+      "from": "call-svc",
+      "to": "storage",
+      "label": "持久化",
+      "points": [
+        {
+          "x": 1006,
+          "y": 120
+        },
+        {
+          "x": 1006,
+          "y": 320
+        }
+      ]
+    },
+    {
+      "edgeId": "e12",
+      "from": "storage",
+      "to": "meta",
+      "label": "写完成",
+      "points": [
+        {
+          "x": 1082,
+          "y": 324.6666666666667
+        },
+        {
+          "x": 1126,
+          "y": 324.6666666666667
+        },
+        {
+          "x": 1126,
+          "y": 308
+        },
+        {
+          "x": 532,
+          "y": 308
+        },
+        {
+          "x": 532,
+          "y": 320
+        }
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "groupId": "lane-entry",
+      "title": "服务入口",
+      "axis": "horizontal",
+      "nodeIds": [
+        "start",
+        "init-ws",
+        "connect",
+        "recv"
+      ]
+    },
+    {
+      "groupId": "lane-dispatch",
+      "title": "工具分发",
+      "axis": "horizontal",
+      "nodeIds": [
+        "dispatch",
+        "validate",
+        "err",
+        "meta",
+        "end"
+      ]
+    },
+    {
+      "groupId": "lane-svc",
+      "title": "服务/存储层",
+      "axis": "horizontal",
+      "nodeIds": [
+        "call-svc",
+        "storage"
+      ]
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 {
   "projectId": "34a29cd8-790c-43c4-8ce9-e2c25573cfa0",
-  "version": 1788234788,
+  "version": 1788315157,
   "documentIndex": [
     {
       "docId": "dev-doc",
@@ -33,6 +33,14 @@
         "dev-doc-diagram-freeform-f5",
         "dev-doc-diagram-freeform-f6"
       ]
+    },
+    {
+      "docId": "dev-doc-edge-arrow-orient",
+      "title": "附录：连线箭头方向修正（端点垂直进入）",
+      "summary": "## 连线箭头方向修正：端点沿节点边移动时箭头垂直于边（变更记录）\n\n### 问题\n- 端点吸附到节",
+      "fragmentIds": [
+        "dev-doc-edge-arrow-orient-f0"
+      ]
     }
   ],
   "diagramIndex": [
@@ -42,6 +50,83 @@
       "type": "architecture",
       "nodeCount": 7,
       "edgeCount": 7
+    },
+    {
+      "diagramId": "biz-service-class",
+      "title": "业务服务层 - 类图",
+      "type": "class",
+      "nodeCount": 6,
+      "edgeCount": 5
+    },
+    {
+      "diagramId": "biz-service-flow",
+      "title": "业务服务层 - 核心流程图",
+      "type": "flow",
+      "nodeCount": 19,
+      "edgeCount": 18
+    },
+    {
+      "diagramId": "file-store-class",
+      "title": "本地存储层 - 类图",
+      "type": "class",
+      "nodeCount": 8,
+      "edgeCount": 8
+    },
+    {
+      "diagramId": "file-store-flow",
+      "title": "本地存储层 - 核心流程图",
+      "type": "flow",
+      "nodeCount": 11,
+      "edgeCount": 13
+    },
+    {
+      "diagramId": "http-api-class",
+      "title": "HTTP API - 类图",
+      "type": "class",
+      "nodeCount": 8,
+      "edgeCount": 14
+    },
+    {
+      "diagramId": "http-api-flow",
+      "title": "HTTP API - 核心流程图",
+      "type": "flow",
+      "nodeCount": 10,
+      "edgeCount": 12
+    },
+    {
+      "diagramId": "layout-engine-class",
+      "title": "布局引擎 - 类图",
+      "type": "class",
+      "nodeCount": 9,
+      "edgeCount": 8
+    },
+    {
+      "diagramId": "layout-engine-flow",
+      "title": "布局引擎 - 核心流程图",
+      "type": "flow",
+      "nodeCount": 9,
+      "edgeCount": 9
+    },
+    {
+      "diagramId": "mcp-server-class",
+      "title": "MCP Server - 类图",
+      "type": "class",
+      "nodeCount": 9,
+      "edgeCount": 12
+    },
+    {
+      "diagramId": "mcp-server-flow",
+      "title": "MCP Server - 核心流程图",
+      "type": "flow",
+      "nodeCount": 11,
+      "edgeCount": 12
+    },
+    {
+      "diagramId": "sys-flow",
+      "title": "系统流程概览",
+      "type": "flow",
+      "nodeCount": 8,
+      "edgeCount": 9
     },
     {
       "diagramId": "web-frontend-class",
@@ -78,6 +163,13 @@
       "title": "需求状态三态化与自动流转",
       "status": "done",
       "branchName": "feature/requirement-status",
+      "taskCount": 4
+    },
+    {
+      "requirementId": "24176d00-fff5-4bab-9eae-aeb2b2b4a6d2",
+      "title": "连线箭头方向修正：端点沿节点边移动时箭头应垂直于边",
+      "status": "done",
+      "branchName": "feature/edge-arrow-orient",
       "taskCount": 4
     },
     {
@@ -226,10 +318,22 @@
       "requirementId": "40822db0-0c50-45b9-9377-164c8b62affa"
     },
     {
+      "taskId": "0ec294a3-bd17-46de-b8d3-094ea33a0ddc",
+      "title": "构建验证与联调",
+      "status": "done",
+      "requirementId": "24176d00-fff5-4bab-9eae-aeb2b2b4a6d2"
+    },
+    {
       "taskId": "0fb113ac-302e-418e-a9a8-6b68becb2b06",
       "title": "T54 详情页统计按状态细分",
       "status": "done",
       "requirementId": "bbe72970-1124-4675-ab51-1500a8d4aeb5"
+    },
+    {
+      "taskId": "13b780f2-09e8-4804-848b-d4849345bb3a",
+      "title": "手动拖端点/线段：箭头随端点所在边保持垂直",
+      "status": "done",
+      "requirementId": "24176d00-fff5-4bab-9eae-aeb2b2b4a6d2"
     },
     {
       "taskId": "15ffd636-8494-4df8-93d0-2b26abb0326d",
@@ -296,6 +400,12 @@
       "title": "T03 存储层：仓库入口与目录",
       "status": "done",
       "requirementId": "311621a6-ca26-4050-b682-ac3ac2bba4d5"
+    },
+    {
+      "taskId": "3774b6ff-1d61-4b74-b5a1-9be1aa3814e4",
+      "title": "端点几何工具扩展：按端点所在边生成垂直进入路径",
+      "status": "done",
+      "requirementId": "24176d00-fff5-4bab-9eae-aeb2b2b4a6d2"
     },
     {
       "taskId": "3c8fb6a6-0633-4b23-8909-2a0e9c1f23a7",
@@ -470,6 +580,12 @@
       "title": "T19 任务文档去文档化",
       "status": "done",
       "requirementId": "6c3990f0-4296-4f32-aad9-c23f3d53c2e8"
+    },
+    {
+      "taskId": "8e557a2f-b2ba-436a-aed5-2dc6f07ad96f",
+      "title": "节点拖动重布线：最后一段垂直进入端点边",
+      "status": "done",
+      "requirementId": "24176d00-fff5-4bab-9eae-aeb2b2b4a6d2"
     },
     {
       "taskId": "9514ca87-8f37-4a1b-bbd9-dbdfa5f51143",

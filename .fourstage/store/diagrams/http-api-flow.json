@@ -1,0 +1,410 @@
+{
+  "diagramId": "http-api-flow",
+  "type": "flow",
+  "metadata": {
+    "title": "HTTP API - 核心流程图",
+    "version": 3,
+    "description": "基于 packages/server/src/http 源码：前端请求→路由→服务层→布局/存储 的处理流程"
+  },
+  "nodes": [
+    {
+      "nodeId": "start",
+      "label": "前端发起请求",
+      "nodeKind": "start",
+      "description": "Web 前端 ApiClient fetch",
+      "geometry": {
+        "x": 12,
+        "y": 64,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "cors",
+      "label": "CORS 预检",
+      "nodeKind": "decision",
+      "description": "OPTIONS 预检直接 204",
+      "payload": {
+        "condition": "method === OPTIONS"
+      },
+      "geometry": {
+        "x": 12,
+        "y": 320,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "route",
+      "label": "路由匹配",
+      "nodeKind": "process",
+      "description": "四类路由分发：projects/documents/diagrams/requirements",
+      "geometry": {
+        "x": 12,
+        "y": 576,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "validate",
+      "label": "参数校验",
+      "nodeKind": "decision",
+      "description": "title 必填 / status 白名单 / changeType 白名单",
+      "payload": {
+        "condition": "校验通过"
+      },
+      "geometry": {
+        "x": 12,
+        "y": 832,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "resolver",
+      "label": "解析工作区",
+      "nodeKind": "process",
+      "description": "requireWorkspaceByProjectId",
+      "geometry": {
+        "x": 12,
+        "y": 1088,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "svc",
+      "label": "调用业务服务",
+      "nodeKind": "process",
+      "description": "ProjectService / DocumentService / DiagramService / RequirementService / IndexService",
+      "geometry": {
+        "x": 284,
+        "y": 64,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "layout",
+      "label": "布局计算路由",
+      "nodeKind": "decision",
+      "description": "GET /diagrams/:did/layout 走布局引擎",
+      "payload": {
+        "condition": "请求为 layout"
+      },
+      "geometry": {
+        "x": 284,
+        "y": 320,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "engine",
+      "label": "布局引擎",
+      "nodeKind": "subprocess",
+      "description": "layoutInWorker 计算坐标",
+      "payload": {
+        "layer": "布局引擎"
+      },
+      "geometry": {
+        "x": 284,
+        "y": 576,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "err",
+      "label": "错误处理",
+      "nodeKind": "process",
+      "description": "errorStatus 映射 404/422/409/500",
+      "geometry": {
+        "x": 556,
+        "y": 64,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "end",
+      "label": "返回响应",
+      "nodeKind": "end",
+      "description": "JSON 结果 + CORS 头",
+      "geometry": {
+        "x": 556,
+        "y": 320,
+        "width": 152,
+        "height": 56
+      }
+    }
+  ],
+  "edges": [
+    {
+      "edgeId": "e01",
+      "from": "start",
+      "to": "cors",
+      "label": "请求",
+      "points": [
+        {
+          "x": 88,
+          "y": 120
+        },
+        {
+          "x": 88,
+          "y": 320
+        }
+      ]
+    },
+    {
+      "edgeId": "e02",
+      "from": "cors",
+      "to": "end",
+      "label": "预检 204",
+      "points": [
+        {
+          "x": 164,
+          "y": 348
+        },
+        {
+          "x": 324,
+          "y": 348
+        },
+        {
+          "x": 324,
+          "y": 348
+        },
+        {
+          "x": 556,
+          "y": 348
+        }
+      ]
+    },
+    {
+      "edgeId": "e03",
+      "from": "cors",
+      "to": "route",
+      "label": "正常请求",
+      "points": [
+        {
+          "x": 88,
+          "y": 376
+        },
+        {
+          "x": 88,
+          "y": 576
+        }
+      ]
+    },
+    {
+      "edgeId": "e04",
+      "from": "route",
+      "to": "validate",
+      "label": "匹配路由",
+      "points": [
+        {
+          "x": 88,
+          "y": 632
+        },
+        {
+          "x": 88,
+          "y": 832
+        }
+      ]
+    },
+    {
+      "edgeId": "e05",
+      "from": "validate",
+      "to": "err",
+      "label": "非法参数",
+      "points": [
+        {
+          "x": 164,
+          "y": 860
+        },
+        {
+          "x": 342,
+          "y": 860
+        },
+        {
+          "x": 342,
+          "y": 92
+        },
+        {
+          "x": 556,
+          "y": 92
+        }
+      ]
+    },
+    {
+      "edgeId": "e06",
+      "from": "err",
+      "to": "end",
+      "label": "错误响应",
+      "points": [
+        {
+          "x": 632,
+          "y": 120
+        },
+        {
+          "x": 632,
+          "y": 320
+        }
+      ]
+    },
+    {
+      "edgeId": "e07",
+      "from": "validate",
+      "to": "resolver",
+      "label": "校验通过",
+      "points": [
+        {
+          "x": 88,
+          "y": 888
+        },
+        {
+          "x": 88,
+          "y": 1088
+        }
+      ]
+    },
+    {
+      "edgeId": "e08",
+      "from": "resolver",
+      "to": "svc",
+      "label": "调用服务",
+      "points": [
+        {
+          "x": 164,
+          "y": 1116
+        },
+        {
+          "x": 224,
+          "y": 1116
+        },
+        {
+          "x": 224,
+          "y": 92
+        },
+        {
+          "x": 284,
+          "y": 92
+        }
+      ]
+    },
+    {
+      "edgeId": "e09",
+      "from": "svc",
+      "to": "layout",
+      "label": "服务返回",
+      "points": [
+        {
+          "x": 360,
+          "y": 120
+        },
+        {
+          "x": 360,
+          "y": 320
+        }
+      ]
+    },
+    {
+      "edgeId": "e10",
+      "from": "layout",
+      "to": "engine",
+      "label": "是",
+      "points": [
+        {
+          "x": 360,
+          "y": 376
+        },
+        {
+          "x": 360,
+          "y": 576
+        }
+      ]
+    },
+    {
+      "edgeId": "e11",
+      "from": "engine",
+      "to": "end",
+      "label": "布局结果",
+      "points": [
+        {
+          "x": 436,
+          "y": 604
+        },
+        {
+          "x": 505.6,
+          "y": 604
+        },
+        {
+          "x": 505.6,
+          "y": 348
+        },
+        {
+          "x": 556,
+          "y": 348
+        }
+      ]
+    },
+    {
+      "edgeId": "e12",
+      "from": "layout",
+      "to": "end",
+      "label": "否",
+      "points": [
+        {
+          "x": 436,
+          "y": 348
+        },
+        {
+          "x": 515.2,
+          "y": 348
+        },
+        {
+          "x": 515.2,
+          "y": 348
+        },
+        {
+          "x": 556,
+          "y": 348
+        }
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "groupId": "lane-entry",
+      "title": "请求入口",
+      "axis": "horizontal",
+      "nodeIds": [
+        "start",
+        "cors",
+        "route",
+        "validate",
+        "resolver"
+      ]
+    },
+    {
+      "groupId": "lane-svc",
+      "title": "服务/引擎",
+      "axis": "horizontal",
+      "nodeIds": [
+        "svc",
+        "layout",
+        "engine"
+      ]
+    },
+    {
+      "groupId": "lane-out",
+      "title": "响应出口",
+      "axis": "horizontal",
+      "nodeIds": [
+        "err",
+        "end"
+      ]
+    }
+  ]
+}

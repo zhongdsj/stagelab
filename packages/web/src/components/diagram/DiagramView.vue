@@ -103,7 +103,7 @@ import {
   type LayoutResponse
 } from "../../api/index";
 import type { Diagram, NodeGeometry } from "@fourstage/shared";
-import { snapToNodeBorder, orthogonalPath, type NodeBox } from "./useEdgeGeometry";
+import { snapToNodeBorder, perpendicularEntryPath, type NodeBox } from "./useEdgeGeometry";
 
 const props = defineProps<{
   projectId: string;
@@ -154,7 +154,8 @@ function recomputeEdgeAnchors(nodeId: string) {
     const bC = { x: a.x + a.width / 2, y: a.y + a.height / 2 };
     const fromPt = snapToNodeBorder(aC, a);
     const toPt = snapToNodeBorder(bC, b);
-    manual.edges[e.edgeId] = { points: orthogonalPath(fromPt, toPt) };
+    // T77 节点拖动重布线：按端点所在边生成垂直进入路径（末段垂直进入端点边，箭头垂直）
+    manual.edges[e.edgeId] = { points: perpendicularEntryPath(fromPt, a, toPt, b) };
   }
 }
 
@@ -412,12 +413,15 @@ const layout = computed<LayoutResponse | null>(() => {
     const maxX = Math.max(...boxes.map((b) => b.x + b.width));
     const maxY = Math.max(...boxes.map((b) => b.y + b.height));
     const pad = 10;
+    // 纵向模块（垂直模块框）：顶部预留标题空间（标题渲染在 y+16，文字上缘约 y+7），
+    // 避免标题被第一个节点遮住；横向泳道框顶部即画布顶，无需额外预留。
+    const padTop = g.axis !== "horizontal" ? 22 : pad;
     return {
       groupId: g.groupId,
       x: minX - pad,
-      y: minY - pad,
+      y: minY - padTop,
       width: maxX - minX + pad * 2,
-      height: maxY - minY + pad * 2
+      height: maxY - minY + pad + padTop
     };
   });
 

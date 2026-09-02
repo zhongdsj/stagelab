@@ -1,0 +1,352 @@
+{
+  "diagramId": "biz-service-class",
+  "type": "class",
+  "metadata": {
+    "title": "业务服务层 - 类图",
+    "version": 6,
+    "description": "基于 packages/server/src/services 源码：项目/文档/图/索引/需求/工作区 六大服务"
+  },
+  "nodes": [
+    {
+      "nodeId": "ProjectService",
+      "label": "ProjectService",
+      "kind": "class",
+      "methods": [
+        {
+          "name": "createProject"
+        },
+        {
+          "name": "listProjects"
+        },
+        {
+          "name": "getProjectMeta"
+        },
+        {
+          "name": "switchProjectStage"
+        },
+        {
+          "name": "generateId"
+        }
+      ],
+      "description": "项目管理服务",
+      "geometry": {
+        "x": 12,
+        "y": 266,
+        "width": 250,
+        "height": 144
+      }
+    },
+    {
+      "nodeId": "DocumentService",
+      "label": "DocumentService",
+      "kind": "class",
+      "methods": [
+        {
+          "name": "createDocument"
+        },
+        {
+          "name": "getDocumentIndex"
+        },
+        {
+          "name": "readDocumentFragment"
+        },
+        {
+          "name": "writeDocumentFragment"
+        },
+        {
+          "name": "readDocumentFull"
+        }
+      ],
+      "description": "文档分片服务",
+      "geometry": {
+        "x": 12,
+        "y": 508,
+        "width": 250,
+        "height": 144
+      }
+    },
+    {
+      "nodeId": "DiagramService",
+      "label": "DiagramService",
+      "kind": "class",
+      "methods": [
+        {
+          "name": "createDiagram"
+        },
+        {
+          "name": "getDiagramMeta"
+        },
+        {
+          "name": "getDiagramPartial"
+        },
+        {
+          "name": "updateDiagramElements"
+        },
+        {
+          "name": "deleteDiagram"
+        }
+      ],
+      "description": "图元 CRUD 服务",
+      "geometry": {
+        "x": 12,
+        "y": 750,
+        "width": 250,
+        "height": 144
+      }
+    },
+    {
+      "nodeId": "IndexService",
+      "label": "IndexService",
+      "kind": "class",
+      "methods": [
+        {
+          "name": "getProjectIndex"
+        },
+        {
+          "name": "searchProjectContent"
+        },
+        {
+          "name": "readFragment"
+        },
+        {
+          "name": "readDiagram"
+        }
+      ],
+      "description": "索引服务（分层访问+搜索）",
+      "geometry": {
+        "x": 12,
+        "y": 1174,
+        "width": 250,
+        "height": 124
+      }
+    },
+    {
+      "nodeId": "RequirementService",
+      "label": "RequirementService",
+      "kind": "class",
+      "methods": [
+        {
+          "name": "createRequirement"
+        },
+        {
+          "name": "listRequirements"
+        },
+        {
+          "name": "getRequirement"
+        },
+        {
+          "name": "updateRequirement"
+        },
+        {
+          "name": "createTask"
+        },
+        {
+          "name": "updateTaskStatus"
+        }
+      ],
+      "description": "需求-任务服务（三态流转）",
+      "geometry": {
+        "x": 12,
+        "y": 1540,
+        "width": 250,
+        "height": 164
+      }
+    },
+    {
+      "nodeId": "WorkspaceService",
+      "label": "WorkspaceService",
+      "kind": "class",
+      "methods": [
+        {
+          "name": "initRepoProject"
+        },
+        {
+          "name": "setWorkingRepo"
+        },
+        {
+          "name": "getWorkingRepo"
+        },
+        {
+          "name": "listWorkingRepos"
+        }
+      ],
+      "description": "工作区服务（仓库加载/切换）",
+      "geometry": {
+        "x": 12,
+        "y": 1396,
+        "width": 250,
+        "height": 124
+      }
+    }
+  ],
+  "edges": [
+    {
+      "edgeId": "e01",
+      "from": "DiagramService",
+      "to": "IndexService",
+      "label": "索引联动",
+      "points": [
+        {
+          "x": 101,
+          "y": 894
+        },
+        {
+          "x": 101,
+          "y": 1174
+        }
+      ]
+    },
+    {
+      "edgeId": "e02",
+      "from": "DocumentService",
+      "to": "IndexService",
+      "label": "索引联动",
+      "points": [
+        {
+          "x": 262,
+          "y": 580
+        },
+        {
+          "x": 282,
+          "y": 580
+        },
+        {
+          "x": 282,
+          "y": 1162
+        },
+        {
+          "x": 137,
+          "y": 1162
+        },
+        {
+          "x": 137,
+          "y": 1174
+        }
+      ]
+    },
+    {
+      "edgeId": "e03",
+      "from": "RequirementService",
+      "to": "IndexService",
+      "label": "索引联动",
+      "points": [
+        {
+          "x": 262,
+          "y": 1622
+        },
+        {
+          "x": 290,
+          "y": 1622
+        },
+        {
+          "x": 290,
+          "y": 1162
+        },
+        {
+          "x": 137,
+          "y": 1162
+        },
+        {
+          "x": 137,
+          "y": 1174
+        }
+      ]
+    },
+    {
+      "edgeId": "e04",
+      "from": "ProjectService",
+      "to": "WorkspaceService",
+      "label": "工作区依赖",
+      "points": [
+        {
+          "x": 262,
+          "y": 338
+        },
+        {
+          "x": 298,
+          "y": 338
+        },
+        {
+          "x": 298,
+          "y": 1384
+        },
+        {
+          "x": 137,
+          "y": 1384
+        },
+        {
+          "x": 137,
+          "y": 1396
+        }
+      ]
+    },
+    {
+      "edgeId": "e05",
+      "from": "WorkspaceService",
+      "to": "ProjectService",
+      "label": "初始化项目",
+      "points": [
+        {
+          "x": 262,
+          "y": 1458
+        },
+        {
+          "x": 274,
+          "y": 1458
+        },
+        {
+          "x": 274,
+          "y": 254
+        },
+        {
+          "x": 137,
+          "y": 254
+        },
+        {
+          "x": 137,
+          "y": 266
+        }
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "groupId": "g-proj",
+      "title": "项目服务",
+      "axis": "vertical",
+      "nodeIds": [
+        "ProjectService"
+      ],
+      "collapsible": true
+    },
+    {
+      "groupId": "g-doc",
+      "title": "文档服务",
+      "axis": "vertical",
+      "nodeIds": [
+        "DocumentService"
+      ],
+      "collapsible": true
+    },
+    {
+      "groupId": "g-dg",
+      "title": "图与索引服务",
+      "axis": "vertical",
+      "nodeIds": [
+        "DiagramService",
+        "IndexService"
+      ],
+      "collapsible": true
+    },
+    {
+      "groupId": "g-req",
+      "title": "需求与工作区",
+      "axis": "vertical",
+      "nodeIds": [
+        "RequirementService",
+        "WorkspaceService"
+      ],
+      "collapsible": true
+    }
+  ]
+}

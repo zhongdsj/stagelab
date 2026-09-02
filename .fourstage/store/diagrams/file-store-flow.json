@@ -1,0 +1,466 @@
+{
+  "diagramId": "file-store-flow",
+  "type": "flow",
+  "metadata": {
+    "title": "本地存储层 - 核心流程图",
+    "version": 3,
+    "description": "基于 packages/server/src/storage 源码：读写安全（原子写+锁+mtime）与索引重建流程"
+  },
+  "nodes": [
+    {
+      "nodeId": "start",
+      "label": "读写请求",
+      "nodeKind": "start",
+      "description": "服务层发起存储读写",
+      "geometry": {
+        "x": 12,
+        "y": 64,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "path",
+      "label": "解析路径",
+      "nodeKind": "process",
+      "description": "Paths 定位 .fourstage 文件",
+      "geometry": {
+        "x": 12,
+        "y": 320,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "read",
+      "label": "读分支",
+      "nodeKind": "decision",
+      "description": "读：检查缓存+mtime",
+      "payload": {
+        "condition": "读操作"
+      },
+      "geometry": {
+        "x": 284,
+        "y": 64,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "cache-hit",
+      "label": "缓存有效？",
+      "nodeKind": "decision",
+      "description": "TTL 未过期且 mtime 未变",
+      "payload": {
+        "condition": "命中缓存"
+      },
+      "geometry": {
+        "x": 284,
+        "y": 320,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "disk-read",
+      "label": "读磁盘 JSON",
+      "nodeKind": "process",
+      "description": "readJsonFile + 解析校验",
+      "geometry": {
+        "x": 284,
+        "y": 576,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "write",
+      "label": "写分支",
+      "nodeKind": "process",
+      "description": "acquireLock 获取写锁",
+      "geometry": {
+        "x": 556,
+        "y": 64,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "conflict",
+      "label": "磁盘 mtime 冲突？",
+      "nodeKind": "decision",
+      "description": "外部 Git 已改则拒绝",
+      "payload": {
+        "condition": "mtime 较新"
+      },
+      "geometry": {
+        "x": 556,
+        "y": 320,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "atomic",
+      "label": "临时文件+原子 rename",
+      "nodeKind": "process",
+      "description": "写 tmp + fsync + rename 覆盖",
+      "geometry": {
+        "x": 556,
+        "y": 576,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "release",
+      "label": "释放锁+更新缓存",
+      "nodeKind": "process",
+      "description": "释放锁，记录新 mtime",
+      "geometry": {
+        "x": 556,
+        "y": 832,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "end",
+      "label": "返回结果",
+      "nodeKind": "end",
+      "geometry": {
+        "x": 828,
+        "y": 320,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "conflict-err",
+      "label": "返回冲突错误",
+      "nodeKind": "process",
+      "description": "ConflictError 提示刷新重试",
+      "geometry": {
+        "x": 828,
+        "y": 64,
+        "width": 152,
+        "height": 56
+      }
+    }
+  ],
+  "edges": [
+    {
+      "edgeId": "e01",
+      "from": "start",
+      "to": "path",
+      "label": "请求",
+      "points": [
+        {
+          "x": 88,
+          "y": 120
+        },
+        {
+          "x": 88,
+          "y": 320
+        }
+      ]
+    },
+    {
+      "edgeId": "e02",
+      "from": "path",
+      "to": "read",
+      "label": "定位完成",
+      "points": [
+        {
+          "x": 164,
+          "y": 348
+        },
+        {
+          "x": 204.8,
+          "y": 348
+        },
+        {
+          "x": 204.8,
+          "y": 92
+        },
+        {
+          "x": 284,
+          "y": 92
+        }
+      ]
+    },
+    {
+      "edgeId": "e03",
+      "from": "read",
+      "to": "cache-hit",
+      "label": "读",
+      "points": [
+        {
+          "x": 360,
+          "y": 120
+        },
+        {
+          "x": 360,
+          "y": 320
+        }
+      ]
+    },
+    {
+      "edgeId": "e04",
+      "from": "cache-hit",
+      "to": "disk-read",
+      "label": "否",
+      "points": [
+        {
+          "x": 360,
+          "y": 376
+        },
+        {
+          "x": 360,
+          "y": 576
+        }
+      ]
+    },
+    {
+      "edgeId": "e05",
+      "from": "disk-read",
+      "to": "end",
+      "label": "返回数据",
+      "points": [
+        {
+          "x": 436,
+          "y": 604
+        },
+        {
+          "x": 446,
+          "y": 604
+        },
+        {
+          "x": 446,
+          "y": 162
+        },
+        {
+          "x": 818,
+          "y": 162
+        },
+        {
+          "x": 818,
+          "y": 348
+        },
+        {
+          "x": 828,
+          "y": 348
+        }
+      ]
+    },
+    {
+      "edgeId": "e06",
+      "from": "cache-hit",
+      "to": "end",
+      "label": "是",
+      "points": [
+        {
+          "x": 436,
+          "y": 348
+        },
+        {
+          "x": 446,
+          "y": 348
+        },
+        {
+          "x": 446,
+          "y": 128
+        },
+        {
+          "x": 818,
+          "y": 128
+        },
+        {
+          "x": 818,
+          "y": 348
+        },
+        {
+          "x": 828,
+          "y": 348
+        }
+      ]
+    },
+    {
+      "edgeId": "e07",
+      "from": "read",
+      "to": "write",
+      "label": "写",
+      "points": [
+        {
+          "x": 436,
+          "y": 92
+        },
+        {
+          "x": 505.6,
+          "y": 92
+        },
+        {
+          "x": 505.6,
+          "y": 92
+        },
+        {
+          "x": 556,
+          "y": 92
+        }
+      ]
+    },
+    {
+      "edgeId": "e08",
+      "from": "write",
+      "to": "conflict",
+      "label": "持有锁",
+      "points": [
+        {
+          "x": 632,
+          "y": 120
+        },
+        {
+          "x": 632,
+          "y": 320
+        }
+      ]
+    },
+    {
+      "edgeId": "e09",
+      "from": "conflict",
+      "to": "conflict-err",
+      "label": "是",
+      "points": [
+        {
+          "x": 708,
+          "y": 348
+        },
+        {
+          "x": 787.2,
+          "y": 348
+        },
+        {
+          "x": 787.2,
+          "y": 92
+        },
+        {
+          "x": 828,
+          "y": 92
+        }
+      ]
+    },
+    {
+      "edgeId": "e10",
+      "from": "conflict-err",
+      "to": "end",
+      "label": "错误返回",
+      "points": [
+        {
+          "x": 904,
+          "y": 120
+        },
+        {
+          "x": 904,
+          "y": 320
+        }
+      ]
+    },
+    {
+      "edgeId": "e11",
+      "from": "conflict",
+      "to": "atomic",
+      "label": "否",
+      "points": [
+        {
+          "x": 632,
+          "y": 376
+        },
+        {
+          "x": 632,
+          "y": 576
+        }
+      ]
+    },
+    {
+      "edgeId": "e12",
+      "from": "atomic",
+      "to": "release",
+      "label": "落盘",
+      "points": [
+        {
+          "x": 632,
+          "y": 632
+        },
+        {
+          "x": 632,
+          "y": 832
+        }
+      ]
+    },
+    {
+      "edgeId": "e13",
+      "from": "release",
+      "to": "end",
+      "label": "返回",
+      "points": [
+        {
+          "x": 708,
+          "y": 860
+        },
+        {
+          "x": 748.8,
+          "y": 860
+        },
+        {
+          "x": 748.8,
+          "y": 348
+        },
+        {
+          "x": 828,
+          "y": 348
+        }
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "groupId": "lane-path",
+      "title": "路径解析",
+      "axis": "horizontal",
+      "nodeIds": [
+        "start",
+        "path"
+      ]
+    },
+    {
+      "groupId": "lane-read",
+      "title": "读路径",
+      "axis": "horizontal",
+      "nodeIds": [
+        "read",
+        "cache-hit",
+        "disk-read"
+      ]
+    },
+    {
+      "groupId": "lane-write",
+      "title": "写路径",
+      "axis": "horizontal",
+      "nodeIds": [
+        "write",
+        "conflict",
+        "atomic",
+        "release"
+      ]
+    },
+    {
+      "groupId": "lane-out",
+      "title": "出口",
+      "axis": "horizontal",
+      "nodeIds": [
+        "end",
+        "conflict-err"
+      ]
+    }
+  ]
+}

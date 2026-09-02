@@ -1,0 +1,7 @@
+{
+  "fragmentId": "dev-doc-edge-arrow-orient-f0",
+  "docId": "dev-doc-edge-arrow-orient",
+  "order": 0,
+  "title": "附录：连线箭头方向修正（端点垂直进入）",
+  "content": "## 连线箭头方向修正：端点沿节点边移动时箭头垂直于边（变更记录）\n\n### 问题\n- 端点吸附到节点四边后，末段方向可能与吸附后的最后一段不一致，箭头与边不垂直（SVG marker orient 用 auto-start-reverse）。\n- 实测发现：拖拽端点跨边时 orthogonalizePath 会把整条路径重画、丢弃手工折点，路径跳变；mergeCollinear 会吃掉垂直 stub 导致末段方向反向。\n- 端点被节点层遮挡 + 命中半径 10px 过小，端点难以拖拽。\n\n### 修复\n- useEdgeGeometry.ts 新增 T77 系列：edgeNormal/edgeSideOf/perpendicularEntryPath/ensurePerpendicularEnds/moveEdgeEndpoint；orthogonalizePath 支持传节点盒子按边生成垂直路径。\n- 节点拖动重布线（DiagramView.recomputeEdgeAnchors）改用 perpendicularEntryPath，末段垂直进入端点所在边。\n- 手动拖端点（DiagramSvg.onSvgPointerMove edgePoint）改用 moveEdgeEndpoint：仅重画端点段、保留中间手工折点、箭头垂直；先 mergeCollinear 再重画端点段，避免 stub 被合并吃掉。\n- 端点命中半径扩大（端点 14px，中间折点 10px）；连线层绘制在普通节点之上、聚合节点置于最顶层，端点/箭头不被节点遮挡且聚合展开不回归。\n- marker orient 由 auto-start-reverse 改为 auto（marker-end 行为一致）。\n\n### 验证\n- 纯函数模拟 21 项断言全过：perpendicularEntryPath/ensurePerpendicularEnds 跨边垂直、moveEdgeEndpoint 跨四边连续拖拽每帧垂直且保留中间折点。\n- 浏览器实测（架构图编辑态）：拖 b 端顶边→右边→底边→左边、拖 a 端到顶边，箭头始终垂直所在边且方向朝内；类图 22 条连线正交无回归；折叠聚合节点可点击展开。\n- vue-tsc + vite build 通过。"
+}

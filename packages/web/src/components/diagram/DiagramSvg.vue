@@ -9,7 +9,7 @@
     @pointercancel="onSvgPointerUp"
   >
     <defs>
-      <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
         <path d="M 0 0 L 10 5 L 0 10 z" fill="#909399" />
       </marker>
     </defs>
@@ -45,37 +45,12 @@
       </g>
     </g>
 
-    <!-- 连线（正交折线 + 箭头 + 标签）；跨折叠模块连线端点收敛到模块框边缘 -->
+    <!-- 节点（普通节点，按语义类型区分样式；连线绘制在其上，端点/箭头完整可见便于拖拽） -->
     <g
-      v-for="e in renderEdges"
-      :key="e.edgeId"
-      :class="[
-        'edge',
-        diagram.type === 'class' ? 'is-clickable' : '',
-        isEdgeHighlighted(e.edgeId) ? 'is-highlighted' : '',
-        hasEdgeOverride(e.edgeId) ? 'has-override' : ''
-      ]"
-      @click="onEdgeClickSuppressed(e.edgeId)"
-      @contextmenu.prevent="onEdgeContextMenu(e.edgeId, $event)"
-      @pointerdown="onEdgeDown(e.edgeId, $event)"
-      @dblclick="onEdgeDblClick(e.edgeId, $event)"
-    >
-      <!-- T49 透明粗热区：扩大连线点击命中范围（仅命中用，不参与高亮样式） -->
-      <polyline class="edge-hit" :points="pointsToStr(e.points)" fill="none" stroke="transparent" stroke-width="14" />
-      <polyline :points="pointsToStr(e.points)" fill="none" marker-end="url(#arrow)" />
-      <text v-if="edgeLabel(e.edgeId)" class="edge-label" :x="edgeMid(e).x" :y="edgeMid(e).y" text-anchor="middle">
-        {{ edgeLabel(e.edgeId) }}
-      </text>
-      <!-- T53 手动编辑：折点/端点操作改为线段命中/双击/右键，不再以圆形手柄标出（T78） -->
-    </g>
-
-    <!-- 节点（按语义类型区分样式；聚合节点特殊渲染；折叠模块内部节点隐藏） -->
-    <g
-      v-for="n in renderNodes"
+      v-for="n in normalNodes"
       :key="n.nodeId"
       :class="[
         'node',
-        isAggregate(n.nodeId) ? 'is-aggregate' : '',
         isNodeHighlighted(n.nodeId) ? 'is-highlighted' : '',
         editMode ? 'is-editing' : '',
         hasNodeOverride(n.nodeId) ? 'has-override' : ''
@@ -87,19 +62,8 @@
       @mouseenter="onNodeHover(n.nodeId, true)"
       @mouseleave="onNodeHover(n.nodeId, false)"
     >
-      <!-- 聚合节点（折叠模块呈现为单个节点，点击展开） -->
-      <template v-if="isAggregate(n.nodeId)">
-        <rect :width="n.width" :height="n.height" rx="8" class="node-rect aggregate" />
-        <text class="node-label aggregate-title" :x="n.width / 2" :y="n.height / 2" text-anchor="middle" dominant-baseline="central">
-          {{ aggregateTitle(n.nodeId) }}
-        </text>
-        <text class="node-label aggregate-hint" :x="n.width / 2" :y="n.height / 2 + 18" text-anchor="middle">
-          （已折叠 · 点击展开）
-        </text>
-      </template>
-
       <!-- 流程图决策节点：菱形 -->
-      <template v-else-if="nodeShape(n.nodeId) === 'diamond'">
+      <template v-if="nodeShape(n.nodeId) === 'diamond'">
         <path :d="diamondPath(n)" :class="['node-rect', 'shape-diamond', nodeKindClass(n.nodeId)]" />
         <text class="node-label" :x="n.width / 2" :y="n.height / 2" text-anchor="middle" dominant-baseline="central">
           {{ nodeLabel(n.nodeId) }}
@@ -136,6 +100,51 @@
         </text>
       </template>
     </g>
+
+    <!-- 连线（正交折线 + 箭头 + 标签）；绘制在普通节点之上，端点/箭头不被节点遮挡（跨折叠模块连线端点收敛到模块框边缘） -->
+    <g
+      v-for="e in renderEdges"
+      :key="e.edgeId"
+      :class="[
+        'edge',
+        diagram.type === 'class' ? 'is-clickable' : '',
+        isEdgeHighlighted(e.edgeId) ? 'is-highlighted' : '',
+        hasEdgeOverride(e.edgeId) ? 'has-override' : ''
+      ]"
+      @click="onEdgeClickSuppressed(e.edgeId)"
+      @contextmenu.prevent="onEdgeContextMenu(e.edgeId, $event)"
+      @pointerdown="onEdgeDown(e.edgeId, $event)"
+      @dblclick="onEdgeDblClick(e.edgeId, $event)"
+    >
+      <!-- T49 透明粗热区：扩大连线点击命中范围（仅命中用，不参与高亮样式） -->
+      <polyline class="edge-hit" :points="pointsToStr(e.points)" fill="none" stroke="transparent" stroke-width="14" />
+      <polyline :points="pointsToStr(e.points)" fill="none" marker-end="url(#arrow)" />
+      <text v-if="edgeLabel(e.edgeId)" class="edge-label" :x="edgeMid(e).x" :y="edgeMid(e).y" text-anchor="middle">
+        {{ edgeLabel(e.edgeId) }}
+      </text>
+      <!-- T53 手动编辑：折点/端点操作改为线段命中/双击/右键，不再以圆形手柄标出（T78） -->
+    </g>
+
+    <!-- 聚合节点（折叠模块）：置于最顶层，保证连线不遮挡其点击展开 -->
+    <g
+      v-for="n in renderAggregateNodes"
+      :key="n.nodeId"
+      class="node is-aggregate"
+      :transform="`translate(${n.x}, ${n.y})`"
+      @click="onNodeClickSuppressed(n.nodeId)"
+      @pointerdown="onNodeDown(n.nodeId, $event)"
+      @contextmenu.prevent="onNodeContextMenu(n.nodeId)"
+      @mouseenter="onNodeHover(n.nodeId, true)"
+      @mouseleave="onNodeHover(n.nodeId, false)"
+    >
+      <rect :width="n.width" :height="n.height" rx="8" class="node-rect aggregate" />
+      <text class="node-label aggregate-title" :x="n.width / 2" :y="n.height / 2" text-anchor="middle" dominant-baseline="central">
+        {{ aggregateTitle(n.nodeId) }}
+      </text>
+      <text class="node-label aggregate-hint" :x="n.width / 2" :y="n.height / 2 + 18" text-anchor="middle">
+        （已折叠 · 点击展开）
+      </text>
+    </g>
   </svg>
 </template>
 
@@ -143,7 +152,7 @@
 import { computed, ref, watch } from "vue";
 import type { Diagram, LayoutDiagram } from "@fourstage/shared";
 import type { ManualOverrides } from "./useManualEdit";
-import { dist, snapToNodeBorder, orthogonalizePath, mergeCollinear, type NodeBox } from "./useEdgeGeometry";
+import { dist, snapToNodeBorder, orthogonalizePath, mergeCollinear, ensurePerpendicularEnds, moveEdgeEndpoint, type NodeBox } from "./useEdgeGeometry";
 
 const props = defineProps<{
   layout: LayoutDiagram;
@@ -397,6 +406,12 @@ const renderNodes = computed(() => [
   })
 ]);
 
+/** 普通节点（不含聚合节点；连线绘制在其上层，端点/箭头不被遮挡） */
+const normalNodes = computed(() => renderNodes.value.filter((n) => !isAggregate(n.nodeId)));
+
+/** 聚合节点（折叠模块）：置于最顶层渲染，保证连线不遮挡其点击展开 */
+const renderAggregateNodes = computed(() => renderNodes.value.filter((n) => isAggregate(n.nodeId)));
+
 /** 分组是否处于折叠态（用于「已折叠」提示） */
 function isGroupCollapsed(groupId: string): boolean {
   return isCollapsedOrAncestor(groupId);
@@ -454,7 +469,9 @@ const renderEdges = computed(() => {
     } else {
       // T80 渲染层正交化兜底：旧数据/异常路径存在斜线段时自动补最小折点（Z 形），
       // 保证渲染连线严格横平竖直；已正交路径原样返回（幂等），不影响正常渲染。
-      arr = orthogonalizePath(pts);
+      // T77：按端点所在边生成垂直进入路径，箭头垂直所在边。
+      const boxes = endpointBoxes(e.edgeId);
+      arr = orthogonalizePath(pts, boxes?.a, boxes?.b);
     }
     if (arr.length >= 2) out.push({ edgeId: e.edgeId, points: arr });
   }
@@ -803,7 +820,11 @@ function onEdgeDown(edgeId: string, e: PointerEvent) {
   const pts = edge?.points ?? [];
   if (pts.length < 2) return;
   // 优先命中已有折点/端点（半径阈值）：拖动该点（T75 端点跨边吸附在其拖动分支处理）
-  const hitIndex = pts.findIndex((p) => dist(world, p) <= 10);
+  // T77：端点命中半径扩大（端点需沿节点边滑动，范围太小难拖动；中间折点保持小半径）
+  const hitIndex = pts.findIndex((p, i) => {
+    const isEnd = i === 0 || i === pts.length - 1;
+    return dist(world, p) <= (isEnd ? 14 : 10);
+  });
   if (hitIndex !== -1) {
     e.stopPropagation();
     dragMoved = false;
@@ -883,7 +904,14 @@ function removeEdgePoint(edgeId: string, index: number) {
   if (pts.length <= 2) return; // 至少保留两端锚点
   if (index === 0 || index === pts.length - 1) return; // 端点锚点禁止删除
   const np = pts.filter((_, i) => i !== index).map((p) => ({ ...p }));
-  emit("edge-move", edgeId, orthogonalizePath(np), true);
+  // T77 删除折点后保持端点段垂直进入（箭头垂直所在边）
+  const boxes = endpointBoxes(edgeId);
+  const out = ensurePerpendicularEnds(
+    orthogonalizePath(np, boxes?.a, boxes?.b),
+    boxes?.a,
+    boxes?.b
+  );
+  emit("edge-move", edgeId, out, true);
 }
 
 /**
@@ -921,17 +949,26 @@ function onSvgPointerMove(e: PointerEvent) {
     let nx = d.startPos.x + dx;
     let ny = d.startPos.y + dy;
     const boxes = endpointBoxes(d.targetId);
-    if (idx === 0 && boxes) {
-      const s = snapToNodeBorder({ x: nx, y: ny }, boxes.a);
-      nx = s.x;
-      ny = s.y;
-    } else if (idx === pts.length - 1 && boxes) {
-      const s = snapToNodeBorder({ x: nx, y: ny }, boxes.b);
-      nx = s.x;
-      ny = s.y;
+    let out: Array<{ x: number; y: number }>;
+    if ((idx === 0 || idx === pts.length - 1) && boxes) {
+      // T77 端点拖动：吸附到节点边后，仅重画端点段（垂直进出所在边，箭头垂直），
+      // 保留中间手工折点，避免拖拽中整条路径跳变/箭头方向乱。
+      if (idx === 0) {
+        const s = snapToNodeBorder({ x: nx, y: ny }, boxes.a);
+        nx = s.x;
+        ny = s.y;
+      } else {
+        const s = snapToNodeBorder({ x: nx, y: ny }, boxes.b);
+        nx = s.x;
+        ny = s.y;
+      }
+      // 先合并中间冗余折点，再重画端点段（端点段最后生成，避免被共线合并吃掉垂直 stub）
+      out = moveEdgeEndpoint(mergeCollinear(pts), idx, { x: nx, y: ny }, idx === 0 ? boxes.a : boxes.b);
+    } else {
+      // 中间折点拖动：保持自由，正交化 + 共线合并
+      pts[idx] = { x: nx, y: ny };
+      out = mergeCollinear(orthogonalizePath(pts));
     }
-    pts[idx] = { x: nx, y: ny };
-    const out = mergeCollinear(orthogonalizePath(pts));
     d.last = { x: 0, y: 0, points: out };
     emit("edge-move", d.targetId, out, false);
   } else {
@@ -962,7 +999,12 @@ function onSvgPointerMove(e: PointerEvent) {
       pts[segB].x = nx(segB, isBEnd, isBEnd ? boxes?.b : undefined);
     }
     // T79：相邻平行段重合 → 共线合并去冗余折点；T80：非正交 → 自动补最小折点
-    const out = mergeCollinear(orthogonalizePath(pts));
+    // T77：线段平移后端点沿边滑动，修正首/末段垂直进入（箭头垂直所在边）
+    const out = ensurePerpendicularEnds(
+      mergeCollinear(orthogonalizePath(pts, boxes?.a, boxes?.b)),
+      boxes?.a,
+      boxes?.b
+    );
     d.last = { x: 0, y: 0, points: out };
     emit("edge-move", d.targetId, out, false);
   }

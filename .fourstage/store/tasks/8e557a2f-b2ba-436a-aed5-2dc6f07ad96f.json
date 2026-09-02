@@ -1,0 +1,14 @@
+{
+  "taskId": "8e557a2f-b2ba-436a-aed5-2dc6f07ad96f",
+  "requirementId": "24176d00-fff5-4bab-9eae-aeb2b2b4a6d2",
+  "title": "节点拖动重布线：最后一段垂直进入端点边",
+  "description": "DiagramView.vue recomputeEdgeAnchors 改用新工具生成路径：端点在顶/底边→最后一段垂直进入；左/右边→最后一段水平进入（指向节点内部）。替换当前固定正交Path（总是垂直进线导致左右边箭头平行）。",
+  "status": "done",
+  "acceptanceCriteria": "拖动节点后关联连线端点吸附在四边，最后一段连线垂直/水平垂直于所在边，箭头方向正确。",
+  "files": [
+    "packages/web/src/components/diagram/DiagramView.vue"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788255899936,
+  "updatedAt": 1788314663885
+}

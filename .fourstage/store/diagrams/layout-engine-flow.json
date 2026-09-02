@@ -1,0 +1,272 @@
+{
+  "diagramId": "layout-engine-flow",
+  "type": "flow",
+  "metadata": {
+    "title": "布局引擎 - 核心流程图",
+    "version": 3,
+    "description": "基于 packages/server/src/layout 源码：业务图→布局计算→LayoutDiagram 返回流程"
+  },
+  "nodes": [
+    {
+      "nodeId": "start",
+      "label": "接收布局请求",
+      "nodeKind": "start",
+      "description": "HTTP /diagrams/:did/layout 或 MCP 布局",
+      "geometry": {
+        "x": 0,
+        "y": 0,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "parse",
+      "label": "解析布局参数",
+      "nodeKind": "process",
+      "description": "getLayoutParams(type) + options 覆盖",
+      "geometry": {
+        "x": 0,
+        "y": 256,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "worker",
+      "label": "进 Worker 线程",
+      "nodeKind": "decision",
+      "description": "大图走 Worker，小图同步",
+      "payload": {
+        "condition": "图较大"
+      },
+      "geometry": {
+        "x": 0,
+        "y": 512,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "build",
+      "label": "构建模块/泳道结构",
+      "nodeKind": "process",
+      "description": "VModule/HLane 分区结构",
+      "geometry": {
+        "x": 0,
+        "y": 768,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "focus",
+      "label": "折叠计划",
+      "nodeKind": "decision",
+      "description": "focusModuleId 折叠非聚焦模块",
+      "payload": {
+        "condition": "有聚焦模块"
+      },
+      "geometry": {
+        "x": 0,
+        "y": 1024,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "elk",
+      "label": "ELK 布局计算",
+      "nodeKind": "subprocess",
+      "description": "elk.layout 计算节点坐标",
+      "geometry": {
+        "x": 0,
+        "y": 1280,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "route",
+      "label": "连线路径规划",
+      "nodeKind": "process",
+      "description": "routeEdge 正交路径 + Z 形通道",
+      "geometry": {
+        "x": 0,
+        "y": 1536,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "out",
+      "label": "组装 LayoutDiagram",
+      "nodeKind": "process",
+      "description": "节点/连线/分组坐标输出",
+      "geometry": {
+        "x": 0,
+        "y": 1792,
+        "width": 152,
+        "height": 56
+      }
+    },
+    {
+      "nodeId": "end",
+      "label": "返回布局结果",
+      "nodeKind": "end",
+      "description": "供前端 SVG 渲染",
+      "geometry": {
+        "x": 0,
+        "y": 2048,
+        "width": 152,
+        "height": 56
+      }
+    }
+  ],
+  "edges": [
+    {
+      "edgeId": "e01",
+      "from": "start",
+      "to": "parse",
+      "label": "请求",
+      "points": [
+        {
+          "x": 76,
+          "y": 56
+        },
+        {
+          "x": 76,
+          "y": 256
+        }
+      ]
+    },
+    {
+      "edgeId": "e02",
+      "from": "parse",
+      "to": "worker",
+      "label": "参数就绪",
+      "points": [
+        {
+          "x": 76,
+          "y": 312
+        },
+        {
+          "x": 76,
+          "y": 512
+        }
+      ]
+    },
+    {
+      "edgeId": "e03",
+      "from": "worker",
+      "to": "build",
+      "label": "计算",
+      "points": [
+        {
+          "x": 76,
+          "y": 568
+        },
+        {
+          "x": 76,
+          "y": 768
+        }
+      ]
+    },
+    {
+      "edgeId": "e04",
+      "from": "build",
+      "to": "focus",
+      "label": "分区完成",
+      "points": [
+        {
+          "x": 76,
+          "y": 824
+        },
+        {
+          "x": 76,
+          "y": 1024
+        }
+      ]
+    },
+    {
+      "edgeId": "e05",
+      "from": "focus",
+      "to": "elk",
+      "label": "处理折叠",
+      "points": [
+        {
+          "x": 101.33333333333333,
+          "y": 1080
+        },
+        {
+          "x": 101.33333333333333,
+          "y": 1280
+        }
+      ]
+    },
+    {
+      "edgeId": "e06",
+      "from": "focus",
+      "to": "elk",
+      "label": "直接计算",
+      "points": [
+        {
+          "x": 50.666666666666664,
+          "y": 1080
+        },
+        {
+          "x": 50.666666666666664,
+          "y": 1280
+        }
+      ]
+    },
+    {
+      "edgeId": "e07",
+      "from": "elk",
+      "to": "route",
+      "label": "坐标就绪",
+      "points": [
+        {
+          "x": 76,
+          "y": 1336
+        },
+        {
+          "x": 76,
+          "y": 1536
+        }
+      ]
+    },
+    {
+      "edgeId": "e08",
+      "from": "route",
+      "to": "out",
+      "label": "路径就绪",
+      "points": [
+        {
+          "x": 76,
+          "y": 1592
+        },
+        {
+          "x": 76,
+          "y": 1792
+        }
+      ]
+    },
+    {
+      "edgeId": "e09",
+      "from": "out",
+      "to": "end",
+      "label": "完成",
+      "points": [
+        {
+          "x": 76,
+          "y": 1848
+        },
+        {
+          "x": 76,
+          "y": 2048
+        }
+      ]
+    }
+  ],
+  "groups": []
+}

@@ -1,0 +1,434 @@
+{
+  "diagramId": "file-store-class",
+  "type": "class",
+  "metadata": {
+    "title": "本地存储层 - 类图",
+    "version": 8,
+    "description": "基于 packages/server/src/storage 源码：IO/路径/锁/注册表/缓存/索引构建/仓储/工作区"
+  },
+  "nodes": [
+    {
+      "nodeId": "StorageIO",
+      "label": "StorageIO",
+      "kind": "class",
+      "methods": [
+        {
+          "name": "readJsonFile"
+        },
+        {
+          "name": "writeJsonFile"
+        },
+        {
+          "name": "getMtimeMs"
+        },
+        {
+          "name": "invalidateCache"
+        }
+      ],
+      "description": "文件 IO 安全引擎",
+      "geometry": {
+        "x": 12,
+        "y": 266,
+        "width": 250,
+        "height": 124
+      }
+    },
+    {
+      "nodeId": "Paths",
+      "label": "Paths",
+      "kind": "class",
+      "methods": [
+        {
+          "name": "storeSubdir"
+        },
+        {
+          "name": "entityPath"
+        },
+        {
+          "name": "documentFragmentPath"
+        },
+        {
+          "name": "lockPath"
+        }
+      ],
+      "description": "仓库路径解析",
+      "geometry": {
+        "x": 12,
+        "y": 670,
+        "width": 250,
+        "height": 124
+      }
+    },
+    {
+      "nodeId": "Lock",
+      "label": "Lock",
+      "kind": "class",
+      "methods": [
+        {
+          "name": "acquireLock"
+        },
+        {
+          "name": "withLock"
+        }
+      ],
+      "description": "文件锁（原子互斥+stale 检测）",
+      "geometry": {
+        "x": 12,
+        "y": 892,
+        "width": 250,
+        "height": 96
+      }
+    },
+    {
+      "nodeId": "Registry",
+      "label": "Registry",
+      "kind": "class",
+      "methods": [
+        {
+          "name": "loadRegistry"
+        },
+        {
+          "name": "registerRepo"
+        },
+        {
+          "name": "listRegisteredRepos"
+        }
+      ],
+      "description": "仓库注册表（用户级持久化）",
+      "geometry": {
+        "x": 384,
+        "y": 1594,
+        "width": 250,
+        "height": 104
+      }
+    },
+    {
+      "nodeId": "TtlCache",
+      "label": "TtlCache",
+      "kind": "class",
+      "methods": [
+        {
+          "name": "get"
+        },
+        {
+          "name": "set"
+        },
+        {
+          "name": "invalidate"
+        }
+      ],
+      "description": "短时内存缓存（TTL+mtime 校验）",
+      "geometry": {
+        "x": 12,
+        "y": 1008,
+        "width": 250,
+        "height": 104
+      }
+    },
+    {
+      "nodeId": "IndexBuilder",
+      "label": "IndexBuilder",
+      "kind": "class",
+      "methods": [
+        {
+          "name": "rebuildIndex",
+          "returnType": "Promise<ProjectIndex>"
+        },
+        {
+          "name": "readIndex"
+        },
+        {
+          "name": "invalidateIndexCache"
+        }
+      ],
+      "description": "项目索引重建",
+      "geometry": {
+        "x": 12,
+        "y": 1210,
+        "width": 250,
+        "height": 104
+      }
+    },
+    {
+      "nodeId": "RepositoryFactory",
+      "label": "RepositoryFactory",
+      "kind": "class",
+      "methods": [
+        {
+          "name": "createRepositories"
+        },
+        {
+          "name": "save"
+        },
+        {
+          "name": "delete"
+        }
+      ],
+      "description": "实体仓储（base/factory/index）",
+      "geometry": {
+        "x": 54,
+        "y": 1594,
+        "width": 250,
+        "height": 104
+      }
+    },
+    {
+      "nodeId": "RepoWorkspace",
+      "label": "RepoWorkspace",
+      "kind": "class",
+      "attributes": [
+        {
+          "name": "repoRoot",
+          "type": "string"
+        },
+        {
+          "name": "entry",
+          "type": "RepoEntryMeta"
+        }
+      ],
+      "description": "仓库工作区",
+      "geometry": {
+        "x": 342,
+        "y": 1218,
+        "width": 250,
+        "height": 96
+      }
+    }
+  ],
+  "edges": [
+    {
+      "edgeId": "e01",
+      "from": "StorageIO",
+      "to": "Paths",
+      "label": "路径解析",
+      "points": [
+        {
+          "x": 137,
+          "y": 390
+        },
+        {
+          "x": 137,
+          "y": 670
+        }
+      ]
+    },
+    {
+      "edgeId": "e02",
+      "from": "StorageIO",
+      "to": "Lock",
+      "label": "互斥锁",
+      "points": [
+        {
+          "x": 262,
+          "y": 328
+        },
+        {
+          "x": 272,
+          "y": 328
+        },
+        {
+          "x": 272,
+          "y": 102
+        },
+        {
+          "x": -33.16614292530727,
+          "y": 102
+        },
+        {
+          "x": -33.16614292530727,
+          "y": 940
+        },
+        {
+          "x": 12,
+          "y": 940
+        }
+      ]
+    },
+    {
+      "edgeId": "e03",
+      "from": "StorageIO",
+      "to": "TtlCache",
+      "label": "短时缓存",
+      "points": [
+        {
+          "x": 262,
+          "y": 328
+        },
+        {
+          "x": 272,
+          "y": 328
+        },
+        {
+          "x": 272,
+          "y": 68
+        },
+        {
+          "x": -84.50871159625586,
+          "y": 68
+        },
+        {
+          "x": -84.50871159625586,
+          "y": 1060
+        },
+        {
+          "x": 12,
+          "y": 1060
+        }
+      ]
+    },
+    {
+      "edgeId": "e04",
+      "from": "IndexBuilder",
+      "to": "StorageIO",
+      "label": "读写",
+      "points": [
+        {
+          "x": 262,
+          "y": 1262
+        },
+        {
+          "x": 293.0996857551843,
+          "y": 1262
+        },
+        {
+          "x": 293.0996857551843,
+          "y": 34
+        },
+        {
+          "x": -121.78482309708158,
+          "y": 34
+        },
+        {
+          "x": -121.78482309708158,
+          "y": 328
+        },
+        {
+          "x": 12,
+          "y": 328
+        }
+      ]
+    },
+    {
+      "edgeId": "e05",
+      "from": "RepositoryFactory",
+      "to": "StorageIO",
+      "label": "底层 IO",
+      "points": [
+        {
+          "x": 303.6666666666667,
+          "y": 1646
+        },
+        {
+          "x": 313.6666666666667,
+          "y": 1646
+        },
+        {
+          "x": 313.6666666666667,
+          "y": 0
+        },
+        {
+          "x": -180.16062035309164,
+          "y": 0
+        },
+        {
+          "x": -180.16062035309164,
+          "y": 328
+        },
+        {
+          "x": 12,
+          "y": 328
+        }
+      ]
+    },
+    {
+      "edgeId": "e06",
+      "from": "RepoWorkspace",
+      "to": "RepositoryFactory",
+      "label": "构建仓储",
+      "points": [
+        {
+          "x": 425.3333333333333,
+          "y": 1314
+        },
+        {
+          "x": 425.3333333333333,
+          "y": 1464
+        },
+        {
+          "x": 220.33333333333331,
+          "y": 1464
+        },
+        {
+          "x": 220.33333333333331,
+          "y": 1594
+        }
+      ]
+    },
+    {
+      "edgeId": "e07",
+      "from": "RepoWorkspace",
+      "to": "Registry",
+      "label": "登记/校验",
+      "points": [
+        {
+          "x": 508.66666666666663,
+          "y": 1314
+        },
+        {
+          "x": 508.6666666666667,
+          "y": 1594
+        }
+      ]
+    },
+    {
+      "edgeId": "e08",
+      "from": "IndexBuilder",
+      "to": "RepositoryFactory",
+      "label": "读取实体",
+      "points": [
+        {
+          "x": 137,
+          "y": 1314
+        },
+        {
+          "x": 137,
+          "y": 1594
+        }
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "groupId": "g-io",
+      "title": "IO 与路径",
+      "axis": "vertical",
+      "nodeIds": [
+        "StorageIO",
+        "Paths"
+      ],
+      "collapsible": true
+    },
+    {
+      "groupId": "g-safe",
+      "title": "安全机制",
+      "axis": "vertical",
+      "nodeIds": [
+        "Lock",
+        "TtlCache"
+      ],
+      "collapsible": true
+    },
+    {
+      "groupId": "g-repo",
+      "title": "仓储与索引",
+      "axis": "vertical",
+      "nodeIds": [
+        "IndexBuilder",
+        "RepositoryFactory",
+        "RepoWorkspace",
+        "Registry"
+      ],
+      "collapsible": true
+    }
+  ]
+}

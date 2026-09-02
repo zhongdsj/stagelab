@@ -1,0 +1,14 @@
+{
+  "taskId": "13b780f2-09e8-4804-848b-d4849345bb3a",
+  "requirementId": "24176d00-fff5-4bab-9eae-aeb2b2b4a6d2",
+  "title": "手动拖端点/线段：箭头随端点所在边保持垂直",
+  "description": "DiagramView.vue onSvgPointerMove 的 edgePoint/edgeSegment 分支：端点跨边吸附后，依据端点最终所在边重算最后一段方向，使箭头始终垂直于边（顶/底边垂直进线，左/右边水平进线），并保持正交化与共线合并。",
+  "status": "done",
+  "acceptanceCriteria": "编辑态拖动端点跨边滑动时，箭头始终垂直指向所在边；拖动线段时端点贴边且方向正确。",
+  "files": [
+    "packages/web/src/components/diagram/DiagramView.vue"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788255901595,
+  "updatedAt": 1788314664442
+}

@@ -1,0 +1,14 @@
+{
+  "taskId": "0ec294a3-bd17-46de-b8d3-094ea33a0ddc",
+  "requirementId": "24176d00-fff5-4bab-9eae-aeb2b2b4a6d2",
+  "title": "构建验证与联调",
+  "description": "运行 vue-tsc -b 类型检查；浏览器回归验证箭头方向修复效果，确认不破坏节点拖拽/连线改形/撤销重做等既有交互。",
+  "status": "done",
+  "acceptanceCriteria": "vue-tsc 类型检查通过；浏览器打开类图验证：拖动节点/端点/线段，箭头始终垂直指向节点边；不回归其他图类型。",
+  "files": [
+    "packages/web"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788255910412,
+  "updatedAt": 1788314664896
+}
