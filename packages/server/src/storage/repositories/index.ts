@@ -22,7 +22,7 @@ import {
   DocumentFragmentSchema,
   DocumentMetaSchema,
   VerificationRecordSchema
-} from "@fourstage/shared";
+} from "@stagelab/shared";
 import fs from "node:fs";
 import {
   entityPath,
@@ -50,7 +50,7 @@ import type {
   DocumentFragment,
   DocumentMeta,
   VerificationRecord
-} from "@fourstage/shared";
+} from "@stagelab/shared";
 
 /** Project 仓储（meta.json 单文件） */
 export class ProjectRepository extends EntityRepository<Project> {

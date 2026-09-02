@@ -1,27 +1,27 @@
 {
-  "name": "fourstage",
-  "version": "0.1.0",
+  "name": "stagelab",
+  "version": "0.3",
   "private": false,
-  "description": "四阶段MCP项目管理工具 - 单一 npm CLI 包（server+web 一体，MCP 独立子命令）",
+  "description": "源库 - 四阶段MCP项目管理工具",
   "workspaces": [
     "packages/*"
   ],
   "bin": {
-    "fourstage": "./dist/cli.mjs"
+    "stagelab": "./dist/cli.mjs"
   },
   "main": "./dist/cli.mjs",
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "npm run build -w @fourstage/shared && npm run build -w @fourstage/server && npm run build -w @fourstage/web",
+    "build": "npm run build -w @stagelab/shared && npm run build -w @stagelab/server && npm run build -w @stagelab/web",
     "build:release": "node scripts/build-release.mjs",
     "prepublishOnly": "npm run build:release",
-    "dev:mcp": "npm run dev:mcp -w @fourstage/server",
-    "dev:http": "npm run dev:http -w @fourstage/server",
-    "dev:index": "npm run dev:index -w @fourstage/server",
-    "dev:web": "npm run dev -w @fourstage/web",
-    "typecheck": "npm run typecheck -w @fourstage/shared && npm run typecheck -w @fourstage/server"
+    "dev:mcp": "npm run dev:mcp -w @stagelab/server",
+    "dev:http": "npm run dev:http -w @stagelab/server",
+    "dev:index": "npm run dev:index -w @stagelab/server",
+    "dev:web": "npm run dev -w @stagelab/web",
+    "typecheck": "npm run typecheck -w @stagelab/shared && npm run typecheck -w @stagelab/server"
   },
   "dependencies": {
     "@fastify/static": "^7.0.0",

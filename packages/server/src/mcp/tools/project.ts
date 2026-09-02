@@ -6,7 +6,7 @@
  */
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { StageSchema } from "@fourstage/shared";
+import { StageSchema } from "@stagelab/shared";
 import {
   initRepoProject,
   setWorkingRepo,
@@ -28,7 +28,7 @@ export function registerProjectTools(server: McpServer): void {
     {
       title: "初始化仓库项目",
       description:
-        "在指定仓库根生成 .fourstage/project.meta.json 与 store 目录树，并加载为当前工作仓库",
+        "在指定仓库根生成 .stagelab/project.meta.json 与 store 目录树，并加载为当前工作仓库",
       inputSchema: { repoRoot: z.string().min(1) }
     },
     async (args) =>

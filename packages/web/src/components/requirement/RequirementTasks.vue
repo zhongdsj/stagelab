@@ -173,7 +173,7 @@ import {
   ApiError
 } from "../../api/index";
 import type { RequirementItem, TaskSummary } from "../../api/requirements";
-import type { RequirementStatus, TaskStatus } from "@fourstage/shared";
+import type { RequirementStatus, TaskStatus } from "@stagelab/shared";
 
 const props = defineProps<{ projectId: string }>();
 

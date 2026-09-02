@@ -1,5 +1,5 @@
 {
-  "name": "@fourstage/server",
+  "name": "@stagelab/server",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@fastify/static": "^7.0.0",
-    "@fourstage/shared": "*",
+    "@stagelab/shared": "*",
     "@modelcontextprotocol/sdk": "^1.0.0",
     "elkjs": "^0.12.0",
     "fastify": "^4.28.1",

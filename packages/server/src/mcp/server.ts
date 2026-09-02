@@ -13,7 +13,7 @@ import { errLog } from "../logger.js";
 
 /** 创建 MCP Server（注册全部工具） */
 export function createMcpServer(): McpServer {
-  const server = new McpServer({ name: "fourstage-mcp", version: "0.1.0" });
+  const server = new McpServer({ name: "stagelab-mcp", version: "0.1.0" });
   registerAllTools(server);
   return server;
 }

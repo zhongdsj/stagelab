@@ -1,6 +1,6 @@
 {
   "projectId": "34a29cd8-790c-43c4-8ce9-e2c25573cfa0",
-  "version": 1788340478,
+  "version": 1788342100,
   "documentIndex": [
     {
       "docId": "dev-doc",
@@ -331,7 +331,7 @@
     {
       "requirementId": "ed976849-7163-4396-bacb-bb527b0132b2",
       "title": "打包发布：单一 npm CLI 包（server+web 一体，MCP 独立子命令）",
-      "status": "test",
+      "status": "done",
       "branchName": "release/npm-package",
       "taskCount": 6
     }

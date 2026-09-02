@@ -19,7 +19,7 @@ import type {
   Diagram,
   DocumentFragment,
   DocumentMeta
-} from "@fourstage/shared";
+} from "@stagelab/shared";
 
 /** 读取目录下全部 JSON 文件（容忍单文件损坏） */
 async function readAllInDir<T>(dir: string): Promise<T[]> {

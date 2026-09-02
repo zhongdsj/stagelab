@@ -11,7 +11,7 @@
  * - 输出仅内部渲染用，不进入 MCP 通道（数据分层约束）。
  */
 import ELK, { type ElkNode, type ElkExtendedEdge } from "elkjs";
-import type { Diagram, LayoutDiagram, Group, Edge } from "@fourstage/shared";
+import type { Diagram, LayoutDiagram, Group, Edge } from "@stagelab/shared";
 import { getLayoutParams, type LayoutParams } from "./params.ts";
 
 export interface LayoutOptions {

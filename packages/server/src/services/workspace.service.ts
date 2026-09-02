@@ -14,7 +14,7 @@ import {
 import { initRepo } from "../storage/repo.js";
 import { createRepositories, type Repositories } from "../storage/repositories/factory.js";
 
-/** 初始化仓库项目（生成 .fourstage 与 store，返回工作区） */
+/** 初始化仓库项目（生成 .stagelab 与 store，返回工作区） */
 export async function initRepoProject(repoRoot: string): Promise<RepoWorkspace> {
   const ws = await openWorkspace(repoRoot);
   await initRepo(repoRoot);

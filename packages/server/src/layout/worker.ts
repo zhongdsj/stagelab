@@ -7,7 +7,7 @@
  * - Worker 线程：接收 { id, diagram, options }，执行 computeLayout 并回传结果
  */
 import { Worker, isMainThread, parentPort } from "node:worker_threads";
-import type { Diagram, LayoutDiagram } from "@fourstage/shared";
+import type { Diagram, LayoutDiagram } from "@stagelab/shared";
 import { computeLayout, type LayoutOptions, type LayoutOverrides } from "./engine.ts";
 
 export type { LayoutOverrides };

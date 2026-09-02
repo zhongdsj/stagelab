@@ -7,8 +7,8 @@
  * - 删除图时清理：deleteDiagram 联动删除对应 impact 文件。
  * - 读取兜底：读取时若文件缺失/损坏，从现有 Diagram 现算一次补全，保证 MCP 读取始终可用。
  */
-import type { Diagram, ImpactIndexMap } from "@fourstage/shared";
-import { ImpactIndexMapSchema } from "@fourstage/shared";
+import type { Diagram, ImpactIndexMap } from "@stagelab/shared";
+import { ImpactIndexMapSchema } from "@stagelab/shared";
 import { readJsonFile, writeJsonFile } from "../storage/io.js";
 import { impactPath } from "../storage/paths.js";
 import type { RepoWorkspace } from "../storage/workspace.js";

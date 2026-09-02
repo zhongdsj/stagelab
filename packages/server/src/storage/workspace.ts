@@ -60,7 +60,7 @@ export async function openWorkspace(repoRoot: string): Promise<RepoWorkspace> {
 /**
  * 启动时从注册表恢复仓库工作区
  *
- * - 逐个校验仓库仍有效（.fourstage/project.meta.json 存在）
+ * - 逐个校验仓库仍有效（.stagelab/project.meta.json 存在）
  * - 有效 → 加载进内存；无效 → 跳过（视为失效，不保留）
  * - 回写注册表，自动清理失效项
  */
@@ -70,7 +70,7 @@ export async function loadRegisteredWorkspaces(): Promise<RepoWorkspace[]> {
   const valid: string[] = [];
   for (const root of roots) {
     try {
-      if (!isRepoInitialized(root)) continue; // 仓库已失效（.fourstage 被删）
+      if (!isRepoInitialized(root)) continue; // 仓库已失效（.stagelab 被删）
       const ws = await openWorkspace(root);
       loaded.push(ws);
       valid.push(root);

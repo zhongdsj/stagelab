@@ -26,7 +26,7 @@ import type {
   DocumentFragment,
   Requirement,
   Task
-} from "@fourstage/shared";
+} from "@stagelab/shared";
 
 /** 索引查询结果（轻量分层访问） */
 export interface ProjectIndexResult {

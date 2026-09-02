@@ -7,7 +7,7 @@
  * 存储形态：store/documents/{docId}/{fragmentId}.json + meta.json（文档标题独立于分片）
  * 分片约束：单分片内容不超过 2000 字（开发文档 7.5）
  */
-import type { DocumentFragment, DocumentMeta } from "@fourstage/shared";
+import type { DocumentFragment, DocumentMeta } from "@stagelab/shared";
 import type { RepoWorkspace } from "../storage/workspace.js";
 import { createRepositories } from "../storage/repositories/factory.js";
 

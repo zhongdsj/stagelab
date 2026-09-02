@@ -14,7 +14,7 @@ import {
   GroupSchema,
   VerificationActorSchema,
   VerificationChangeTypeSchema
-} from "@fourstage/shared";
+} from "@stagelab/shared";
 import { getWorkspace } from "../../storage/workspace.js";
 import {
   createDiagram,

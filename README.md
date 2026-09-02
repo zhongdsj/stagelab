@@ -1,7 +1,7 @@
 # 四阶段工作流 vs AI直接生成代码：结果质量、Token开销对比
 
 ## 目录
-- [快速开始（发布包 fourstage）](#快速开始发布包-fourstage)
+- [快速开始（发布包 stagelab）](#快速开始发布包-stagelab)
 - [一、项目解决的核心痛点](#一项目解决的核心痛点)
 - [二、项目终极设计哲学](#二项目终极设计哲学)
 - [三、背景：两种工作模式](#三背景两种工作模式)
@@ -13,25 +13,25 @@
 
 ------
 
-## 快速开始（发布包 fourstage）
+## 快速开始（发布包 stagelab）
 
-> 项目可打包为**一个 npm CLI 包 `fourstage`**。装好后一条命令即可同时获得后端 HTTP(+Web 界面) 与 MCP 能力，数据会持久化到本地。当前这一节描述发布包形态；下面的「零、快速启动」是 monorepo 本地开发模式，二选一使用。
+> 项目可打包为**一个 npm CLI 包 `stagelab`**。装好后一条命令即可同时获得后端 HTTP(+Web 界面) 与 MCP 能力，数据会持久化到本地。当前这一节描述发布包形态；下面的「零、快速启动」是 monorepo 本地开发模式，二选一使用。
 
 ### 安装
 
-发布到 npm 后，全局安装即可获得 `fourstage` 命令：
+发布到 npm 后，全局安装即可获得 `stagelab` 命令：
 
 ```powershell
-npm install -g fourstage
-# 或用 npx 免安装：npx fourstage <命令>
+npm install -g stagelab
+# 或用 npx 免安装：npx stagelab <命令>
 ```
 
-### 启动：server + web 一体（`fourstage start`）
+### 启动：server + web 一体（`stagelab start`）
 
-`fourstage start` 默认只启动 **HTTP server 并托管 Web 界面**（不启动 MCP），数据写入本地（注册表与项目存储，见下）：
+`stagelab start` 默认只启动 **HTTP server 并托管 Web 界面**（不启动 MCP），数据写入本地（注册表与项目存储，见下）：
 
 ```powershell
-fourstage start
+stagelab start
 # 默认监听 0.0.0.0:6327，Web 界面与 /api 接口同源：
 #   - 浏览器打开 http://localhost:6327  → Web 管理界面
 #   - API 基础路径                       → http://localhost:6327/api
@@ -40,37 +40,37 @@ fourstage start
 可选参数：
 
 ```text
-fourstage start --port 8080        # 改端口（也可用环境变量 PORT）
-fourstage start --data    D:\data   # 指定数据根目录（注册表 JSON 所在处）
-fourstage start --repo    D:\some\repo  # 预加载指定仓库
+stagelab start --port 8080        # 改端口（也可用环境变量 PORT）
+stagelab start --data    D:\data   # 指定数据根目录（注册表 JSON 所在处）
+stagelab start --repo    D:\some\repo  # 预加载指定仓库
 ```
 
-> 仅想暴露 API、不要 Web 界面时用 `fourstage http`。数据目录默认为 `%APPDATA%/fourstage`（Windows），可用 `--data` 或环境变量 `FOURSTAGE_DATA_DIR` 覆盖；项目级文档/图/需求等仍存于各仓库根下的 `.fourstage/`。
+> 仅想暴露 API、不要 Web 界面时用 `stagelab http`。数据目录默认为 `%APPDATA%/stagelab`（Windows），可用 `--data` 或环境变量 `STAGELAB_DATA_DIR` 覆盖；项目级文档/图/需求等仍存于各仓库根下的 `.stagelab/`。
 
 ### 配置 MCP（AI 客户端接入）
 
 MCP 是独立子命令（stdio 模式），在 AI 客户端的 MCP 服务器配置里把命令指向它即可。以下图适用于 Trae 等任意支持 stdio MCP 的客户端：
 
 ```
-命令：   fourstage mcp
-（或）   npx fourstage mcp
+命令：   stagelab mcp
+（或）   npx stagelab mcp
 可加参数： --data <dir>  --repo <path>
 ```
 
-因为 MCP 自带存储访问，**即使 HTTP server 未启动，MCP 也能正常读写本地数据**；需要「Web 给开发者看」时再用 `fourstage start` 起界面，二者指向同一份数据（`--data` 需一致）。
+因为 MCP 自带存储访问，**即使 HTTP server 未启动，MCP 也能正常读写本地数据**；需要「Web 给开发者看」时再用 `stagelab start` 起界面，二者指向同一份数据（`--data` 需一致）。
 
 ### 发布包形态 与 dev 三窗模式的区别
 
 | 模式 | 命令 | 说明 |
 | ---- | ---- | ---- |
-| **发布包（生产）** | `fourstage start` / `fourstage http` / `fourstage mcp` | 单包安装即用，HTTP 托管 Web 同源，MCP 独立子命令 |
+| **发布包（生产）** | `stagelab start` / `stagelab http` / `stagelab mcp` | 单包安装即用，HTTP 托管 Web 同源，MCP 独立子命令 |
 | **dev 三窗模式** | `npm run dev:http` + `dev:mcp` + `dev:web` | monorepo 源码开发，Web 走 vite（5173）代理 `/api` 到 `:6327`，需自行构建 |
 
 ---
 
 ## 零、快速启动
 
-> 本工具为 npm workspaces monorepo，三个包：`@fourstage/shared`（共享类型与 Zod Schema）、`@fourstage/server`（后端：MCP 服务 + HTTP 服务）、`@fourstage/web`（Vue3 前端）。
+> 本工具为 npm workspaces monorepo，三个包：`@stagelab/shared`（共享类型与 Zod Schema）、`@stagelab/server`（后端：MCP 服务 + HTTP 服务）、`@stagelab/web`（Vue3 前端）。
 
 ### 0.1 安装依赖（首次）
 
@@ -87,7 +87,7 @@ npm install
 npm run dev:http
 
 # 生产模式（先构建再运行）
-npm run build -w @fourstage/server
+npm run build -w @stagelab/server
 node packages/server/dist/http/server.js
 ```
 
@@ -123,9 +123,9 @@ npm run dev:web
 ### 0.5 完整开发启动
 
 **方式一：双击 `dev.bat`**，自动开启 3 个窗口：
-- `fourstage-mcp` → MCP 服务（stdio，日志走 stderr）
-- `fourstage-http` → HTTP server（6327）
-- `fourstage-web` → 前端（5173，代理 `/api`）
+- `stagelab-mcp` → MCP 服务（stdio，日志走 stderr）
+- `stagelab-http` → HTTP server（6327）
+- `stagelab-web` → 前端（5173，代理 `/api`）
 
 **方式二：手动分终端启动**
 
@@ -138,7 +138,7 @@ npm run dev:mcp
 npm run dev:web
 ```
 
-> 后端启动时会自动从注册表（`%APPDATA%/fourstage/registry.json`）恢复历史仓库，故 `--repo` 可省略。
+> 后端启动时会自动从注册表（`%APPDATA%/stagelab/registry.json`）恢复历史仓库，故 `--repo` 可省略。
 
 生产部署先执行 `npm run build`，再运行编译产物（`dist/` 下对应入口）。
 

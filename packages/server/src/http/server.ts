@@ -76,7 +76,7 @@ export function createHttpServer(): FastifyInstance {
  * 启动 HTTP 服务（--repo 预加载默认仓库，可选托管 Web 静态界面）
  *
  * @param options.serveWeb 是否托管 Web 界面（true 时在同一端口提供静态页面与 /api 接口）
- * @param options.webDir   Web 静态资源目录（默认取 FOURSTAGE_WEB_DIST，或发布包布局 dist/web）
+ * @param options.webDir   Web 静态资源目录（默认取 STAGELAB_WEB_DIST，或发布包布局 dist/web）
  */
 export async function startHttpServer(options: {
   port?: number;
@@ -90,7 +90,7 @@ export async function startHttpServer(options: {
   if (options.serveWeb) {
     const webDir =
       options.webDir ??
-      process.env.FOURSTAGE_WEB_DIST ??
+      process.env.STAGELAB_WEB_DIST ??
       // 发布包布局：bundle 后的 cli.js 位于 dist/，Web 产物放在 dist/web
       path.join(path.dirname(fileURLToPath(import.meta.url)), "web");
     if (fs.existsSync(webDir)) {

@@ -151,7 +151,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
-import type { Diagram, LayoutDiagram } from "@fourstage/shared";
+import type { Diagram, LayoutDiagram } from "@stagelab/shared";
 import type { ImpactRiskMap } from "../../api/index";
 import type { ManualOverrides } from "./useManualEdit";
 import { dist, snapToNodeBorder, orthogonalizePath, mergeCollinear, ensurePerpendicularEnds, moveEdgeEndpoint, type NodeBox } from "./useEdgeGeometry";

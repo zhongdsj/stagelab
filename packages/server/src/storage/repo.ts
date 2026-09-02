@@ -3,14 +3,14 @@
  *
  * 对应开发文档 7.1/7.3：
  * - 每个 Git 仓库最多对应一个工具 Project 项目
- * - 仓库根生成 .fourstage/project.meta.json 作为入口元文件
+ * - 仓库根生成 .stagelab/project.meta.json 作为入口元文件
  * - 支持多仓库实例管理
  */
 import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
 import {
-  fourstageRoot,
+  stagelabRoot,
   storeRoot,
   storeSubdir,
   repoEntryPath,
@@ -36,12 +36,12 @@ export function generateProjectId(): string {
 }
 
 /**
- * 初始化仓库：在仓库根生成 .fourstage/project.meta.json 与 store 完整目录树
+ * 初始化仓库：在仓库根生成 .stagelab/project.meta.json 与 store 完整目录树
  * @param repoRoot 业务 Git 仓库根路径
  * @returns 生成的入口元数据
  */
 export async function initRepo(repoRoot: string): Promise<RepoEntryMeta> {
-  const fsRoot = fourstageRoot(repoRoot);
+  const fsRoot = stagelabRoot(repoRoot);
 
   // 已存在则不重复初始化（保留原 projectId）
   const existing = await loadRepoEntry(repoRoot);
@@ -81,7 +81,7 @@ async function ensureStoreDirs(repoRoot: string): Promise<void> {
 
 /**
  * 加载仓库入口元数据
- * @returns 入口元数据；若 .fourstage 不存在或未初始化返回 null
+ * @returns 入口元数据；若 .stagelab 不存在或未初始化返回 null
  */
 export async function loadRepoEntry(
   repoRoot: string
@@ -101,7 +101,7 @@ export async function loadRepoEntry(
   }
 }
 
-/** 判断仓库是否已初始化（.fourstage/project.meta.json 存在） */
+/** 判断仓库是否已初始化（.stagelab/project.meta.json 存在） */
 export function isRepoInitialized(repoRoot: string): boolean {
   return fs.existsSync(repoEntryPath(repoRoot));
 }

@@ -81,7 +81,7 @@ import DocumentLibrary from "../components/document/DocumentLibrary.vue";
 import DiagramLibrary from "../components/diagram/DiagramLibrary.vue";
 import RequirementTasks from "../components/requirement/RequirementTasks.vue";
 import { getProject, getProjectIndex, switchStage, ApiError } from "../api/index";
-import type { Project, Stage } from "@fourstage/shared";
+import type { Project, Stage } from "@stagelab/shared";
 import type { ProjectIndexResult } from "../api/projects";
 
 const props = defineProps<{ id: string }>();
