@@ -49,15 +49,47 @@ stagelab start --repo    D:\some\repo  # 预加载指定仓库
 
 ### 配置 MCP（AI 客户端接入）
 
-MCP 是独立子命令（stdio 模式），在 AI 客户端的 MCP 服务器配置里把命令指向它即可。以下图适用于 Trae 等任意支持 stdio MCP 的客户端：
+MCP 是独立子命令（stdio 模式），在 AI 客户端的 MCP 服务器配置里把命令指向它即可。以下适用于 Trae 等任意支持 stdio MCP 的客户端，**直接复制到 mcp.json 即可用**（发布包形态，全局已装 `stagelab`）：
 
+```json
+{
+  "mcpServers": {
+    "stagelab": {
+      "command": "stagelab",
+      "args": ["mcp"],
+      "env": {}
+    }
+  }
+}
 ```
-命令：   stagelab mcp
-（或）   npx stagelab mcp
-可加参数： --data <dir>  --repo <path>
-```
+
+> 想免安装、直接用 npx 时，把 `"command": "stagelab"` 改为 `"command": "npx"`、`"args": ["stagelab", "mcp"]`。需要指定数据目录或预加载仓库时，在 `args` 中追加 `"--data", "<dir>"` 或 `"--repo", "<path>"`。
 
 因为 MCP 自带存储访问，**即使 HTTP server 未启动，MCP 也能正常读写本地数据**；需要「Web 给开发者看」时再用 `stagelab start` 起界面，二者指向同一份数据（`--data` 需一致）。
+
+#### 本地开发模式（monorepo 源码，未打包）
+
+在源码仓库里直接驱动开发（还未发布 / 未构建）时，MCP 客户端应指向 `packages/server/src/cli.ts`，用 `tsx` 启动（与 `npm run dev:mcp` 等价）。以下为支持 stdio MCP 的客户端（如 Trae）通用 `mcp.json` 配置：
+
+```json
+{
+  "mcpServers": {
+    "stagelab": {
+      "command": "npx",
+      "args": [
+        "tsx",
+        "<仓库根>/packages/server/src/cli.ts",
+        "mcp"
+      ],
+      "env": {}
+    }
+  }
+}
+```
+
+> - `<仓库根>` 换成你本机该仓库的绝对路径（例如 `F:/projects/uni-app/stagelab`）。
+> - `tsx` 已作为 `@stagelab/server` 的 dev 依赖安装，无需全局安装；若 IDE 里装了 tsx 也可直接用其绝对路径作为 `command`。
+> - 注册表默认在 `%APPDATA%/stagelab`，如需指定数据目录或预加载仓库，在 `args` 末尾追加 `--data <dir>` 或 `--repo <path>`（例如 `"...cli.ts", "mcp", "--repo", "<仓库根>"`）。
 
 ### 发布包形态 与 dev 三窗模式的区别
 
