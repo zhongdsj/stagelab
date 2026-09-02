@@ -1,0 +1,14 @@
+{
+  "taskId": "7b3106a8-e60e-4b74-9e61-a7487d59a0e1",
+  "requirementId": "34e3589b-32e7-4f28-b710-15794560e4c3",
+  "title": "T84 MCP：get_diagram_impact 读取工具",
+  "description": "注册 get_diagram_impact(diagramId, nodeIds?) 读取预计算 impactIndex，支持单节点/批量/全量，返回 nodeId→entry 映射",
+  "status": "done",
+  "acceptanceCriteria": "MCP 可读取任意图节点影响指标；nodeIds 缺省返回整图摘要；不含整图内容",
+  "files": [
+    "packages/server/src/mcp/tools/diagram.ts"
+  ],
+  "changeType": "新增",
+  "createdAt": 1788321913294,
+  "updatedAt": 1788329618437
+}

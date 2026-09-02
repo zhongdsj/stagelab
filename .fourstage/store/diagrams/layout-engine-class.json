@@ -3,7 +3,7 @@
   "type": "class",
   "metadata": {
     "title": "布局引擎 - 类图",
-    "version": 24,
+    "version": 25,
     "description": "基于 packages/server/src/layout 源码：computeLayout 引擎 + 参数 + Worker 封装"
   },
   "nodes": [
@@ -39,6 +39,16 @@
         "y": 368,
         "width": 250,
         "height": 104
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/layout/engine.ts",
+            "symbols": [
+              "LayoutEngine"
+            ]
+          }
+        ]
       }
     },
     {
@@ -61,6 +71,16 @@
         "y": 571.2086830108332,
         "width": 250,
         "height": 96
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/layout/engine.ts",
+            "symbols": [
+              "LayoutOptions"
+            ]
+          }
+        ]
       }
     },
     {
@@ -87,6 +107,16 @@
         "y": 802,
         "width": 250,
         "height": 104
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/layout/engine.ts",
+            "symbols": [
+              "LayoutOverrides"
+            ]
+          }
+        ]
       }
     },
     {
@@ -113,6 +143,17 @@
         "y": 1186,
         "width": 250,
         "height": 104
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/layout/params.ts",
+            "symbols": [
+              "LayoutParams",
+              "getLayoutParams"
+            ]
+          }
+        ]
       }
     },
     {
@@ -145,6 +186,16 @@
         "y": 1388,
         "width": 250,
         "height": 96
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/layout/worker.ts",
+            "symbols": [
+              "layoutInWorker"
+            ]
+          }
+        ]
       }
     },
     {
@@ -163,6 +214,16 @@
         "y": 1582,
         "width": 250,
         "height": 96
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/layout/engine.ts",
+            "symbols": [
+              "ElkEngine"
+            ]
+          }
+        ]
       }
     },
     {
@@ -185,6 +246,16 @@
         "y": 598.4040507545786,
         "width": 250,
         "height": 96
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/layout/engine.ts",
+            "symbols": [
+              "VModule"
+            ]
+          }
+        ]
       }
     },
     {
@@ -207,6 +278,16 @@
         "y": 686,
         "width": 250,
         "height": 96
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/layout/engine.ts",
+            "symbols": [
+              "HLane"
+            ]
+          }
+        ]
       }
     },
     {
@@ -229,6 +310,17 @@
         "y": 802.0335690399809,
         "width": 250,
         "height": 96
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/layout/engine.ts",
+            "symbols": [
+              "buildCollapsePlan",
+              "CollapsePlan"
+            ]
+          }
+        ]
       }
     }
   ],

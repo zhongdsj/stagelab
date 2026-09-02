@@ -1,0 +1,14 @@
+{
+  "taskId": "79ee7d5e-1141-4aea-bb33-3d876e369043",
+  "requirementId": "c055a226-b8a6-4d47-b1f6-565762654470",
+  "title": "T92 MCP：verify_diagram + get_verification_history 工具",
+  "description": "MCP 工具：verify_diagram(diagramId, commit, note?, verifiedBy?, changeType?) 返回最新快照；get_verification_history(diagramId, limit?) 返回历史列表（不含整图）",
+  "status": "done",
+  "acceptanceCriteria": "MCP 实测 verify 后 meta 快照更新、历史追加；get_verification_history 返回链式列表",
+  "files": [
+    "packages/server/src/mcp/tools/diagram.ts"
+  ],
+  "changeType": "新增",
+  "createdAt": 1788321932874,
+  "updatedAt": 1788336067100
+}

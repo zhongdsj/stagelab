@@ -1,0 +1,103 @@
+{
+  "mcp-client": {
+    "upstream": [],
+    "downstream": [
+      "mcp-server"
+    ],
+    "upstreamHops": 0,
+    "downstreamHops": 3,
+    "fanIn": 0,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "web-frontend": {
+    "upstream": [],
+    "downstream": [
+      "http-api"
+    ],
+    "upstreamHops": 0,
+    "downstreamHops": 3,
+    "fanIn": 0,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "mcp-server": {
+    "upstream": [
+      "mcp-client"
+    ],
+    "downstream": [
+      "biz-service"
+    ],
+    "upstreamHops": 1,
+    "downstreamHops": 2,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "http-api": {
+    "upstream": [
+      "web-frontend"
+    ],
+    "downstream": [
+      "biz-service",
+      "layout-engine"
+    ],
+    "upstreamHops": 1,
+    "downstreamHops": 2,
+    "fanIn": 1,
+    "fanOut": 2,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "biz-service": {
+    "upstream": [
+      "mcp-server",
+      "http-api"
+    ],
+    "downstream": [
+      "layout-engine",
+      "file-store"
+    ],
+    "upstreamHops": 2,
+    "downstreamHops": 1,
+    "fanIn": 2,
+    "fanOut": 2,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "medium"
+  },
+  "layout-engine": {
+    "upstream": [
+      "http-api",
+      "biz-service"
+    ],
+    "downstream": [],
+    "upstreamHops": 3,
+    "downstreamHops": 0,
+    "fanIn": 2,
+    "fanOut": 0,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "medium"
+  },
+  "file-store": {
+    "upstream": [
+      "biz-service"
+    ],
+    "downstream": [],
+    "upstreamHops": 3,
+    "downstreamHops": 0,
+    "fanIn": 1,
+    "fanOut": 0,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  }
+}

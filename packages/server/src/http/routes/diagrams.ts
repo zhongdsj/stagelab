@@ -8,9 +8,11 @@
  * 布局在 Worker Thread 执行，客户端断开时自动取消。
  */
 import type { FastifyInstance } from "fastify";
+import type { ImpactRiskLevel, VerificationActor, VerificationChangeType } from "@fourstage/shared";
 import { readDiagram } from "../../services/index.service.js";
 import { layoutInWorker, type LayoutOverrides } from "../../layout/worker.js";
-import { getDiagramGroup, getNodeGroups, saveDiagramGeometry } from "../../services/diagram.service.js";
+import { getDiagramGroup, getNodeGroups, saveDiagramGeometry, verifyDiagram, getVerificationHistory } from "../../services/diagram.service.js";
+import { getImpactIndex } from "../../services/impact.service.js";
 import { getLayoutParams } from "../../layout/params.js";
 import { requireWorkspaceByProjectId, HttpError } from "./_util.js";
 
@@ -119,5 +121,64 @@ export function registerDiagramRoutes(app: FastifyInstance): void {
       nodes: body.nodes ?? [],
       edges: body.edges ?? []
     });
+  });
+
+  // 前端风险着色（feature/diagram-risk-color）：透传预计算 impactIndex 的 structuralRisk 分，
+  // 仅返回 {nodeId → 风险分} 轻量映射，不泄漏可达集/hops 详情（对齐 business/layout 分离）
+  app.get("/api/projects/:id/diagrams/:did/impact", async (request) => {
+    const { id, did } = request.params as { id: string; did: string };
+    const ws = requireWorkspaceByProjectId(id);
+    const diagram = await readDiagram(ws, did);
+    const { version, impact } = await getImpactIndex(ws, diagram);
+    const risk: Record<string, ImpactRiskLevel> = {};
+    for (const [nodeId, entry] of Object.entries(impact)) {
+      risk[nodeId] = entry.structuralRisk;
+    }
+    return { version, risk };
+  });
+
+  // 图漂移校验与验证历史 HTTP 透传（阶段3扩展：前端人工确认可信度 + 查看可信度历史）
+  // T91：显式确认图在某 commit 下可信（人工/AI 显式声明，绝不自动提升 HEAD），
+  // 提升 metadata 最新可信快照 + 追加一条验证历史（changeType: no_change|incremental|rebuild）
+  app.post("/api/projects/:id/diagrams/:did/verify", async (request) => {
+    const { id, did } = request.params as { id: string; did: string };
+    const ws = requireWorkspaceByProjectId(id);
+    const body = (request.body ?? {}) as {
+      commit: string;
+      note?: string;
+      verifiedBy?: VerificationActor;
+      changeType?: VerificationChangeType;
+      baseCommit?: string;
+    };
+    if (!body?.commit || typeof body.commit !== "string") {
+      throw new HttpError(400, "缺少 commit（本次显式确认可信的提交）");
+    }
+    const d = await verifyDiagram(ws, did, {
+      commit: body.commit,
+      note: body.note,
+      verifiedBy: body.verifiedBy,
+      changeType: body.changeType,
+      baseCommit: body.baseCommit
+    });
+    // 返回最新可信快照锚点（前端徽标数据源），避免整图开销
+    return {
+      diagramId: d.diagramId,
+      version: d.metadata.version,
+      verifiedCommit: d.metadata.verifiedCommit,
+      lastVerifiedAt: d.metadata.lastVerifiedAt,
+      verifiedBy: d.metadata.verifiedBy,
+      verifyNote: d.metadata.verifyNote,
+      baseCommit: d.metadata.baseCommit
+    };
+  });
+
+  // T91：读取图演证历史（链式，verifiedAt 升序；可选 limit 限制最新 N 条）
+  app.get("/api/projects/:id/diagrams/:did/verifications", async (request) => {
+    const { id, did } = request.params as { id: string; did: string };
+    const ws = requireWorkspaceByProjectId(id);
+    const q = request.query as { limit?: string } | undefined;
+    const limitVal = q?.limit ? Number(q.limit) : undefined;
+    const limit = limitVal && Number.isInteger(limitVal) && limitVal > 0 ? limitVal : undefined;
+    return getVerificationHistory(ws, did, limit);
   });
 }

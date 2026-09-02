@@ -1,0 +1,16 @@
+{
+  "taskId": "cf8a183f-aaf7-4511-a4ab-efcecc81d8bc",
+  "requirementId": "e05e619d-4899-4e03-ba58-0e84b965eed5",
+  "title": "T1 共享层：LinkedDiagram 类型 + ClassNode.linkedDiagrams 字段 + Schema 扩展",
+  "description": "在 packages/shared/src/types.ts 新增 LinkedDiagram 接口（diagramId/label/type），ClassNode 增加可选 linkedDiagrams?: LinkedDiagram[]（类图无 payload，需语义字段承载跨模块引用，含义同架构图的 payload.linkedDiagrams）；同步 schemas.ts 增加 LinkedDiagramSchema 并在 ClassNodeSchema 声明 linkedDiagrams optional。FlowNode 沿用 payload.linkedDiagrams 复数数组约定（与 ArchitectureNode 一致，无需类型改动）。",
+  "status": "done",
+  "acceptanceCriteria": "共享层构建通过；ClassNodeSchema 允许携带 linkedDiagrams；图元素按 type 键校验不影响 class/architecture/flow 节点。",
+  "files": [
+    "packages/shared/src/types.ts",
+    "packages/shared/src/schemas.ts",
+    "packages/shared/src/index.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788337691420,
+  "updatedAt": 1788338066142
+}

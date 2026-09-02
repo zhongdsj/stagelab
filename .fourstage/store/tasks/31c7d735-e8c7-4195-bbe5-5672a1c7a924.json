@@ -1,0 +1,16 @@
+{
+  "taskId": "31c7d735-e8c7-4195-bbe5-5672a1c7a924",
+  "requirementId": "e05e619d-4899-4e03-ba58-0e84b965eed5",
+  "title": "T4 构建验证与联调",
+  "description": "重建共享层并重启 HTTP/MCP 服务，验证：类图占位节点点击弹出跳转框并正确导航；流程图 subprocess 跳转；架构图 node-click 气泡不回归；类图普通节点仍保留 T41 点击高亮；schema 校验通过。",
+  "status": "done",
+  "acceptanceCriteria": "构建通过（shared、server、web），前后端联调跳转生效，无回归。",
+  "files": [
+    "packages/shared",
+    "packages/server",
+    "packages/web"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788337700709,
+  "updatedAt": 1788338069140
+}

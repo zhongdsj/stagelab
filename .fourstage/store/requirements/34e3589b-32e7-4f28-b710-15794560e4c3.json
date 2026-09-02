@@ -1,0 +1,16 @@
+{
+  "requirementId": "34e3589b-32e7-4f28-b710-15794560e4c3",
+  "title": "图影响面分析：impactIndex + 风险结构分",
+  "description": "基于图拓扑预计算影响范围索引（可达集/跳数/扇入扇出/环）与风险结构分（low/medium/high），写图时增量维护，独立存储，MCP 提供读取工具。参考 dev-doc-diagram-impact 第二、三章。",
+  "branchName": "feature/diagram-impact-index",
+  "status": "done",
+  "taskIds": [
+    "9c461764-ba6d-41f5-aedd-9847ff8d8b86",
+    "a1fdb8e5-a746-4974-855f-06f2db8d6a16",
+    "8403444c-0ad7-45ce-b9a6-d894c863dabb",
+    "7b3106a8-e60e-4b74-9e61-a7487d59a0e1",
+    "129e5566-2535-4ccb-b172-09219d627a58"
+  ],
+  "createdAt": 1788321871897,
+  "updatedAt": 1788334084085
+}

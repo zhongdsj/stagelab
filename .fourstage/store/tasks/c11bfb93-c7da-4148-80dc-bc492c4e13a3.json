@@ -1,0 +1,12 @@
+{
+  "taskId": "c11bfb93-c7da-4148-80dc-bc492c4e13a3",
+  "requirementId": "78d8e8b4-bbcd-4562-99ed-b748ad9e494b",
+  "title": "构建验证与联调",
+  "description": "service/web 构建通过；前端观察类图/架构图高/中风险节点着色符合预期。",
+  "status": "done",
+  "acceptanceCriteria": "构建通过；前端实图验证 high/medium 节点着色正确",
+  "files": [],
+  "changeType": "修改",
+  "createdAt": 1788330729792,
+  "updatedAt": 1788330940105
+}

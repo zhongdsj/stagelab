@@ -1,0 +1,16 @@
+{
+  "taskId": "81a69cad-59a0-4a7c-8d8f-9a6b8f85a8a5",
+  "requirementId": "c055a226-b8a6-4d47-b1f6-565762654470",
+  "title": "T90 存储层：verifications 独立仓储",
+  "description": "存储层：paths.ts 新增 verificationPath（store/verifications/{diagramId}/{verificationId}.json）；VerificationRecordRepository 继承 EntityRepository + listByDiagram 方法；factory.ts 注册",
+  "status": "done",
+  "acceptanceCriteria": "仓储可 get/save/listByDiagram/delete；独立目录 store/verifications/{diagramId}/；factory 注册生效",
+  "files": [
+    "packages/server/src/storage/paths.ts",
+    "packages/server/src/storage/repositories/index.ts",
+    "packages/server/src/storage/repositories/factory.ts"
+  ],
+  "changeType": "新增",
+  "createdAt": 1788321926202,
+  "updatedAt": 1788336064531
+}

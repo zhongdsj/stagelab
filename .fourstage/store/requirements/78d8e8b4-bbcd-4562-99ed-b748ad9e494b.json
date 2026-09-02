@@ -1,0 +1,14 @@
+{
+  "requirementId": "78d8e8b4-bbcd-4562-99ed-b748ad9e494b",
+  "title": "前端 impactIndex 风险着色",
+  "description": "前端节点按预计算 impactIndex 的 structuralRisk 分级渲染风险色（low/medium/high → 绿/橙/红），数据驱动。\n\n## 背景\nimpactIndex 已落地（T81-T85），含每节点 structuralRisk（low/medium/high），独立存储、MCP 提供 get_diagram_impact。但 impact 不在 Diagram/HTTP 返回链路，前端拿不到，无法渲染风险色。\n\n## 需求\n1. HTTP 透传 impact：新增接口或在 layout/partial 返回方向提供 structuralRisk 到前端（需对齐现有 business/layout 分离原则，只透传风险分，不泄漏可达集/Hops 详情）\n2. 前端渲染：节点按 structuralRisk 分级着色——low→绿、medium→橙、high→红（方案：节点边框/描边着色，数据驱动而非类型编码）\n3. 无 impact 数据的节点保持默认无色\n\n## 约束\n- 数据源为独立存储 impact 文件，仅取 structuralRisk 字段\n- 着色为纯视觉态，不写回 Diagram（业务/布局分离）\n- 前端为会话态，刷新重置\n\n## 关联\ndev-doc-diagram-impact 第二、三章（风险结构分/前端叠加渲染）；现有 impact 独立存储 T83、MCP 读取 T84",
+  "branchName": "feature/diagram-risk-color",
+  "status": "done",
+  "taskIds": [
+    "a42cadac-b6d4-4ba4-93c3-570606c323a6",
+    "d3f660ab-fbf7-4a6d-9432-6e764cd04e85",
+    "c11bfb93-c7da-4148-80dc-bc492c4e13a3"
+  ],
+  "createdAt": 1788330714525,
+  "updatedAt": 1788332180518
+}

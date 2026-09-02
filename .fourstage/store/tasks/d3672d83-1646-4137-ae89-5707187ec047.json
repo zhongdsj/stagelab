@@ -1,0 +1,14 @@
+{
+  "taskId": "d3672d83-1646-4137-ae89-5707187ec047",
+  "requirementId": "c055a226-b8a6-4d47-b1f6-565762654470",
+  "title": "T93 前端：图 meta 面板展示可信度快照",
+  "description": "前端图信息面板展示最新可信度快照（verifiedCommit/verifiedBy/lastVerifiedAt/verifyNote），提示「图基于哪个 commit、谁确认、为何可信」",
+  "status": "done",
+  "acceptanceCriteria": "有快照时展示 verifiedCommit/verifiedBy/lastVerifiedAt/verifyNote；无快照不展示",
+  "files": [
+    "packages/web/src/components/diagram/DiagramView.vue"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788321934411,
+  "updatedAt": 1788336068107
+}

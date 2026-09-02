@@ -3,7 +3,7 @@
   "type": "class",
   "metadata": {
     "title": "MCP Server - 类图",
-    "version": 4,
+    "version": 5,
     "description": "基于 packages/server/src/mcp 源码：MCP Server(stdin/stdout) + 五类工具注册层"
   },
   "nodes": [
@@ -27,6 +27,16 @@
         "y": 164,
         "width": 250,
         "height": 96
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/mcp/server.ts",
+            "symbols": [
+              "McpServer"
+            ]
+          }
+        ]
       }
     },
     {
@@ -50,6 +60,16 @@
         "y": 540,
         "width": 250,
         "height": 96
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/mcp/server.ts",
+            "symbols": [
+              "StdioTransport"
+            ]
+          }
+        ]
       }
     },
     {
@@ -90,6 +110,16 @@
         "y": 734,
         "width": 250,
         "height": 96
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/mcp/tools/index.ts",
+            "symbols": [
+              "ToolsIndex"
+            ]
+          }
+        ]
       }
     },
     {
@@ -107,6 +137,16 @@
         "y": 1110,
         "width": 250,
         "height": 96
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/mcp/tools/project.ts",
+            "symbols": [
+              "ProjectTools"
+            ]
+          }
+        ]
       }
     },
     {
@@ -124,6 +164,16 @@
         "y": 1110,
         "width": 250,
         "height": 96
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/mcp/tools/document.ts",
+            "symbols": [
+              "DocumentTools"
+            ]
+          }
+        ]
       }
     },
     {
@@ -141,6 +191,16 @@
         "y": 1110,
         "width": 250,
         "height": 96
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/mcp/tools/requirement.ts",
+            "symbols": [
+              "RequirementTools"
+            ]
+          }
+        ]
       }
     },
     {
@@ -158,6 +218,16 @@
         "y": 1110,
         "width": 250,
         "height": 96
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/mcp/tools/diagram.ts",
+            "symbols": [
+              "DiagramTools"
+            ]
+          }
+        ]
       }
     },
     {
@@ -175,6 +245,16 @@
         "y": 1110,
         "width": 250,
         "height": 96
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/mcp/tools/search.ts",
+            "symbols": [
+              "SearchTools"
+            ]
+          }
+        ]
       }
     },
     {
@@ -187,6 +267,16 @@
         "y": 1486,
         "width": 210,
         "height": 96
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/mcp/tools/_util.ts",
+            "symbols": [
+              "safeCall"
+            ]
+          }
+        ]
       }
     }
   ],

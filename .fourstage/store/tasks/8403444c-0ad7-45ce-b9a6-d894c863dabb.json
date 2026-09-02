@@ -1,0 +1,15 @@
+{
+  "taskId": "8403444c-0ad7-45ce-b9a6-d894c863dabb",
+  "requirementId": "34e3589b-32e7-4f28-b710-15794560e4c3",
+  "title": "T83 服务层：impactIndex 增量维护 + 独立存储",
+  "description": "updateDiagramElements/saveDiagramGeometry/createDiagram 写图后增量维护 impactIndex，独立存储 store/impact/{diagramId}.json（paths.ts 新增 impactPath）；删除图时清理",
+  "status": "done",
+  "acceptanceCriteria": "写图后 impact 文件自动生成/更新；图删除时 impact 文件同步清理；不整图重算（仅受影响节点局部刷新）",
+  "files": [
+    "packages/server/src/services/diagram.service.ts",
+    "packages/server/src/storage/paths.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788321908509,
+  "updatedAt": 1788329617495
+}

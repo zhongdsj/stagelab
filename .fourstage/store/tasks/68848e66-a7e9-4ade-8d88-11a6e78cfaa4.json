@@ -1,0 +1,15 @@
+{
+  "taskId": "68848e66-a7e9-4ade-8d88-11a6e78cfaa4",
+  "requirementId": "e05e619d-4899-4e03-ba58-0e84b965eed5",
+  "title": "T3 数据固化：FourSeq 图为占位节点补充关联图（MCP 局部增量）",
+  "description": "通过 MCP update_diagram_elements 局部增量：1) web-frontend-class 的 BackendService 占位节点补 linkedDiagrams=[http-api-class(HTTP API层), biz-service-class(业务服务层), layout-engine-class(布局引擎), file-store-class(本地存储层)]，type 均 class；2) sys-flow 的 subprocess 节点（mcp/http/biz/layout/store/fe）统一将 payload.linkedDiagram 单数迁移为 payload.linkedDiagrams 复数数组，保持与前端约定一致；ext-ai/ext-browser 占位入口按需处理。",
+  "status": "done",
+  "acceptanceCriteria": "MCP update_diagram_elements 校验通过并持久化；web-frontend-class/sys-flow 图的占位节点具备合法 linkedDiagrams；前端可读取并弹出跳转框。",
+  "files": [
+    ".fourstage/store/diagrams/web-frontend-class.json",
+    ".fourstage/store/diagrams/sys-flow.json"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788337698376,
+  "updatedAt": 1788338068105
+}

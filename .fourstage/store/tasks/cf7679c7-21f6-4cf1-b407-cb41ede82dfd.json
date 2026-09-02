@@ -1,0 +1,12 @@
+{
+  "taskId": "cf7679c7-21f6-4cf1-b407-cb41ede82dfd",
+  "requirementId": "c055a226-b8a6-4d47-b1f6-565762654470",
+  "title": "T94 构建验证与联调",
+  "description": "R3 构建验证与联调",
+  "status": "done",
+  "acceptanceCriteria": "前后端构建通过；verify_diagram + get_verification_history 端到端可用",
+  "files": [],
+  "changeType": "修改",
+  "createdAt": 1788321935559,
+  "updatedAt": 1788336068514
+}

@@ -1,0 +1,133 @@
+{
+  "start": {
+    "upstream": [],
+    "downstream": [
+      "parse"
+    ],
+    "upstreamHops": 0,
+    "downstreamHops": 8,
+    "fanIn": 0,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "parse": {
+    "upstream": [
+      "start"
+    ],
+    "downstream": [
+      "worker"
+    ],
+    "upstreamHops": 1,
+    "downstreamHops": 7,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "worker": {
+    "upstream": [
+      "parse"
+    ],
+    "downstream": [
+      "build"
+    ],
+    "upstreamHops": 2,
+    "downstreamHops": 6,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "build": {
+    "upstream": [
+      "worker"
+    ],
+    "downstream": [
+      "focus"
+    ],
+    "upstreamHops": 3,
+    "downstreamHops": 5,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "focus": {
+    "upstream": [
+      "build"
+    ],
+    "downstream": [
+      "elk"
+    ],
+    "upstreamHops": 4,
+    "downstreamHops": 4,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "elk": {
+    "upstream": [
+      "focus"
+    ],
+    "downstream": [
+      "route"
+    ],
+    "upstreamHops": 5,
+    "downstreamHops": 3,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "route": {
+    "upstream": [
+      "elk"
+    ],
+    "downstream": [
+      "out"
+    ],
+    "upstreamHops": 6,
+    "downstreamHops": 2,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "out": {
+    "upstream": [
+      "route"
+    ],
+    "downstream": [
+      "end"
+    ],
+    "upstreamHops": 7,
+    "downstreamHops": 1,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "end": {
+    "upstream": [
+      "out"
+    ],
+    "downstream": [],
+    "upstreamHops": 8,
+    "downstreamHops": 0,
+    "fanIn": 1,
+    "fanOut": 0,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  }
+}

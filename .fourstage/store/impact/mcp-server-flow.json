@@ -1,0 +1,167 @@
+{
+  "start": {
+    "upstream": [],
+    "downstream": [
+      "init-ws"
+    ],
+    "upstreamHops": 0,
+    "downstreamHops": 8,
+    "fanIn": 0,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "init-ws": {
+    "upstream": [
+      "start"
+    ],
+    "downstream": [
+      "connect"
+    ],
+    "upstreamHops": 1,
+    "downstreamHops": 7,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "connect": {
+    "upstream": [
+      "init-ws"
+    ],
+    "downstream": [
+      "recv"
+    ],
+    "upstreamHops": 2,
+    "downstreamHops": 6,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "recv": {
+    "upstream": [
+      "connect"
+    ],
+    "downstream": [
+      "dispatch"
+    ],
+    "upstreamHops": 3,
+    "downstreamHops": 5,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "dispatch": {
+    "upstream": [
+      "recv"
+    ],
+    "downstream": [
+      "call-svc"
+    ],
+    "upstreamHops": 4,
+    "downstreamHops": 4,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "call-svc": {
+    "upstream": [
+      "dispatch"
+    ],
+    "downstream": [
+      "validate",
+      "storage"
+    ],
+    "upstreamHops": 5,
+    "downstreamHops": 3,
+    "fanIn": 1,
+    "fanOut": 2,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "validate": {
+    "upstream": [
+      "call-svc"
+    ],
+    "downstream": [
+      "err",
+      "meta"
+    ],
+    "upstreamHops": 6,
+    "downstreamHops": 2,
+    "fanIn": 1,
+    "fanOut": 2,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "err": {
+    "upstream": [
+      "validate"
+    ],
+    "downstream": [
+      "end"
+    ],
+    "upstreamHops": 7,
+    "downstreamHops": 1,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "meta": {
+    "upstream": [
+      "validate",
+      "storage"
+    ],
+    "downstream": [
+      "end"
+    ],
+    "upstreamHops": 7,
+    "downstreamHops": 1,
+    "fanIn": 2,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "medium"
+  },
+  "end": {
+    "upstream": [
+      "err",
+      "meta"
+    ],
+    "downstream": [],
+    "upstreamHops": 8,
+    "downstreamHops": 0,
+    "fanIn": 2,
+    "fanOut": 0,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "medium"
+  },
+  "storage": {
+    "upstream": [
+      "call-svc"
+    ],
+    "downstream": [
+      "meta"
+    ],
+    "upstreamHops": 6,
+    "downstreamHops": 2,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  }
+}

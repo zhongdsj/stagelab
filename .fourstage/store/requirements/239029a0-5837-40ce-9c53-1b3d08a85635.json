@@ -1,0 +1,14 @@
+{
+  "requirementId": "239029a0-5837-40ce-9c53-1b3d08a85635",
+  "title": "节点源码锚点 codeAnchor",
+  "description": "Node 扩展 codeAnchor 字段（file/symbol 清单），schema 支持，前端节点气泡展示 file 清单给开发者。参考 dev-doc-diagram-impact 第六章。",
+  "branchName": "feature/diagram-code-anchor",
+  "status": "done",
+  "taskIds": [
+    "94cafd0e-6b91-4433-b4b3-5327b0b8a8a6",
+    "f730008d-5996-4b1e-bd7a-531c22f8a8c7",
+    "527548c3-5dd4-4363-8842-2f62bc5a946e"
+  ],
+  "createdAt": 1788321872929,
+  "updatedAt": 1788334081270
+}

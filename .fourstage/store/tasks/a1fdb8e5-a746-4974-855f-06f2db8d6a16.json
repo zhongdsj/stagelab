@@ -1,0 +1,14 @@
+{
+  "taskId": "a1fdb8e5-a746-4974-855f-06f2db8d6a16",
+  "requirementId": "34e3589b-32e7-4f28-b710-15794560e4c3",
+  "title": "T82 服务层：图拓扑算法模块（可达集/跳数/扇入扇出/环/结构分）",
+  "description": "新增图拓扑算法模块：传递闭包可达集（BFS）、跳数、扇入扇出、Tarjan 强连通分量环检测；派生 structuralRisk（fanIn 高→high、在环→high、跨层/近关键→medium、其余 low）",
+  "status": "done",
+  "acceptanceCriteria": "纯函数；对 arch-system 图手工核对若干节点上下游/跳数正确；在环节点 inCycle=true；fanIn 高→high、在环→high、其余→medium/low",
+  "files": [
+    "packages/server/src/services/diagram-impact.ts"
+  ],
+  "changeType": "新增",
+  "createdAt": 1788321906432,
+  "updatedAt": 1788329616402
+}

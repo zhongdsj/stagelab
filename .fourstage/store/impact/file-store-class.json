@@ -1,0 +1,116 @@
+{
+  "StorageIO": {
+    "upstream": [
+      "IndexBuilder",
+      "RepositoryFactory"
+    ],
+    "downstream": [
+      "Paths",
+      "Lock",
+      "TtlCache"
+    ],
+    "upstreamHops": 2,
+    "downstreamHops": 1,
+    "fanIn": 2,
+    "fanOut": 3,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "medium"
+  },
+  "Paths": {
+    "upstream": [
+      "StorageIO"
+    ],
+    "downstream": [],
+    "upstreamHops": 3,
+    "downstreamHops": 0,
+    "fanIn": 1,
+    "fanOut": 0,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "Lock": {
+    "upstream": [
+      "StorageIO"
+    ],
+    "downstream": [],
+    "upstreamHops": 3,
+    "downstreamHops": 0,
+    "fanIn": 1,
+    "fanOut": 0,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "Registry": {
+    "upstream": [
+      "RepoWorkspace"
+    ],
+    "downstream": [],
+    "upstreamHops": 1,
+    "downstreamHops": 0,
+    "fanIn": 1,
+    "fanOut": 0,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "TtlCache": {
+    "upstream": [
+      "StorageIO"
+    ],
+    "downstream": [],
+    "upstreamHops": 3,
+    "downstreamHops": 0,
+    "fanIn": 1,
+    "fanOut": 0,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "IndexBuilder": {
+    "upstream": [],
+    "downstream": [
+      "StorageIO",
+      "RepositoryFactory"
+    ],
+    "upstreamHops": 0,
+    "downstreamHops": 2,
+    "fanIn": 0,
+    "fanOut": 2,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "RepositoryFactory": {
+    "upstream": [
+      "RepoWorkspace",
+      "IndexBuilder"
+    ],
+    "downstream": [
+      "StorageIO"
+    ],
+    "upstreamHops": 1,
+    "downstreamHops": 2,
+    "fanIn": 2,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "medium"
+  },
+  "RepoWorkspace": {
+    "upstream": [],
+    "downstream": [
+      "RepositoryFactory",
+      "Registry"
+    ],
+    "upstreamHops": 0,
+    "downstreamHops": 3,
+    "fanIn": 0,
+    "fanOut": 2,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  }
+}

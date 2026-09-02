@@ -1,0 +1,285 @@
+{
+  "App": {
+    "upstream": [],
+    "downstream": [],
+    "upstreamHops": 0,
+    "downstreamHops": 0,
+    "fanIn": 0,
+    "fanOut": 0,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "Router": {
+    "upstream": [],
+    "downstream": [
+      "ProjectListView",
+      "ProjectDetailView"
+    ],
+    "upstreamHops": 0,
+    "downstreamHops": 4,
+    "fanIn": 0,
+    "fanOut": 2,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "ProjectListView": {
+    "upstream": [
+      "Router"
+    ],
+    "downstream": [
+      "ProjectsApi",
+      "ApiError"
+    ],
+    "upstreamHops": 1,
+    "downstreamHops": 3,
+    "fanIn": 1,
+    "fanOut": 2,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "ProjectDetailView": {
+    "upstream": [
+      "Router"
+    ],
+    "downstream": [
+      "ProjectsApi",
+      "StageNav",
+      "DocumentLibrary",
+      "DiagramLibrary",
+      "RequirementTasks"
+    ],
+    "upstreamHops": 1,
+    "downstreamHops": 3,
+    "fanIn": 1,
+    "fanOut": 5,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "StageNav": {
+    "upstream": [
+      "ProjectDetailView"
+    ],
+    "downstream": [],
+    "upstreamHops": 2,
+    "downstreamHops": 0,
+    "fanIn": 1,
+    "fanOut": 0,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "DocumentLibrary": {
+    "upstream": [
+      "ProjectDetailView"
+    ],
+    "downstream": [
+      "DocumentFragments",
+      "DocumentsApi"
+    ],
+    "upstreamHops": 2,
+    "downstreamHops": 3,
+    "fanIn": 1,
+    "fanOut": 2,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "DocumentFragments": {
+    "upstream": [
+      "DocumentLibrary"
+    ],
+    "downstream": [
+      "DocumentsApi"
+    ],
+    "upstreamHops": 3,
+    "downstreamHops": 3,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "DiagramLibrary": {
+    "upstream": [
+      "ProjectDetailView"
+    ],
+    "downstream": [
+      "DiagramView"
+    ],
+    "upstreamHops": 2,
+    "downstreamHops": 4,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "DiagramView": {
+    "upstream": [
+      "DiagramLibrary"
+    ],
+    "downstream": [
+      "DiagramSvg",
+      "DiagramsApi",
+      "useManualEdit"
+    ],
+    "upstreamHops": 3,
+    "downstreamHops": 3,
+    "fanIn": 1,
+    "fanOut": 3,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "DiagramSvg": {
+    "upstream": [
+      "DiagramView"
+    ],
+    "downstream": [],
+    "upstreamHops": 4,
+    "downstreamHops": 0,
+    "fanIn": 1,
+    "fanOut": 0,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "RequirementTasks": {
+    "upstream": [
+      "ProjectDetailView"
+    ],
+    "downstream": [
+      "RequirementsApi"
+    ],
+    "upstreamHops": 2,
+    "downstreamHops": 3,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "ApiClient": {
+    "upstream": [
+      "ProjectsApi",
+      "DocumentsApi",
+      "DiagramsApi",
+      "RequirementsApi"
+    ],
+    "downstream": [
+      "BackendService"
+    ],
+    "upstreamHops": 3,
+    "downstreamHops": 1,
+    "fanIn": 4,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "high"
+  },
+  "ApiError": {
+    "upstream": [
+      "ProjectListView"
+    ],
+    "downstream": [],
+    "upstreamHops": 2,
+    "downstreamHops": 0,
+    "fanIn": 1,
+    "fanOut": 0,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "ProjectsApi": {
+    "upstream": [
+      "ProjectListView",
+      "ProjectDetailView"
+    ],
+    "downstream": [
+      "ApiClient"
+    ],
+    "upstreamHops": 2,
+    "downstreamHops": 2,
+    "fanIn": 2,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "medium"
+  },
+  "DocumentsApi": {
+    "upstream": [
+      "DocumentLibrary",
+      "DocumentFragments"
+    ],
+    "downstream": [
+      "ApiClient"
+    ],
+    "upstreamHops": 3,
+    "downstreamHops": 2,
+    "fanIn": 2,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "medium"
+  },
+  "DiagramsApi": {
+    "upstream": [
+      "DiagramView"
+    ],
+    "downstream": [
+      "ApiClient"
+    ],
+    "upstreamHops": 4,
+    "downstreamHops": 2,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "RequirementsApi": {
+    "upstream": [
+      "RequirementTasks"
+    ],
+    "downstream": [
+      "ApiClient"
+    ],
+    "upstreamHops": 3,
+    "downstreamHops": 2,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "BackendService": {
+    "upstream": [
+      "ApiClient"
+    ],
+    "downstream": [],
+    "upstreamHops": 4,
+    "downstreamHops": 0,
+    "fanIn": 1,
+    "fanOut": 0,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "useManualEdit": {
+    "upstream": [
+      "DiagramView"
+    ],
+    "downstream": [],
+    "upstreamHops": 4,
+    "downstreamHops": 0,
+    "fanIn": 1,
+    "fanOut": 0,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  }
+}

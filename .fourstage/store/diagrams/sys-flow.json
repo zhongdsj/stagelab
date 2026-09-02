@@ -3,7 +3,7 @@
   "type": "flow",
   "metadata": {
     "title": "系统流程概览",
-    "version": 2,
+    "version": 4,
     "description": "全链路系统流程概览：各模块流程入口概览图（MCP Server / HTTP API / 业务服务层 / 布局引擎 / 本地存储层 / Web 前端），详细流程见各模块流程图。"
   },
   "nodes": [
@@ -11,66 +11,150 @@
       "nodeId": "ext-ai",
       "label": "AI 客户端",
       "nodeKind": "start",
-      "description": "[占位] MCP 调用入口，后续支持跳转"
+      "description": "[占位] MCP 调用入口，后续支持跳转",
+      "geometry": {
+        "x": 404,
+        "y": 0,
+        "width": 152,
+        "height": 56
+      }
     },
     {
-      "label": "Web 浏览器",
       "nodeId": "ext-browser",
+      "label": "Web 浏览器",
       "nodeKind": "start",
-      "description": "[占位] 前端访问入口，后续支持跳转"
+      "description": "[占位] 前端访问入口，后续支持跳转",
+      "geometry": {
+        "x": 202,
+        "y": 0,
+        "width": 152,
+        "height": 56
+      }
     },
     {
       "nodeId": "mcp",
       "label": "MCP Server 流程",
-      "description": "工具调用→服务层→存储层（详见 mcp-server-flow）",
       "nodeKind": "subprocess",
+      "description": "工具调用→服务层→存储层（详见 mcp-server-flow）",
       "payload": {
-        "linkedDiagram": "mcp-server-flow"
+        "linkedDiagrams": [
+          {
+            "diagramId": "mcp-server-flow",
+            "label": "MCP Server",
+            "type": "flow"
+          }
+        ]
+      },
+      "geometry": {
+        "x": 404,
+        "y": 256,
+        "width": 152,
+        "height": 56
       }
     },
     {
       "nodeId": "http",
       "label": "HTTP API 流程",
-      "description": "请求→路由→服务/布局→响应（详见 http-api-flow）",
       "nodeKind": "subprocess",
+      "description": "请求→路由→服务/布局→响应（详见 http-api-flow）",
       "payload": {
-        "linkedDiagram": "http-api-flow"
+        "linkedDiagrams": [
+          {
+            "diagramId": "http-api-flow",
+            "label": "HTTP API",
+            "type": "flow"
+          }
+        ]
+      },
+      "geometry": {
+        "x": 25,
+        "y": 256,
+        "width": 152,
+        "height": 56
       }
     },
     {
-      "label": "业务服务层流程",
       "nodeId": "biz",
+      "label": "业务服务层流程",
       "nodeKind": "subprocess",
       "description": "项目/文档/需求/索引（详见 biz-service-flow）",
       "payload": {
-        "linkedDiagram": "biz-service-flow"
+        "linkedDiagrams": [
+          {
+            "diagramId": "biz-service-flow",
+            "label": "业务服务层",
+            "type": "flow"
+          }
+        ]
+      },
+      "geometry": {
+        "x": 127,
+        "y": 512,
+        "width": 152,
+        "height": 56
       }
     },
     {
-      "label": "布局引擎流程",
       "nodeId": "layout",
+      "label": "布局引擎流程",
       "nodeKind": "subprocess",
       "description": "Diagram→LayoutDiagram（详见 layout-engine-flow）",
       "payload": {
-        "linkedDiagram": "layout-engine-flow"
+        "linkedDiagrams": [
+          {
+            "diagramId": "layout-engine-flow",
+            "label": "布局引擎",
+            "type": "flow"
+          }
+        ]
+      },
+      "geometry": {
+        "x": 25,
+        "y": 768,
+        "width": 152,
+        "height": 56
       }
     },
     {
-      "label": "本地存储层流程",
       "nodeId": "store",
+      "label": "本地存储层流程",
       "nodeKind": "subprocess",
       "description": "读写安全+索引重建（详见 file-store-flow）",
       "payload": {
-        "linkedDiagram": "file-store-flow"
+        "linkedDiagrams": [
+          {
+            "diagramId": "file-store-flow",
+            "label": "本地存储层",
+            "type": "flow"
+          }
+        ]
+      },
+      "geometry": {
+        "x": 227,
+        "y": 768,
+        "width": 152,
+        "height": 56
       }
     },
     {
       "nodeId": "fe",
       "label": "Web 前端流程",
-      "description": "项目总览→详情→图/文档/需求（详见 web-frontend-flow）",
       "nodeKind": "subprocess",
+      "description": "项目总览→详情→图/文档/需求（详见 web-frontend-flow）",
       "payload": {
-        "linkedDiagram": "web-frontend-flow"
+        "linkedDiagrams": [
+          {
+            "diagramId": "web-frontend-flow",
+            "label": "Web 前端",
+            "type": "flow"
+          }
+        ]
+      },
+      "geometry": {
+        "x": 0,
+        "y": 0,
+        "width": 152,
+        "height": 56
       }
     }
   ],
@@ -79,55 +163,193 @@
       "edgeId": "e01",
       "from": "ext-ai",
       "to": "mcp",
-      "label": "stdio"
+      "label": "stdio",
+      "points": [
+        {
+          "x": 480,
+          "y": 56
+        },
+        {
+          "x": 480,
+          "y": 256
+        }
+      ]
     },
     {
       "edgeId": "e02",
       "from": "mcp",
       "to": "biz",
-      "label": "调用服务"
+      "label": "调用服务",
+      "points": [
+        {
+          "x": 480,
+          "y": 312
+        },
+        {
+          "x": 480,
+          "y": 422
+        },
+        {
+          "x": 228.33333333333331,
+          "y": 422
+        },
+        {
+          "x": 228.33333333333331,
+          "y": 512
+        }
+      ]
     },
     {
       "edgeId": "e03",
       "from": "ext-browser",
       "to": "http",
-      "label": "HTTP"
+      "label": "HTTP",
+      "points": [
+        {
+          "x": 278,
+          "y": 56
+        },
+        {
+          "x": 278,
+          "y": 166
+        },
+        {
+          "x": 139.33333333333331,
+          "y": 166
+        },
+        {
+          "x": 139.33333333333331,
+          "y": 256
+        }
+      ]
     },
     {
       "edgeId": "e04",
       "from": "http",
       "to": "biz",
-      "label": "调用服务"
+      "label": "调用服务",
+      "points": [
+        {
+          "x": 126.66666666666666,
+          "y": 312
+        },
+        {
+          "x": 126.66666666666666,
+          "y": 322
+        },
+        {
+          "x": 177.66666666666666,
+          "y": 322
+        },
+        {
+          "x": 177.66666666666666,
+          "y": 512
+        }
+      ]
     },
     {
       "edgeId": "e05",
       "from": "biz",
       "to": "layout",
-      "label": "布局计算"
+      "label": "布局计算",
+      "points": [
+        {
+          "x": 177.66666666666666,
+          "y": 568
+        },
+        {
+          "x": 177.66666666666666,
+          "y": 678
+        },
+        {
+          "x": 126.66666666666666,
+          "y": 678
+        },
+        {
+          "x": 126.66666666666666,
+          "y": 768
+        }
+      ]
     },
     {
       "edgeId": "e06",
       "from": "biz",
       "to": "store",
-      "label": "读写持久化"
+      "label": "读写持久化",
+      "points": [
+        {
+          "x": 228.33333333333331,
+          "y": 568
+        },
+        {
+          "x": 228.33333333333331,
+          "y": 578
+        },
+        {
+          "x": 303.3333333333333,
+          "y": 578
+        },
+        {
+          "x": 303.3333333333333,
+          "y": 768
+        }
+      ]
     },
     {
       "edgeId": "e07",
       "from": "http",
       "to": "fe",
-      "label": "返回渲染"
+      "label": "返回渲染",
+      "points": [
+        {
+          "x": 63.33333333333333,
+          "y": 256
+        },
+        {
+          "x": 63.33333333333333,
+          "y": 166
+        },
+        {
+          "x": 50.666666666666664,
+          "y": 166
+        },
+        {
+          "x": 50.666666666666664,
+          "y": 56
+        }
+      ]
     },
     {
       "edgeId": "e08",
       "from": "fe",
       "to": "http",
-      "label": "交互请求"
+      "label": "交互请求",
+      "points": [
+        {
+          "x": 101.33333333333333,
+          "y": 56
+        },
+        {
+          "x": 101.33333333333333,
+          "y": 256
+        }
+      ]
     },
     {
       "edgeId": "e09",
       "from": "layout",
       "to": "http",
-      "label": "布局结果"
+      "label": "布局结果",
+      "points": [
+        {
+          "x": 76,
+          "y": 768
+        },
+        {
+          "x": 76,
+          "y": 312
+        }
+      ]
     }
   ],
   "groups": []

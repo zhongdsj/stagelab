@@ -1,0 +1,131 @@
+{
+  "HttpServer": {
+    "upstream": [],
+    "downstream": [
+      "ProjectRoutes",
+      "DocumentRoutes",
+      "DiagramRoutes",
+      "RequirementRoutes",
+      "ErrorStatus"
+    ],
+    "upstreamHops": 0,
+    "downstreamHops": 2,
+    "fanIn": 0,
+    "fanOut": 5,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "ProjectRoutes": {
+    "upstream": [
+      "HttpServer"
+    ],
+    "downstream": [
+      "HttpError",
+      "WorkspaceResolver"
+    ],
+    "upstreamHops": 1,
+    "downstreamHops": 1,
+    "fanIn": 1,
+    "fanOut": 2,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "DocumentRoutes": {
+    "upstream": [
+      "HttpServer"
+    ],
+    "downstream": [
+      "HttpError",
+      "WorkspaceResolver"
+    ],
+    "upstreamHops": 1,
+    "downstreamHops": 1,
+    "fanIn": 1,
+    "fanOut": 2,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "DiagramRoutes": {
+    "upstream": [
+      "HttpServer"
+    ],
+    "downstream": [
+      "HttpError",
+      "WorkspaceResolver"
+    ],
+    "upstreamHops": 1,
+    "downstreamHops": 1,
+    "fanIn": 1,
+    "fanOut": 2,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "RequirementRoutes": {
+    "upstream": [
+      "HttpServer"
+    ],
+    "downstream": [
+      "HttpError",
+      "WorkspaceResolver"
+    ],
+    "upstreamHops": 1,
+    "downstreamHops": 1,
+    "fanIn": 1,
+    "fanOut": 2,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "HttpError": {
+    "upstream": [
+      "ProjectRoutes",
+      "DocumentRoutes",
+      "DiagramRoutes",
+      "RequirementRoutes",
+      "ErrorStatus"
+    ],
+    "downstream": [],
+    "upstreamHops": 2,
+    "downstreamHops": 0,
+    "fanIn": 5,
+    "fanOut": 0,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "high"
+  },
+  "ErrorStatus": {
+    "upstream": [
+      "HttpServer"
+    ],
+    "downstream": [
+      "HttpError"
+    ],
+    "upstreamHops": 1,
+    "downstreamHops": 1,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "WorkspaceResolver": {
+    "upstream": [
+      "ProjectRoutes",
+      "DocumentRoutes",
+      "DiagramRoutes",
+      "RequirementRoutes"
+    ],
+    "downstream": [],
+    "upstreamHops": 2,
+    "downstreamHops": 0,
+    "fanIn": 4,
+    "fanOut": 0,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "high"
+  }
+}

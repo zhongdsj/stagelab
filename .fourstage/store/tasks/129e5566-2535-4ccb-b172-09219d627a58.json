@@ -1,0 +1,12 @@
+{
+  "taskId": "129e5566-2535-4ccb-b172-09219d627a58",
+  "requirementId": "34e3589b-32e7-4f28-b710-15794560e4c3",
+  "title": "T85 构建验证与联调",
+  "description": "R1 构建验证与联调：vue-tsc + vite build + 服务端构建；MCP 实测 get_diagram_impact",
+  "status": "done",
+  "acceptanceCriteria": "前后端构建通过；MCP 实测 get_diagram_impact 返回正确",
+  "files": [],
+  "changeType": "修改",
+  "createdAt": 1788321914607,
+  "updatedAt": 1788329620117
+}
