@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import type { LayoutDiagram } from "@fourstage/shared";
+import type { LayoutDiagram } from "@stagelab/shared";
 
 const props = defineProps<{
   layout: LayoutDiagram;

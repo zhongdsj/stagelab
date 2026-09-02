@@ -12,7 +12,7 @@
  * overrides 恒为空对象（坐标固化后不再有增量覆盖概念）。
  */
 import { computed, reactive, ref } from "vue";
-import type { Diagram } from "@fourstage/shared";
+import type { Diagram } from "@stagelab/shared";
 
 export interface CanvasNodeGeom {
   x: number;

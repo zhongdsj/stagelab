@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Stage } from "@fourstage/shared";
+import type { Stage } from "@stagelab/shared";
 
 /** 四阶段定义（与开发文档/任务文档一致） */
 const stages: Array<{ value: Stage; label: string }> = [

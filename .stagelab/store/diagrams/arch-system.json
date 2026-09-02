@@ -225,7 +225,7 @@
       "label": "本地文件存储层",
       "layer": "数据层",
       "nodeKind": "database",
-      "description": "Git 仓库内 .fourstage/ 目录，JSON 明文存储；mtime 检测 + 原子写 + 短时锁",
+      "description": "Git 仓库内 .stagelab/ 目录，JSON 明文存储；mtime 检测 + 原子写 + 短时锁",
       "payload": {
         "linkedDiagrams": [
           {

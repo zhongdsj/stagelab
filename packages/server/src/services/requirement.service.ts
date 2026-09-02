@@ -7,7 +7,7 @@
  *
  * 需求层级：Project → Requirement → Task（需求可关联 Git 分支）
  */
-import type { Requirement, Task, RequirementStatus, TaskStatus } from "@fourstage/shared";
+import type { Requirement, Task, RequirementStatus, TaskStatus } from "@stagelab/shared";
 import type { RepoWorkspace } from "../storage/workspace.js";
 import { createRepositories } from "../storage/repositories/factory.js";
 import { generateId } from "./project.service.js";

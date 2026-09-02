@@ -11,7 +11,10 @@
  * - 编译运行：node dist/http/server.js --repo /path/to/repo
  */
 import Fastify, { type FastifyInstance, type FastifyRequest } from "fastify";
-import { pathToFileURL } from "node:url";
+import fastifyStatic from "@fastify/static";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { registerProjectRoutes } from "./routes/projects.js";
 import { registerDocumentRoutes } from "./routes/documents.js";
 import { registerDiagramRoutes } from "./routes/diagrams.js";
@@ -69,28 +72,51 @@ export function createHttpServer(): FastifyInstance {
   return app;
 }
 
-/** 启动 HTTP 服务（--repo 预加载默认仓库） */
-export async function startHttpServer(options: { port?: number } = {}): Promise<FastifyInstance> {
+/**
+ * 启动 HTTP 服务（--repo 预加载默认仓库，可选托管 Web 静态界面）
+ *
+ * @param options.serveWeb 是否托管 Web 界面（true 时在同一端口提供静态页面与 /api 接口）
+ * @param options.webDir   Web 静态资源目录（默认取 STAGELAB_WEB_DIST，或发布包布局 dist/web）
+ */
+export async function startHttpServer(options: {
+  port?: number;
+  serveWeb?: boolean;
+  webDir?: string;
+} = {}): Promise<FastifyInstance> {
   await initFromArgs(process.argv);
   const app = createHttpServer();
+
+  // 托管 Web 静态界面（server+web 一体）：未托管时不影响纯 API/MCP 场景
+  if (options.serveWeb) {
+    const webDir =
+      options.webDir ??
+      process.env.STAGELAB_WEB_DIST ??
+      // 发布包布局：bundle 后的 cli.js 位于 dist/，Web 产物放在 dist/web
+      path.join(path.dirname(fileURLToPath(import.meta.url)), "web");
+    if (fs.existsSync(webDir)) {
+      await app.register(fastifyStatic, { root: webDir, prefix: "/" });
+      // SPA history fallback：非 /api 且未命中静态文件时回退 index.html
+      app.setNotFoundHandler((request, reply) => {
+        // /api 未命中：返回 JSON 404，不做 SPA fallback
+        if (request.url.startsWith("/api")) {
+          reply.code(404).send({ error: "Not Found" });
+          return;
+        }
+        // 其余路径：SPA history fallback 到 index.html（文件缺失时 fastify-static 自行 404）
+        reply.sendFile("index.html");
+      });
+      log("http", `Web 界面已托管: ${webDir}`);
+    } else {
+      log("http", `未找到 Web 静态目录，跳过托管: ${webDir}`);
+    }
+  }
+
   // 停止日志需在 listen() 之前注册，Fastify 一旦开始监听便禁止新增 hook
   app.addHook("onClose", () => {
     log("http", "HTTP server 已停止");
   });
-  const port = options.port ?? Number(process.env.PORT ?? 3000);
+  const port = options.port ?? Number(process.env.PORT ?? 6327);
   await app.listen({ port, host: "0.0.0.0" });
   log("http", `HTTP server 已启动: http://localhost:${port}`);
   return app;
-}
-
-/** 被直接执行时自动启动 */
-const isDirectRun =
-  process.argv[1] !== undefined &&
-  import.meta.url === pathToFileURL(process.argv[1]).href;
-
-if (isDirectRun) {
-  startHttpServer().catch((err) => {
-    console.error("HTTP server 启动失败:", err);
-    process.exit(1);
-  });
 }

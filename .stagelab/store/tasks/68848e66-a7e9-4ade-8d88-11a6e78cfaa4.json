@@ -6,8 +6,8 @@
   "status": "done",
   "acceptanceCriteria": "MCP update_diagram_elements 校验通过并持久化；web-frontend-class/sys-flow 图的占位节点具备合法 linkedDiagrams；前端可读取并弹出跳转框。",
   "files": [
-    ".fourstage/store/diagrams/web-frontend-class.json",
-    ".fourstage/store/diagrams/sys-flow.json"
+    ".stagelab/store/diagrams/web-frontend-class.json",
+    ".stagelab/store/diagrams/sys-flow.json"
   ],
   "changeType": "修改",
   "createdAt": 1788337698376,

@@ -23,7 +23,7 @@
       "nodeId": "path",
       "label": "解析路径",
       "nodeKind": "process",
-      "description": "Paths 定位 .fourstage 文件",
+      "description": "Paths 定位 .stagelab 文件",
       "geometry": {
         "x": 12,
         "y": 320,

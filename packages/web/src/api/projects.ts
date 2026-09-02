@@ -1,7 +1,7 @@
 /**
  * 项目 API（对接 GET/POST /api/projects 等路由）
  */
-import type { Project, ProjectIndex, Stage } from "@fourstage/shared";
+import type { Project, ProjectIndex, Stage } from "@stagelab/shared";
 import { http } from "./client.js";
 
 /** 索引查询结果（轻量分层访问，对应服务端 ProjectIndexResult） */
@@ -45,7 +45,7 @@ export function renameProject(
   );
 }
 
-/** 删除项目（级联删除 .fourstage 目录） */
+/** 删除项目（级联删除 .stagelab 目录） */
 export function deleteProject(projectId: string): Promise<void> {
   return http.del<void>(
     `/api/projects/${encodeURIComponent(projectId)}`

@@ -4,7 +4,7 @@
  * 针对架构图/类图/流程图分别配置 ELK 布局参数与默认节点尺寸，
  * 提升不同类型图的可视化效果（开发文档十一、风险应对：多套预设）。
  */
-import type { DiagramType } from "@fourstage/shared";
+import type { DiagramType } from "@stagelab/shared";
 
 export interface LayoutParams {
   /** ELK 布局算法 */

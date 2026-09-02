@@ -5,10 +5,10 @@
  */
 import crypto from "node:crypto";
 import fs from "node:fs";
-import type { Stage, Project } from "@fourstage/shared";
+import type { Stage, Project } from "@stagelab/shared";
 import type { RepoWorkspace } from "../storage/workspace.js";
 import { createRepositories } from "../storage/repositories/factory.js";
-import { fourstageRoot } from "../storage/paths.js";
+import { stagelabRoot } from "../storage/paths.js";
 import { clearCache } from "../storage/io.js";
 import { removeWorkspace } from "../storage/workspace.js";
 import { removeRepo } from "../storage/registry.js";
@@ -89,17 +89,17 @@ export async function updateProjectName(
 }
 
 /**
- * 删除项目（级联删除整仓库 .fourstage 目录）
+ * 删除项目（级联删除整仓库 .stagelab 目录）
  *
- * 一个仓库绑定一个 Project，删除项目即删除该仓库的 .fourstage 数据目录，
+ * 一个仓库绑定一个 Project，删除项目即删除该仓库的 .stagelab 数据目录，
  * 并从已加载工作区实例中移除（MCP 端不暴露此操作，仅 HTTP/前端可调用）。
  */
 export async function deleteProject(workspace: RepoWorkspace): Promise<void> {
   // 校验项目存在
   const repos = createRepositories(workspace);
   await repos.project.get(workspace.entry.projectId);
-  // 删除整个 .fourstage 目录（含 meta/index/文档/图/需求/任务/记录）
-  await fs.promises.rm(fourstageRoot(workspace.repoRoot), {
+  // 删除整个 .stagelab 目录（含 meta/index/文档/图/需求/任务/记录）
+  await fs.promises.rm(stagelabRoot(workspace.repoRoot), {
     recursive: true,
     force: true
   });

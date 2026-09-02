@@ -1,9 +1,9 @@
 {
   "projectId": "34a29cd8-790c-43c4-8ce9-e2c25573cfa0",
-  "projectName": "fourstage",
+  "projectName": "stagelab",
   "currentStage": "s2",
   "createdAt": 1787984152121,
-  "updatedAt": 1788337667202,
+  "updatedAt": 1788339085836,
   "stage1": {
     "docId": "",
     "diagramIds": []
@@ -35,7 +35,8 @@
       "239029a0-5837-40ce-9c53-1b3d08a85635",
       "c055a226-b8a6-4d47-b1f6-565762654470",
       "78d8e8b4-bbcd-4562-99ed-b748ad9e494b",
-      "e05e619d-4899-4e03-ba58-0e84b965eed5"
+      "e05e619d-4899-4e03-ba58-0e84b965eed5",
+      "ed976849-7163-4396-bacb-bb527b0132b2"
     ],
     "diagramIds": []
   },

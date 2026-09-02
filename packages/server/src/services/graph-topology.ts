@@ -14,7 +14,7 @@ import type {
   ImpactIndexEntry,
   ImpactIndexMap,
   ImpactRiskLevel
-} from "@fourstage/shared";
+} from "@stagelab/shared";
 
 /** 结构分阈值：fanIn 达到该值视为"被多节点依赖"的高风险（绝对基线） */
 const FANIN_HIGH = 4;

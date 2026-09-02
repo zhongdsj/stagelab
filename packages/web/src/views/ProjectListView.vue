@@ -94,7 +94,7 @@ import {
   deleteProject,
   ApiError
 } from "../api/index";
-import type { Project, Stage } from "@fourstage/shared";
+import type { Project, Stage } from "@stagelab/shared";
 
 const router = useRouter();
 

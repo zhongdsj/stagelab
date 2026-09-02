@@ -1,7 +1,7 @@
 /**
  * 文档分片 API（对接 /api/projects/:id/documents/:docId/fragments 路由）
  */
-import type { DocumentFragment } from "@fourstage/shared";
+import type { DocumentFragment } from "@stagelab/shared";
 import { http } from "./client.js";
 
 /** 分片列表元信息（轻量，不含全文 content） */

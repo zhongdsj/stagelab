@@ -8,7 +8,7 @@
  * 布局在 Worker Thread 执行，客户端断开时自动取消。
  */
 import type { FastifyInstance } from "fastify";
-import type { ImpactRiskLevel, VerificationActor, VerificationChangeType } from "@fourstage/shared";
+import type { ImpactRiskLevel, VerificationActor, VerificationChangeType } from "@stagelab/shared";
 import { readDiagram } from "../../services/index.service.js";
 import { layoutInWorker, type LayoutOverrides } from "../../layout/worker.js";
 import { getDiagramGroup, getNodeGroups, saveDiagramGeometry, verifyDiagram, getVerificationHistory } from "../../services/diagram.service.js";

@@ -5,9 +5,9 @@ node_modules/
 # 依赖
 *.tsbuildinfo
 
-# four-stage 工具临时文件
-.fourstage/*.tmp
-.fourstage/**/*.tmp
+# stagelab 工具临时文件
+.stagelab/*.tmp
+.stagelab/**/*.tmp
 
 # 环境
 .env

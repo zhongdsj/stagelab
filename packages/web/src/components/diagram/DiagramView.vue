@@ -216,7 +216,7 @@ import {
   type LayoutResponse,
   type ImpactRiskMap
 } from "../../api/index";
-import type { Diagram, NodeGeometry, CodeAnchorFile } from "@fourstage/shared";
+import type { Diagram, NodeGeometry, CodeAnchorFile } from "@stagelab/shared";
 import { snapToNodeBorder, perpendicularEntryPath, type NodeBox } from "./useEdgeGeometry";
 
 const props = defineProps<{

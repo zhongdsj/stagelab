@@ -2,7 +2,7 @@
   "taskId": "374ecab5-23d3-45bc-8cb1-9213d7e15246",
   "requirementId": "311621a6-ca26-4050-b682-ac3ac2bba4d5",
   "title": "T03 存储层：仓库入口与目录",
-  "description": "实现 Git 仓库嵌入式存储定位（开发文档第七章）。init_repo 在仓库根生成 .fourstage/project.meta.json 与 store/ 完整目录树；--repo 参数解析与多仓库实例管理。\n\n完成记录：paths/repo/workspace 实现，冒烟验证（目录结构、幂等初始化、双仓库加载）通过。",
+  "description": "实现 Git 仓库嵌入式存储定位（开发文档第七章）。init_repo 在仓库根生成 .stagelab/project.meta.json 与 store/ 完整目录树；--repo 参数解析与多仓库实例管理。\n\n完成记录：paths/repo/workspace 实现，冒烟验证（目录结构、幂等初始化、双仓库加载）通过。",
   "status": "done",
   "acceptanceCriteria": "初始化后目录结构严格符合开发文档 7.2 图示；project.meta.json 符合 RepoEntryMeta（schemaVersion/projectId/storeDir/createdAt）；同一进程支持同时加载多个仓库实例互不干扰。",
   "files": [

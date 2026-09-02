@@ -1,7 +1,7 @@
 /**
  * 需求与任务 API（对接 T12 新增 HTTP 路由）
  */
-import type { Requirement, Task, RequirementStatus, TaskStatus } from "@fourstage/shared";
+import type { Requirement, Task, RequirementStatus, TaskStatus } from "@stagelab/shared";
 import { http } from "./client.js";
 
 /** 需求列表项（轻量） */

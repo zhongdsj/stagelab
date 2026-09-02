@@ -1,7 +1,7 @@
 /**
  * 图 API（对接 /api/projects/:id/diagrams 路由）
  */
-import type { Diagram, LayoutDiagram, ImpactRiskLevel, VerificationRecord, VerificationActor, VerificationChangeType } from "@fourstage/shared";
+import type { Diagram, LayoutDiagram, ImpactRiskLevel, VerificationRecord, VerificationActor, VerificationChangeType } from "@stagelab/shared";
 import { http } from "./client.js";
 
 /** 自由画布坐标保存载荷（T59/T60）：节点几何 + 连线折点 */

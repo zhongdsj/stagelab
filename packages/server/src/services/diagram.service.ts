@@ -19,8 +19,8 @@ import type {
   VerificationRecord,
   VerificationActor,
   VerificationChangeType
-} from "@fourstage/shared";
-import { DiagramSchema, VerificationRecordSchema } from "@fourstage/shared";
+} from "@stagelab/shared";
+import { DiagramSchema, VerificationRecordSchema } from "@stagelab/shared";
 import crypto from "node:crypto";
 import type { RepoWorkspace } from "../storage/workspace.js";
 import { createRepositories } from "../storage/repositories/factory.js";

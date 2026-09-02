@@ -3,7 +3,7 @@
  *
  * 持久化记录"已打开过的仓库地址"，解决服务重启后内存工作区丢失、
  * 项目列表无法自动恢复的问题：
- * - 存储于用户级目录（优先 %APPDATA%/fourstage/registry.json，回退用户主目录）
+ * - 存储于用户级目录（优先 %APPDATA%/stagelab/registry.json，回退用户主目录）
  * - openWorkspace 成功时登记仓库地址
  * - 启动时读取注册表，逐个校验仓库有效性并加载，自动清理失效项
  *
@@ -14,7 +14,7 @@ import os from "node:os";
 import path from "node:path";
 
 /** 注册表目录名 */
-const REGISTRY_DIR = "fourstage";
+const REGISTRY_DIR = "stagelab";
 /** 注册表文件名 */
 const REGISTRY_FILE = "registry.json";
 /** 注册表 schema 版本 */
@@ -32,8 +32,12 @@ export interface RegistryRepo {
   openedAt: number;
 }
 
-/** 注册表文件路径（优先 %APPDATA%，回退用户主目录） */
+/** 注册表文件路径（优先 --data/STAGELAB_DATA_DIR，其次 %APPDATA%，回退用户主目录） */
 export function registryFilePath(): string {
+  const dataDir = process.env.STAGELAB_DATA_DIR;
+  if (dataDir && dataDir.length > 0) {
+    return path.join(dataDir, REGISTRY_FILE);
+  }
   const base =
     process.env.APPDATA && process.env.APPDATA.length > 0
       ? path.join(process.env.APPDATA, REGISTRY_DIR)

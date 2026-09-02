@@ -6,7 +6,7 @@
  */
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { RequirementStatusSchema, TaskStatusSchema } from "@fourstage/shared";
+import { RequirementStatusSchema, TaskStatusSchema } from "@stagelab/shared";
 import { getWorkspace } from "../../storage/workspace.js";
 import {
   createRequirement,

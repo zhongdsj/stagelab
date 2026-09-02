@@ -2,7 +2,7 @@
  * 仓库路径解析工具
  *
  * 对应开发文档 7.2 目录结构：
- * {仓库根}/.fourstage/
+ * {仓库根}/.stagelab/
  *   ├── project.meta.json      # 仓库入口元文件
  *   ├── store/
  *   │   ├── meta.json          # Project
@@ -17,7 +17,7 @@
 import path from "node:path";
 
 /** 工具专属目录名 */
-export const FOURSTAGE_DIR = ".fourstage";
+export const STAGELAB_DIR = ".stagelab";
 
 /** 仓库入口元文件 */
 export const REPO_ENTRY_FILE = "project.meta.json";
@@ -37,19 +37,19 @@ export const STORE_SUBDIRS = [
   "records"
 ] as const;
 
-/** .fourstage 根路径 */
-export function fourstageRoot(repoRoot: string): string {
-  return path.join(repoRoot, FOURSTAGE_DIR);
+/** .stagelab 根路径 */
+export function stagelabRoot(repoRoot: string): string {
+  return path.join(repoRoot, STAGELAB_DIR);
 }
 
 /** 仓库入口元文件路径 */
 export function repoEntryPath(repoRoot: string): string {
-  return path.join(fourstageRoot(repoRoot), REPO_ENTRY_FILE);
+  return path.join(stagelabRoot(repoRoot), REPO_ENTRY_FILE);
 }
 
 /** store 根路径 */
 export function storeRoot(repoRoot: string): string {
-  return path.join(fourstageRoot(repoRoot), STORE_DIR);
+  return path.join(stagelabRoot(repoRoot), STORE_DIR);
 }
 
 /** store 子目录路径 */
@@ -59,7 +59,7 @@ export function storeSubdir(repoRoot: string, sub: string): string {
 
 /** 写入锁路径 */
 export function lockPath(repoRoot: string): string {
-  return path.join(fourstageRoot(repoRoot), LOCK_FILE);
+  return path.join(stagelabRoot(repoRoot), LOCK_FILE);
 }
 
 /** 各类实体文件路径 */
