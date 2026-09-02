@@ -1,6 +1,6 @@
 {
   "name": "stagelab",
-  "version": "0.3",
+  "version": "0.3.0",
   "private": false,
   "description": "源库 - 四阶段MCP项目管理工具",
   "workspaces": [
