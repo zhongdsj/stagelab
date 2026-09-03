@@ -1,0 +1,10 @@
+{
+  "verificationId": "v-9a93d9",
+  "diagramId": "web-frontend-class",
+  "changeType": "incremental",
+  "baseCommit": "58d43b9",
+  "verifiedCommit": "58d43b9",
+  "verifiedAt": 1788419406168,
+  "verifiedBy": "ai",
+  "note": "同步废弃需求：RequirementTasks 补废弃/恢复方法与描述，DocumentFragments 补单分片保存+分级警告描述"
+}

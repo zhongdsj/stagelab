@@ -1,0 +1,14 @@
+{
+  "taskId": "211a3d07-b80a-49f9-aba4-6e3072f4d71d",
+  "requirementId": "64db010b-c10e-4079-95f5-04bda0a377d7",
+  "title": "T4 MCP层：文档工具改造+新增 list/delete_document_fragment",
+  "description": "document.ts 工具：write_document_fragment / create_document 更新 description 为单分片语义+分级警告，返回值携带 warning 字段；新增 list_document_fragments（轻量摘要 fragmentId/order/title/summary，不含 content）；新增 delete_document_fragment（按 fragmentId 删除）",
+  "status": "done",
+  "acceptanceCriteria": "新工具注册成功（get_document_index 后工具列表可见）；write 超长返回 warning 字段不报错；list 返回摘要不含正文；delete 按 fragmentId 生效",
+  "files": [
+    "packages/server/src/mcp/tools/document.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788417824021,
+  "updatedAt": 1788418517052
+}

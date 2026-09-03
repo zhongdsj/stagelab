@@ -4,12 +4,19 @@
 import type { DocumentFragment } from "@stagelab/shared";
 import { http } from "./client.js";
 
-/** 分片列表元信息（轻量，不含全文 content） */
+/** 分片列表元信息（轻量：含摘要，不含全文 content） */
 export interface FragmentMeta {
   fragmentId: string;
   docId: string;
   order: number;
   title: string;
+  summary: string;
+}
+
+/** 文档写入结果（单分片语义，含分级警告） */
+export interface WriteFragmentResult {
+  fragment: DocumentFragment;
+  warning?: "warning" | "strongWarning";
 }
 
 /** 文档分片列表 */
@@ -33,14 +40,14 @@ export function getFragment(
   );
 }
 
-/** 编辑指定分片（按 order 覆盖，超长自动再分片） */
+/** 编辑指定分片（单分片替换，不自动切分；返回分级警告） */
 export function updateFragment(
   projectId: string,
   docId: string,
   fragmentId: string,
   content: string
-): Promise<DocumentFragment[]> {
-  return http.put<DocumentFragment[]>(
+): Promise<WriteFragmentResult> {
+  return http.put<WriteFragmentResult>(
     `/api/projects/${encodeURIComponent(projectId)}/documents/${encodeURIComponent(docId)}/fragments/${encodeURIComponent(fragmentId)}`,
     { content }
   );
@@ -65,14 +72,14 @@ export function getFullDocument(
   );
 }
 
-/** 全量编辑文档（从 order 0 覆盖全文，超长自动再分片 + 清理孤儿分片） */
+/** 全量编辑文档（清空其他分片 + order0 单分片全量覆盖，不自动切分；返回分级警告） */
 export function updateFullDocument(
   projectId: string,
   docId: string,
   content: string,
   title?: string
-): Promise<DocumentFragment[]> {
-  return http.put<DocumentFragment[]>(
+): Promise<WriteFragmentResult> {
+  return http.put<WriteFragmentResult>(
     `/api/projects/${encodeURIComponent(projectId)}/documents/${encodeURIComponent(docId)}/full`,
     { content, title }
   );

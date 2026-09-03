@@ -3,8 +3,13 @@
   "type": "class",
   "metadata": {
     "title": "业务服务层 - 类图",
-    "version": 7,
-    "description": "基于 packages/server/src/services 源码：项目/文档/图/索引/需求/工作区 六大服务"
+    "version": 8,
+    "description": "基于 packages/server/src/services 源码：项目/文档/图/索引/需求/工作区 六大服务",
+    "baseCommit": "58d43b9",
+    "verifiedCommit": "58d43b9",
+    "lastVerifiedAt": 1788419404537,
+    "verifiedBy": "ai",
+    "verifyNote": "同步文档分片自控与废弃需求：DocumentService 补 list/deleteDocumentFragment+分级警告描述，RequirementService 补 updateTask+废弃级联描述"
   },
   "nodes": [
     {
@@ -63,18 +68,24 @@
           "name": "readDocumentFragment"
         },
         {
+          "name": "listDocumentFragments"
+        },
+        {
           "name": "writeDocumentFragment"
+        },
+        {
+          "name": "deleteDocumentFragment"
         },
         {
           "name": "readDocumentFull"
         }
       ],
-      "description": "文档分片服务",
+      "description": "文档分片服务（单分片自控 + 分级警告）",
       "geometry": {
         "x": 12,
         "y": 508,
         "width": 250,
-        "height": 144
+        "height": 164
       },
       "codeAnchor": {
         "files": [
@@ -185,15 +196,21 @@
           "name": "createTask"
         },
         {
+          "name": "updateTask"
+        },
+        {
           "name": "updateTaskStatus"
+        },
+        {
+          "name": "deleteTask"
         }
       ],
-      "description": "需求-任务服务（三态流转）",
+      "description": "需求-任务服务（废弃级联 + 自动流转）",
       "geometry": {
         "x": 12,
         "y": 1540,
         "width": 250,
-        "height": 164
+        "height": 184
       },
       "codeAnchor": {
         "files": [

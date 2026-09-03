@@ -1,0 +1,14 @@
+{
+  "taskId": "f514f206-c5b1-4957-a2b0-6fd79211916c",
+  "requirementId": "64db010b-c10e-4079-95f5-04bda0a377d7",
+  "title": "T3 HTTP层：前端全量编辑改单分片语义",
+  "description": "documents.ts 路由：PUT /full 全量编辑改为「清空该文档其他分片 + order0 写入单分片」（全量覆盖语义，非自动切分）；PUT /fragments/:fid 单分片替换不切分、不连带删除后续分片",
+  "status": "done",
+  "acceptanceCriteria": "全量保存后该文档仅剩 1 个分片；分片编辑只影响目标分片；不再产生自动切分碎片",
+  "files": [
+    "packages/server/src/http/routes/documents.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788417822291,
+  "updatedAt": 1788418516463
+}

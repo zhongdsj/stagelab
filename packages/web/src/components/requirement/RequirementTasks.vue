@@ -47,8 +47,9 @@
               <!-- T51：需求更新时间（活跃度参考） -->
               <span class="req-time" :title="formatTime(req.updatedAt)">更新 {{ formatTime(req.updatedAt) }}</span>
               <span class="req-status" :class="`req-${req.status}`">{{ statusLabel(req.status) }}</span>
-              <!-- 每个需求两个操作按钮：修改 / 删除 -->
+              <!-- 每个需求操作按钮：恢复(仅废弃) / 修改 / 删除 -->
               <span class="req-actions" @click.stop>
+                <button v-if="req.status === 'abandoned'" class="btn btn-sm" type="button" @click="onRestoreReq(req)">恢复</button>
                 <button class="btn btn-sm" type="button" @click="openEditReq(req)">修改</button>
                 <button class="btn btn-sm btn-danger" type="button" @click="onDeleteReq(req)">删除</button>
               </span>
@@ -59,11 +60,12 @@
               <div class="form-row">
                 <input v-model="editReqForm.title" class="input" placeholder="需求标题（必填）" maxlength="80" />
                 <input v-model="editReqForm.branchName" class="input" placeholder="Git 分支名（可选）" maxlength="80" />
-                <!-- T34：需求状态三态（开发/测试/完成），前端可修改 -->
+                <!-- 需求状态四态（开发/测试/完成/废弃），前端可修改 -->
                 <select v-model="editReqForm.status" class="input select">
                   <option value="dev">开发</option>
                   <option value="test">测试</option>
                   <option value="done">完成</option>
+                  <option value="abandoned">废弃</option>
                 </select>
                 <button class="btn btn-sm btn-primary" type="submit" :disabled="savingReq">保存</button>
                 <button class="btn btn-sm" type="button" @click="editingReqId = null">取消</button>
@@ -74,10 +76,19 @@
                 rows="3"
                 placeholder="需求描述（markdown，可选）"
               ></textarea>
+              <textarea
+                v-if="editReqForm.status === 'abandoned'"
+                v-model="editReqForm.abandonReason"
+                class="input ta"
+                rows="2"
+                placeholder="废弃原因（废弃状态建议填写，用于留痕）"
+              ></textarea>
             </form>
 
             <!-- 需求描述（md 渲染） -->
             <div v-if="req.description && !editingReqId && expanded.has(req.requirementId)" class="md-body req-desc" v-html="renderMd(req.description)"></div>
+            <!-- 废弃原因展示 -->
+            <div v-if="req.abandonReason && !editingReqId && expanded.has(req.requirementId)" class="req-abandon-reason">废弃原因：{{ req.abandonReason }}</div>
 
             <!-- 任务分组列表 -->
             <div v-if="expanded.has(req.requirementId)" class="task-list">
@@ -104,7 +115,7 @@
                   ></textarea>
                 </div>
                 <!-- 任务展示态 -->
-                <div v-else class="task-row">
+                <div v-else class="task-row" :class="{ 'task-abandoned': t.status === 'abandoned' }">
                   <span class="task-name">{{ t.title }}</span>
                   <select
                     class="task-status"
@@ -114,9 +125,12 @@
                     <option value="pending">待处理</option>
                     <option value="in_progress">进行中</option>
                     <option value="done">已完成</option>
+                    <option value="abandoned">废弃</option>
                   </select>
-                  <!-- 每个任务两个操作按钮：修改 / 删除 -->
+                  <span v-if="t.abandonReason" class="task-abandon-reason" :title="t.abandonReason">废弃：{{ t.abandonReason }}</span>
+                  <!-- 任务操作按钮：恢复(仅废弃) / 修改 / 删除 -->
                   <span class="task-actions" @click.stop>
+                    <button v-if="t.status === 'abandoned'" class="btn btn-sm" type="button" @click="onRestoreTask(req.requirementId, t)">恢复</button>
                     <button class="btn btn-sm" type="button" @click="openEditTask(t)">修改</button>
                     <button class="btn btn-sm btn-danger" type="button" @click="onDeleteTask(req.requirementId, t)">删除</button>
                   </span>
@@ -196,7 +210,7 @@ const reqForm = reactive({ title: "", branchName: "", description: "" });
 // 修改需求状态
 const editingReqId = ref<string | null>(null);
 const savingReq = ref(false);
-const editReqForm = reactive({ title: "", branchName: "", description: "", status: "dev" as RequirementStatus });
+const editReqForm = reactive({ title: "", branchName: "", description: "", status: "dev" as RequirementStatus, abandonReason: "" });
 
 const showCreateTask = ref<string | null>(null);
 const creatingTask = ref(false);
@@ -207,16 +221,17 @@ const editingTaskId = ref<string | null>(null);
 const savingTask = ref(false);
 const editTaskForm = reactive({ title: "", changeType: "新增" as "新增" | "修改" | "删除", description: "" });
 
-// T34：需求状态三态（开发/测试/完成）
+// 需求状态四态（开发/测试/完成/废弃）
 const STATUS_LABELS: Record<string, string> = {
   dev: "开发",
   test: "测试",
-  done: "完成"
+  done: "完成",
+  abandoned: "废弃"
 };
 const statusLabel = (s: string) => STATUS_LABELS[s] ?? s;
 
-/** 状态排序权重：开发(dev) > 测试(test) > 完成(done)（T51） */
-const STATUS_ORDER: Record<string, number> = { dev: 0, test: 1, done: 2 };
+/** 状态排序权重：开发(dev) > 测试(test) > 完成(done) > 废弃(abandoned)（废弃置底） */
+const STATUS_ORDER: Record<string, number> = { dev: 0, test: 1, done: 2, abandoned: 3 };
 
 /**
  * 需求排序（T51）：优先按状态（开发→测试→完成），同状态按更新时间倒序（最新在前）。
@@ -231,13 +246,13 @@ const sortedRequirements = computed(() =>
   })
 );
 
-/* ========== 状态分组折叠（T53）：三态需求分别折叠，完成组默认折叠 ========== */
+/* ========== 状态分组折叠：四态需求分别折叠，完成/废弃组默认折叠 ========== */
 
-/** 状态组顺序（开发→测试→完成） */
-const STATUS_GROUP_ORDER: RequirementStatus[] = ["dev", "test", "done"];
+/** 状态组顺序（开发→测试→完成→废弃，废弃置底） */
+const STATUS_GROUP_ORDER: RequirementStatus[] = ["dev", "test", "done", "abandoned"];
 
-/** 已折叠的状态组（会话态；「完成」组默认折叠，大部分时间无需看到已完成需求明细） */
-const statusCollapsed = ref<Set<string>>(new Set(["done"]));
+/** 已折叠的状态组（会话态；「完成」「废弃」组默认折叠） */
+const statusCollapsed = ref<Set<string>>(new Set(["done", "abandoned"]));
 
 /** 按状态分组的需求列表（组内沿用 sortedRequirements 的时间倒序） */
 const requirementGroups = computed(() =>
@@ -335,6 +350,7 @@ function openEditReq(req: RequirementItem) {
   editReqForm.branchName = req.branchName ?? "";
   editReqForm.description = req.description ?? "";
   editReqForm.status = req.status;
+  editReqForm.abandonReason = req.abandonReason ?? "";
 }
 
 /** 保存需求修改 */
@@ -353,7 +369,9 @@ async function onSaveReq() {
       title,
       description: editReqForm.description.trim() || undefined,
       branchName: editReqForm.branchName.trim() || undefined,
-      status: editReqForm.status
+      status: editReqForm.status,
+      // 废弃状态才透传废弃原因；其他状态由后端在恢复时自动清除
+      abandonReason: editReqForm.status === "abandoned" ? editReqForm.abandonReason.trim() || undefined : undefined
     });
     editingReqId.value = null;
     await load();
@@ -361,6 +379,18 @@ async function onSaveReq() {
     error.value = e instanceof ApiError ? e.message : "修改需求失败";
   } finally {
     savingReq.value = false;
+  }
+}
+
+/** 恢复废弃需求（abandoned → dev，后端级联恢复其下因级联而废弃的任务） */
+async function onRestoreReq(req: RequirementItem) {
+  const ok = window.confirm(`确定恢复需求「${req.title}」吗？其下因该需求废弃而废弃的任务将一并恢复。`);
+  if (!ok) return;
+  try {
+    await updateRequirement(props.projectId, req.requirementId, { status: "dev" });
+    await load();
+  } catch (e) {
+    error.value = e instanceof ApiError ? e.message : "恢复需求失败";
   }
 }
 
@@ -408,16 +438,33 @@ async function onCreateTask(requirementId: string) {
   }
 }
 
-/** 更新任务状态 */
+/** 更新任务状态（废弃时提示输入废弃原因） */
 async function onStatusChange(requirementId: string, taskId: string, status: TaskStatus) {
   error.value = "";
+  let abandonReason: string | undefined;
+  if (status === "abandoned") {
+    abandonReason = window.prompt("请输入废弃原因（留痕用，可留空）：", "") ?? undefined;
+  }
   try {
-    await updateTaskStatus(props.projectId, taskId, status);
+    await updateTaskStatus(props.projectId, taskId, status, abandonReason);
     taskMap.value[requirementId] = await listTasks(props.projectId, requirementId);
     // 重载需求列表：更新时间、状态（含自动流转 dev→test）与排序实时更新，无需刷新页面
     await load();
   } catch (e) {
     error.value = e instanceof ApiError ? e.message : "更新状态失败";
+  }
+}
+
+/** 恢复废弃任务（abandoned → pending，后端清除废弃原因） */
+async function onRestoreTask(requirementId: string, t: TaskSummary) {
+  const ok = window.confirm(`确定恢复任务「${t.title}」吗？`);
+  if (!ok) return;
+  try {
+    await updateTaskStatus(props.projectId, t.taskId, "pending");
+    taskMap.value[requirementId] = await listTasks(props.projectId, requirementId);
+    await load();
+  } catch (e) {
+    error.value = e instanceof ApiError ? e.message : "恢复任务失败";
   }
 }
 
@@ -680,6 +727,36 @@ onMounted(load);
 .req-done {
   background: #f0f9eb;
   color: #67c23a;
+}
+/* 废弃状态：灰色 */
+.req-abandoned {
+  background: #f4f4f5;
+  color: #909399;
+}
+/* 废弃原因展示条 */
+.req-abandon-reason {
+  margin: 0 12px 8px;
+  padding: 6px 10px;
+  font-size: 12px;
+  color: #909399;
+  background: #f4f4f5;
+  border: 1px dashed #dcdfe6;
+  border-radius: 4px;
+}
+/* 废弃任务灰显 */
+.task-abandoned {
+  opacity: 0.55;
+}
+.task-abandon-reason {
+  font-size: 11px;
+  color: #909399;
+  background: #f4f4f5;
+  padding: 1px 6px;
+  border-radius: 4px;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .task-list {
   padding: 8px 12px 12px;

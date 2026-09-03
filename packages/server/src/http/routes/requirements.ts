@@ -26,10 +26,10 @@ import {
 } from "../../services/requirement.service.js";
 import { HttpError, requireWorkspaceByProjectId } from "./_util.js";
 
-/** 需求状态白名单（与 shared RequirementStatusSchema 一致：开发/测试/完成） */
-const REQUIREMENT_STATUS = ["dev", "test", "done"] as const;
+/** 需求状态白名单（与 shared RequirementStatusSchema 一致：开发/测试/完成/废弃） */
+const REQUIREMENT_STATUS = ["dev", "test", "done", "abandoned"] as const;
 /** 任务状态白名单（与 shared TaskStatusSchema 一致） */
-const TASK_STATUS = ["pending", "in_progress", "done"] as const;
+const TASK_STATUS = ["pending", "in_progress", "done", "abandoned"] as const;
 /** 变更类型白名单 */
 const CHANGE_TYPES = ["新增", "修改", "删除"] as const;
 
@@ -69,16 +69,18 @@ export function registerRequirementRoutes(app: FastifyInstance): void {
       title?: string;
       description?: string;
       branchName?: string;
+      abandonReason?: string;
       status?: string;
     };
     if (body.status !== undefined && !(REQUIREMENT_STATUS as readonly string[]).includes(body.status)) {
-      throw new HttpError(400, "status 必须是 dev/test/done");
+      throw new HttpError(400, "status 必须是 dev/test/done/abandoned");
     }
     const ws = requireWorkspaceByProjectId(id);
     return updateRequirement(ws, rid, {
       title: body.title,
       description: body.description,
       branchName: body.branchName,
+      abandonReason: body.abandonReason,
       status: body.status as typeof REQUIREMENT_STATUS[number] | undefined
     });
   });
@@ -127,12 +129,12 @@ export function registerRequirementRoutes(app: FastifyInstance): void {
   // 更新任务状态
   app.put("/api/projects/:id/tasks/:tid/status", async (request) => {
     const { id, tid } = request.params as { id: string; tid: string };
-    const body = (request.body ?? {}) as { status?: string };
+    const body = (request.body ?? {}) as { status?: string; abandonReason?: string };
     if (!(TASK_STATUS as readonly string[]).includes(body.status ?? "")) {
-      throw new HttpError(400, "status 必须是 pending/in_progress/done");
+      throw new HttpError(400, "status 必须是 pending/in_progress/done/abandoned");
     }
     const ws = requireWorkspaceByProjectId(id);
-    return updateTaskStatus(ws, tid, body.status as typeof TASK_STATUS[number]);
+    return updateTaskStatus(ws, tid, body.status as typeof TASK_STATUS[number], body.abandonReason);
   });
 
   // 更新任务内容（标题/描述/验收标准/文件/变更类型；状态走上方独立接口）

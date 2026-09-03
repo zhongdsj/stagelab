@@ -1,0 +1,22 @@
+{
+  "requirementId": "64db010b-c10e-4079-95f5-04bda0a377d7",
+  "title": "文档分片自控与需求/任务废弃状态",
+  "description": "阶段2任务分组。来源：开发文档 dev-doc-frag-abandon（v1.1）。G1 MCP分片AI自控(分级警告不报错) / G2 补update_task MCP工具 / G3 需求与任务废弃状态(可恢复,需求废弃级联任务,废弃置底默认折叠) / G4 完全丢弃自动切分(前后端一致)",
+  "branchName": "feature/frag-abandon",
+  "status": "test",
+  "taskIds": [
+    "19fccafa-968a-4151-bae0-c0e32b9bfd3f",
+    "9915fd50-f9e6-4c87-8375-ed74b54fb65a",
+    "f514f206-c5b1-4957-a2b0-6fd79211916c",
+    "211a3d07-b80a-49f9-aba4-6e3072f4d71d",
+    "15e4c0d1-2793-47e8-b318-8381f5687bc5",
+    "5fcdb354-9cd3-4120-857e-2721259fa03d",
+    "d9fddf0e-0de5-4d89-a624-8a00231ca27f",
+    "73990b64-171b-435b-808e-ad2540537faa",
+    "96c021b1-1df6-4864-afb2-818a1323f20e",
+    "57c0352e-9f16-4242-9f91-d0251818cb92",
+    "e125ff32-1051-4f31-b90a-5753d81e1933"
+  ],
+  "createdAt": 1788417810165,
+  "updatedAt": 1788419162393
+}

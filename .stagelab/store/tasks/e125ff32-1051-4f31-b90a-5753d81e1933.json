@@ -1,0 +1,16 @@
+{
+  "taskId": "e125ff32-1051-4f31-b90a-5753d81e1933",
+  "requirementId": "64db010b-c10e-4079-95f5-04bda0a377d7",
+  "title": "T11 构建验证与联调",
+  "description": "构建与联调：typecheck + build + 三端冒烟验证（分片自控与分级警告、update_task、需求/任务废弃级联与恢复、废弃任务不阻断自动流转）",
+  "status": "done",
+  "acceptanceCriteria": "npm run typecheck 通过；npm run build 通过；MCP/HTTP/前端三端冒烟验证（分片自控、update_task、废弃级联与恢复、自动流转）",
+  "files": [
+    "packages/shared",
+    "packages/server",
+    "packages/web"
+  ],
+  "changeType": "删除",
+  "createdAt": 1788417838258,
+  "updatedAt": 1788419162336
+}

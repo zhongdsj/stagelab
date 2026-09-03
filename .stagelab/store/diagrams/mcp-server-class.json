@@ -3,8 +3,13 @@
   "type": "class",
   "metadata": {
     "title": "MCP Server - 类图",
-    "version": 5,
-    "description": "基于 packages/server/src/mcp 源码：MCP Server(stdin/stdout) + 五类工具注册层"
+    "version": 6,
+    "description": "基于 packages/server/src/mcp 源码：MCP Server(stdin/stdout) + 五类工具注册层",
+    "baseCommit": "58d43b9",
+    "verifiedCommit": "58d43b9",
+    "lastVerifiedAt": 1788419403587,
+    "verifiedBy": "ai",
+    "verifyNote": "同步文档分片自控需求：DocumentTools 工具数 4→6（新增 list/delete_document_fragment），RequirementTools 7→8（新增 update_task）"
   },
   "nodes": [
     {
@@ -158,7 +163,7 @@
           "name": "registerDocumentTools"
         }
       ],
-      "description": "文档操作类工具（4 个）",
+      "description": "文档操作类工具（6 个：index/read/list/write/create/delete）",
       "geometry": {
         "x": 672,
         "y": 1110,
@@ -185,7 +190,7 @@
           "name": "registerRequirementTools"
         }
       ],
-      "description": "需求任务类工具（7 个）",
+      "description": "需求任务类工具（8 个：含 update_task）",
       "geometry": {
         "x": 1002,
         "y": 1110,

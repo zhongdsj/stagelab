@@ -1,0 +1,7 @@
+{
+  "fragmentId": "dev-doc-frag-abandon-f1",
+  "docId": "dev-doc-frag-abandon",
+  "order": 1,
+  "title": "文档分片自控与需求/任务废弃状态（阶段1开发文档）",
+  "content": "## 三、约束条件\n\n- 完全丢弃自动切分：服务端与前端均不再自动拆分文档，超长内容作为单分片落库并给出分级警告\n- MCP 超长不报错：content 超 2000 字给警告，超 4000 字给强警告，但均成功落库，由 AI 自行决定是否拆分\n- 前端超长不自动切分：全量编辑保存时若超 2000/4000 字，前端提示警告，内容仍作为单分片保存\n- 废弃可恢复（废弃 ≠ 删除）\n- 需求废弃级联废弃其下任务；需求恢复时级联恢复因级联而废弃的任务\n- 废弃在列表置底、默认折叠展示\n- 存量数据零迁移兼容（新字段 optional、枚举扩展向后兼容）\n\n---\n\n## 四、技术选型\n\n沿用现有技术栈，无新依赖：\n\n- 数据模型：@stagelab/shared（types.ts + schemas.ts，Zod 校验）\n- 服务层：document.service.ts / requirement.service.ts\n- 接入层：MCP 工具（mcp/tools/）+ HTTP 路由（http/routes/）\n- 前端：Vue3（RequirementTasks.vue / DocumentFragments.vue）"
+}

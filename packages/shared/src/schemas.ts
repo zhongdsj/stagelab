@@ -13,8 +13,8 @@ import { z } from "zod";
 
 export const StageSchema = z.enum(["s1", "s2", "s3", "s4"]);
 export const DiagramTypeSchema = z.enum(["architecture", "class", "flow"]);
-export const RequirementStatusSchema = z.enum(["dev", "test", "done"]);
-export const TaskStatusSchema = z.enum(["pending", "in_progress", "done"]);
+export const RequirementStatusSchema = z.enum(["dev", "test", "done", "abandoned"]);
+export const TaskStatusSchema = z.enum(["pending", "in_progress", "done", "abandoned"]);
 
 /* ========== 6.1 Project 项目实体 ========== */
 
@@ -50,6 +50,7 @@ export const RequirementSchema = z.object({
   description: z.string().optional(),
   branchName: z.string().optional(),
   status: RequirementStatusSchema,
+  abandonReason: z.string().optional(),
   taskIds: z.array(z.string()),
   createdAt: z.number().int().nonnegative(),
   updatedAt: z.number().int().nonnegative()
@@ -348,7 +349,8 @@ export const DocumentFragmentSchema = z.object({
   docId: z.string().min(1),
   order: z.number().int().nonnegative(),
   title: z.string(),
-  content: z.string()
+  content: z.string(),
+  summary: z.string().optional()
 });
 
 /* ========== 6.7 ImpactIndex 影响范围索引（图拓扑预计算） ========== */
@@ -390,6 +392,7 @@ export const TaskSchema = z.object({
   title: z.string().min(1),
   description: z.string(),
   status: TaskStatusSchema,
+  abandonReason: z.string().optional(),
   acceptanceCriteria: z.string(),
   files: z.array(z.string()),
   changeType: z.enum(["新增", "修改", "删除"]),

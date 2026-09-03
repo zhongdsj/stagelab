@@ -1,9 +1,11 @@
 /**
  * HTTP 路由：文档分片（开发文档第九章 + T12 编辑扩展）
  *
- * GET  /api/projects/:id/documents/:docId/fragments          文档分片列表（轻量，不含全文）
+ * GET  /api/projects/:id/documents/:docId/fragments          文档分片列表（轻量，含摘要）
  * GET  /api/projects/:id/documents/:docId/fragments/:fid     读取指定分片
- * PUT  /api/projects/:id/documents/:docId/fragments/:fid     编辑指定分片（按 order 覆盖，超长自动再分片）
+ * PUT  /api/projects/:id/documents/:docId/fragments/:fid     编辑指定分片（单分片替换，不自动切分）
+ *
+ * 分片语义（AI 自控）：不自动切分；PUT /full 为「清空其他分片 + order0 单分片」全量覆盖。
  */
 import type { FastifyInstance } from "fastify";
 import {
@@ -13,7 +15,8 @@ import {
   listDocumentFragments,
   readDocumentFragment,
   readDocumentFull,
-  writeDocumentFragment
+  writeDocumentFragment,
+  deleteDocumentFragment
 } from "../../services/document.service.js";
 import { generateId } from "../../services/project.service.js";
 import { HttpError, requireWorkspaceByProjectId } from "./_util.js";
@@ -63,7 +66,7 @@ export function registerDocumentRoutes(app: FastifyInstance): void {
     return readDocumentFull(ws, docId);
   });
 
-  // 全量编辑：从 order 0 覆盖全文（超长自动再分片 + 清理孤儿分片）
+  // 全量编辑：清空该文档其他分片 + order0 写入单分片（全量覆盖语义，非自动切分）
   app.put("/api/projects/:id/documents/:docId/full", async (request) => {
     const { id, docId } = request.params as { id: string; docId: string };
     const body = (request.body ?? {}) as { content?: string; title?: string };
@@ -72,6 +75,13 @@ export function registerDocumentRoutes(app: FastifyInstance): void {
       throw new HttpError(400, "content 必填");
     }
     const ws = requireWorkspaceByProjectId(id);
+    // 全量覆盖：删除除 order0 外的全部分片，再写 order0 单分片（不自动切分）
+    const existing = await listDocumentFragments(ws, docId);
+    for (const f of existing) {
+      if (f.order !== 0) {
+        await deleteDocumentFragment(ws, f.fragmentId);
+      }
+    }
     return writeDocumentFragment(ws, docId, content, {
       order: 0,
       title: body.title
@@ -103,7 +113,7 @@ export function registerDocumentRoutes(app: FastifyInstance): void {
     }
   );
 
-  // 编辑指定分片：按 fid 解析 order 覆盖写入（超长内容自动再分片）
+  // 编辑指定分片：按 fid 解析 order 覆盖写入（单分片替换，不自动切分、不连带删除后续分片）
   app.put(
     "/api/projects/:id/documents/:docId/fragments/:fid",
     async (request) => {
@@ -112,7 +122,7 @@ export function registerDocumentRoutes(app: FastifyInstance): void {
         docId: string;
         fid: string;
       };
-      const body = (request.body ?? {}) as { content?: string; title?: string };
+      const body = (request.body ?? {}) as { content?: string; title?: string; summary?: string };
       const content = body.content ?? "";
       if (!content.trim()) {
         throw new HttpError(400, "content 必填");
@@ -126,7 +136,8 @@ export function registerDocumentRoutes(app: FastifyInstance): void {
       const order = Number(match[1]);
       return writeDocumentFragment(ws, docId, content, {
         order,
-        title: body.title
+        title: body.title,
+        summary: body.summary
       });
     }
   );

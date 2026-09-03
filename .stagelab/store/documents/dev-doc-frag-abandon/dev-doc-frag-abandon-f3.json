@@ -1,0 +1,7 @@
+{
+  "fragmentId": "dev-doc-frag-abandon-f3",
+  "docId": "dev-doc-frag-abandon",
+  "order": 3,
+  "title": "文档分片自控与需求/任务废弃状态（阶段1开发文档）",
+  "content": "### 5.3 服务层逻辑\n\n- 完全丢弃自动切分：writeDocumentFragment 不再按 2000 硬切，内容原样落为单分片；写入后计算长度并返回分级警告\n- 删除孤儿分片清理逻辑：不再因覆盖而连带删除后续分片（AI 自主管理分片生命周期，删除走 delete_document_fragment）\n- 分片摘要：写入时可带 summary 存于分片；未带时自动取内容前 50 字兜底\n- 自动流转 maybeAutoAdvanceRequirement：废弃任务不参与\"是否全部完成\"判定 —— 需求下任务全为 done 或 abandoned 时 dev→test；需求本身 abandoned 不触发流转\n- 需求废弃（updateRequirement status=abandoned）：级联将旗下未废弃任务置 abandoned，abandonReason=\"需求废弃级联\"（用固定标记便于恢复识别）\n- 需求恢复（abandoned→dev）：级联恢复 abandonReason 为级联标记的任务（回 pending）\n- 任务独立废弃/恢复不受需求影响\n\n### 5.4 HTTP / 前端\n\n- HTTP 白名单 REQUIREMENT_STATUS / TASK_STATUS 各加 abandoned；PUT 透传 abandonReason\n- 前端全量编辑：保存超长内容不再触发任何自动切分，内容作为单分片落库；前端 UI 显示字符数与分级警告（超 2000 提示建议拆分、超 4000 强警告），用户确认后保存\n- 需求：编辑表单状态下拉加\"废弃\"；废弃组独立展示废弃原因、置底、默认折叠；提供\"恢复\"按钮\n- 任务：状态下拉加\"废弃\"；废弃任务灰显 + 原因展示；提供\"恢复\"\n- 前端接口 api/requirements.ts 类型与 patch 扩展\n\n### 5.5 影响面\n\n- ProjectIndex 的 status 字段为 string，无需改结构\n- listRequirements.normalizeRequirementStatus 保持（abandoned 直通）\n- 前端排序/分组 STATUS_ORDER/STATUS_GROUP_ORDER 需把 abandoned 排最后\n- 存量分片保留原样，无 summary 的降级为空串；不再新增自动拆分产生的碎片分片"
+}

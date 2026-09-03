@@ -3,8 +3,13 @@
   "type": "architecture",
   "metadata": {
     "title": "四阶段MCP项目管理工具 - 系统架构",
-    "version": 122,
-    "description": "基于开发文档 5.1 整体架构：MCP Client(AI) 与 Web 前端通过 stdio/HTTP 接入 Node.js 后端，经业务服务层与布局引擎，落盘到本地文件存储层"
+    "version": 123,
+    "description": "基于开发文档 5.1 整体架构：MCP Client(AI) 与 Web 前端通过 stdio/HTTP 接入 Node.js 后端，经业务服务层与布局引擎，落盘到本地文件存储层",
+    "baseCommit": "58d43b9",
+    "verifiedCommit": "58d43b9",
+    "lastVerifiedAt": 1788419405227,
+    "verifiedBy": "ai",
+    "verifyNote": "同步文档分片自控需求：MCP Server 工具数 25→28"
   },
   "nodes": [
     {
@@ -62,7 +67,7 @@
       "label": "MCP Server",
       "layer": "服务层",
       "nodeKind": "service",
-      "description": "标准 MCP 协议实现(@modelcontextprotocol/sdk)，注册 25 个工具：项目管理/文档/需求任务/图元/索引",
+      "description": "标准 MCP 协议实现(@modelcontextprotocol/sdk)，注册 28 个工具：项目管理/文档/需求任务/图元/索引",
       "payload": {
         "linkedDiagrams": [
           {

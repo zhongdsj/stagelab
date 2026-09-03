@@ -1,0 +1,14 @@
+{
+  "taskId": "15e4c0d1-2793-47e8-b318-8381f5687bc5",
+  "requirementId": "64db010b-c10e-4079-95f5-04bda0a377d7",
+  "title": "T5 MCP层：新增 update_task 工具+废弃状态透传",
+  "description": "requirement.ts 工具：新增 update_task（taskId, title?, description?, acceptanceCriteria?, files?, changeType?，复用服务层 updateTask）；update_requirement 增加 abandonReason 参数；update_task_status 枚举加 abandoned + abandonReason 参数",
+  "status": "done",
+  "acceptanceCriteria": "update_task 可改任务名称/描述/验收标准/文件/变更类型；废弃状态与原因可经 MCP 传递；枚举校验含 abandoned",
+  "files": [
+    "packages/server/src/mcp/tools/requirement.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788417825525,
+  "updatedAt": 1788418517651
+}

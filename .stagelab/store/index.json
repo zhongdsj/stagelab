@@ -1,6 +1,6 @@
 {
   "projectId": "34a29cd8-790c-43c4-8ce9-e2c25573cfa0",
-  "version": 1788342100,
+  "version": 1788419406,
   "documentIndex": [
     {
       "docId": "dev-doc",
@@ -54,6 +54,19 @@
       "summary": "## 连线箭头方向修正：端点沿节点边移动时箭头垂直于边（变更记录）\n\n### 问题\n- 端点吸附到节",
       "fragmentIds": [
         "dev-doc-edge-arrow-orient-f0"
+      ]
+    },
+    {
+      "docId": "dev-doc-frag-abandon",
+      "title": "文档分片自控与需求/任务废弃状态（阶段1开发文档）",
+      "docType": "开发文档",
+      "summary": "## 六、风险点\n\n| 风险 | 说明与对策 |\n|------|-----------|\n| 存量",
+      "fragmentIds": [
+        "dev-doc-frag-abandon-f0",
+        "dev-doc-frag-abandon-f1",
+        "dev-doc-frag-abandon-f2",
+        "dev-doc-frag-abandon-f3",
+        "dev-doc-frag-abandon-f4"
       ]
     }
   ],
@@ -235,6 +248,13 @@
       "taskCount": 4
     },
     {
+      "requirementId": "64db010b-c10e-4079-95f5-04bda0a377d7",
+      "title": "文档分片自控与需求/任务废弃状态",
+      "status": "test",
+      "branchName": "feature/frag-abandon",
+      "taskCount": 11
+    },
+    {
       "requirementId": "65917ee2-c639-4b2f-9c39-74e5b13a76ec",
       "title": "接口：MCP服务与HTTP API",
       "status": "done",
@@ -404,6 +424,12 @@
       "requirementId": "24176d00-fff5-4bab-9eae-aeb2b2b4a6d2"
     },
     {
+      "taskId": "15e4c0d1-2793-47e8-b318-8381f5687bc5",
+      "title": "T5 MCP层：新增 update_task 工具+废弃状态透传",
+      "status": "done",
+      "requirementId": "64db010b-c10e-4079-95f5-04bda0a377d7"
+    },
+    {
       "taskId": "15ffd636-8494-4df8-93d0-2b26abb0326d",
       "title": "T52 前端：节点拖拽移动",
       "status": "done",
@@ -414,6 +440,12 @@
       "title": "T80 前端：非正交路径自动补最小折点",
       "status": "done",
       "requirementId": "e7e0ac7a-f714-4ea3-8b56-d20210b8d5d7"
+    },
+    {
+      "taskId": "19fccafa-968a-4151-bae0-c0e32b9bfd3f",
+      "title": "T1 shared数据模型扩展：废弃状态+abandonReason+分片summary",
+      "status": "done",
+      "requirementId": "64db010b-c10e-4079-95f5-04bda0a377d7"
     },
     {
       "taskId": "1a584d2b-470b-4479-9098-9b438cac5a84",
@@ -432,6 +464,12 @@
       "title": "T62 前端：DiagramSvg 统一按 geometry/points 渲染",
       "status": "done",
       "requirementId": "40822db0-0c50-45b9-9377-164c8b62affa"
+    },
+    {
+      "taskId": "211a3d07-b80a-49f9-aba4-6e3072f4d71d",
+      "title": "T4 MCP层：文档工具改造+新增 list/delete_document_fragment",
+      "status": "done",
+      "requirementId": "64db010b-c10e-4079-95f5-04bda0a377d7"
     },
     {
       "taskId": "215e21b5-f874-4bbd-9c10-4b704c76d6d8",
@@ -596,6 +634,12 @@
       "requirementId": "40822db0-0c50-45b9-9377-164c8b62affa"
     },
     {
+      "taskId": "57c0352e-9f16-4242-9f91-d0251818cb92",
+      "title": "T10 前端：文档编辑分级警告",
+      "status": "done",
+      "requirementId": "64db010b-c10e-4079-95f5-04bda0a377d7"
+    },
+    {
       "taskId": "5a1512ea-89c7-46ea-b1d2-a213b934b699",
       "title": "T09 MCP服务",
       "status": "done",
@@ -606,6 +650,12 @@
       "title": "T08 布局引擎封装(Worker)",
       "status": "done",
       "requirementId": "6c85f4f9-8ea2-4281-83c3-954dff6b80ee"
+    },
+    {
+      "taskId": "5fcdb354-9cd3-4120-857e-2721259fa03d",
+      "title": "T6 服务层：废弃状态逻辑+需求级联+自动流转适配",
+      "status": "done",
+      "requirementId": "64db010b-c10e-4079-95f5-04bda0a377d7"
     },
     {
       "taskId": "621141c0-332e-4ab9-82e9-ec1a90e70ad3",
@@ -636,6 +686,12 @@
       "title": "T04 存储层：文件IO安全引擎",
       "status": "done",
       "requirementId": "311621a6-ca26-4050-b682-ac3ac2bba4d5"
+    },
+    {
+      "taskId": "73990b64-171b-435b-808e-ad2540537faa",
+      "title": "T8 前端API：类型与接口扩展",
+      "status": "done",
+      "requirementId": "64db010b-c10e-4079-95f5-04bda0a377d7"
     },
     {
       "taskId": "73d0a3d7-b482-43b2-b39d-8ab9020f5d10",
@@ -722,10 +778,22 @@
       "requirementId": "6c85f4f9-8ea2-4281-83c3-954dff6b80ee"
     },
     {
+      "taskId": "96c021b1-1df6-4864-afb2-818a1323f20e",
+      "title": "T9 前端：需求/任务废弃展示与恢复",
+      "status": "done",
+      "requirementId": "64db010b-c10e-4079-95f5-04bda0a377d7"
+    },
+    {
       "taskId": "975b0e7e-a2b9-4d7a-bb22-1f7ba768fda9",
       "title": "T21 文档摘要展示与修改",
       "status": "done",
       "requirementId": "6c3990f0-4296-4f32-aad9-c23f3d53c2e8"
+    },
+    {
+      "taskId": "9915fd50-f9e6-4c87-8375-ed74b54fb65a",
+      "title": "T2 服务层：文档分片自控+分级警告（丢弃自动切分）",
+      "status": "done",
+      "requirementId": "64db010b-c10e-4079-95f5-04bda0a377d7"
     },
     {
       "taskId": "9a557b79-1ca9-47d4-ad79-2b7ba7c23cfa",
@@ -938,6 +1006,12 @@
       "requirementId": "bfc97a97-8c75-41bb-8428-83bf6ad9efcf"
     },
     {
+      "taskId": "d9fddf0e-0de5-4d89-a624-8a00231ca27f",
+      "title": "T7 HTTP层：废弃状态白名单+abandonReason透传",
+      "status": "done",
+      "requirementId": "64db010b-c10e-4079-95f5-04bda0a377d7"
+    },
+    {
       "taskId": "dadc67c9-960d-4d67-9d78-56255c556e44",
       "title": "T15 文档库前端组件",
       "status": "done",
@@ -968,6 +1042,12 @@
       "requirementId": "de14234b-8eae-4371-ab0d-d3c6696a6c37"
     },
     {
+      "taskId": "e125ff32-1051-4f31-b90a-5753d81e1933",
+      "title": "T11 构建验证与联调",
+      "status": "done",
+      "requirementId": "64db010b-c10e-4079-95f5-04bda0a377d7"
+    },
+    {
       "taskId": "eb14ad41-f7ca-426c-9979-d5c5bc81632b",
       "title": "T44 服务层：节点-分区反向查询服务",
       "status": "done",
@@ -990,6 +1070,12 @@
       "title": "T3 单包构建与发布配置：esbuild bundle + bin/files/main + 去 private",
       "status": "done",
       "requirementId": "ed976849-7163-4396-bacb-bb527b0132b2"
+    },
+    {
+      "taskId": "f514f206-c5b1-4957-a2b0-6fd79211916c",
+      "title": "T3 HTTP层：前端全量编辑改单分片语义",
+      "status": "done",
+      "requirementId": "64db010b-c10e-4079-95f5-04bda0a377d7"
     },
     {
       "taskId": "f619f86f-6932-416e-8d5f-63ae2d777ab7",

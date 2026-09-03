@@ -1,0 +1,15 @@
+{
+  "taskId": "73990b64-171b-435b-808e-ad2540537faa",
+  "requirementId": "64db010b-c10e-4079-95f5-04bda0a377d7",
+  "title": "T8 前端API：类型与接口扩展",
+  "description": "web/api/requirements.ts：RequirementItem/TaskSummary 加 abandonReason?；updateRequirement/updateTask/updateTaskStatus patch 类型扩展 abandoned 与 abandonReason。web/api/documents.ts：FragmentMeta 加 summary?；updateFullDocument/updateFragment 返回类型适配单分片语义",
+  "status": "done",
+  "acceptanceCriteria": "类型齐全无编译错误；接口与后端返回匹配",
+  "files": [
+    "packages/web/src/api/requirements.ts",
+    "packages/web/src/api/documents.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788417833482,
+  "updatedAt": 1788418709943
+}

@@ -1,0 +1,7 @@
+{
+  "fragmentId": "dev-doc-frag-abandon-f2",
+  "docId": "dev-doc-frag-abandon",
+  "order": 2,
+  "title": "文档分片自控与需求/任务废弃状态（阶段1开发文档）",
+  "content": "## 五、接口/数据设计\n\n### 5.1 数据模型（shared）\n\n```\nRequirementStatus = \"dev\" | \"test\" | \"done\" | \"abandoned\"\nTaskStatus        = \"pending\" | \"in_progress\" | \"done\" | \"abandoned\"\nRequirement       + abandonReason?: string\nTask              + abandonReason?: string\nDocumentFragment  + summary?: string   // 分片级摘要（可选）\n```\n\n### 5.2 MCP 工具变更\n\n| 工具 | 变更类型 | 设计 |\n|------|---------|------|\n| write_document_fragment | 改造 | 单分片语义：docId, content, order?, title?, summary?。缺省 order=追加到末尾；指定 order=替换该分片。超长不报错不硬切：按 2000/4000 分级返回 warning，内容均原样落库 |\n| list_document_fragments | 新增 | 轻量摘要列表：fragmentId/order/title/summary，不含正文；AI 按摘要跳读后再 read_document_fragment 拉正文 |\n| delete_document_fragment | 新增 | 按 fragmentId 删除分片 |\n| create_document | 改造 | 首分片同样单分片语义，超长分级警告不报错；可带 summary |\n| update_task | 新增 | taskId, title?, description?, acceptanceCriteria?, files?, changeType?，复用现成服务层 updateTask |\n| update_requirement | 扩展 | status 枚举加 abandoned；新增 abandonReason? |\n| update_task_status | 扩展 | status 枚举加 abandoned；新增 abandonReason? |\n\n> 分级警告约定：content 长度 ≤2000 无警告；2001~4000 返回 warning（建议按语义拆分以优化读取）；>4000 返回 strongWarning（强烈建议拆分，后续读取成本高）。警告通过工具返回值携带，不阻断落库。"
+}

@@ -5,14 +5,32 @@
  * 增强：readDocumentFull 全文拼接（供前端/人工阅读，观感友好）
  *
  * 存储形态：store/documents/{docId}/{fragmentId}.json + meta.json（文档标题独立于分片）
- * 分片约束：单分片内容不超过 2000 字（开发文档 7.5）
+ * 分片约束（AI 自控）：不自动切分、不超限报错，单分片语义 + 分级警告（2000/4000）。
+ * - 缺省 order=追加到末尾，指定 order=替换该分片；删除走 deleteDocumentFragment
+ * - 超长不报错不硬切：≤2000 无警告，2001~4000 warning，>4000 strongWarning，内容均原样落库
  */
 import type { DocumentFragment, DocumentMeta } from "@stagelab/shared";
 import type { RepoWorkspace } from "../storage/workspace.js";
 import { createRepositories } from "../storage/repositories/factory.js";
 
-/** 单分片最大字数 */
+/** 单分片建议字数上限（超过给警告，不阻断落库） */
 export const MAX_FRAGMENT_CHARS = 2000;
+
+/** 分级警告类型：warning（建议拆分） / strongWarning（强烈建议拆分） */
+export type FragmentWarning = "warning" | "strongWarning";
+
+/** 文档写入结果（含分级警告，供 MCP/HTTP 透传给调用方自行决策） */
+export interface WriteFragmentResult {
+  fragment: DocumentFragment;
+  warning?: FragmentWarning;
+}
+
+/** 按内容长度计算分级警告：≤2000 无警告；2001~4000 warning；>4000 strongWarning */
+function warningOfLength(len: number): FragmentWarning | undefined {
+  if (len <= MAX_FRAGMENT_CHARS) return undefined;
+  if (len <= MAX_FRAGMENT_CHARS * 2) return "warning";
+  return "strongWarning";
+}
 
 /** 确保文档元信息存在并更新标题/摘要（写分片后调用；docType 仅在显式传入时覆盖） */
 async function upsertDocumentMeta(
@@ -43,25 +61,29 @@ async function upsertDocumentMeta(
   await repos.documentMeta.save(meta);
 }
 
-/** 创建文档（meta + 首分片；docType 为自由文本，帮助 AI/人工快速理解文档性质） */
+/**
+ * 创建文档（meta + 首分片；单分片语义，超长不截断，返回分级警告；docType 为自由文本）
+ */
 export async function createDocument(
   workspace: RepoWorkspace,
   docId: string,
   title: string,
   content: string,
-  docType?: string
-): Promise<DocumentFragment> {
+  docType?: string,
+  summary?: string
+): Promise<WriteFragmentResult> {
   const repos = createRepositories(workspace);
   const fragment: DocumentFragment = {
     fragmentId: `${docId}-f0`,
     docId,
     order: 0,
     title,
-    content: content.slice(0, MAX_FRAGMENT_CHARS)
+    content,
+    summary: summary ?? content.slice(0, 50) // 未显式提供摘要时取内容前 50 字兜底
   };
   await repos.documentFragment.save(fragment);
-  await upsertDocumentMeta(workspace, docId, title, content.slice(0, 50), docType);
-  return fragment;
+  await upsertDocumentMeta(workspace, docId, title, fragment.summary, docType);
+  return { fragment, warning: warningOfLength(content.length) };
 }
 
 /** 获取文档索引列表（轻量：标题摘要，来源为独立 meta，不再依赖分片 title） */
@@ -91,7 +113,7 @@ export async function readDocumentFragment(
   return repos.documentFragment.get(fragmentId);
 }
 
-/** 列出指定文档的全部分片（轻量：不含内容，避免返回大文本） */
+/** 列出指定文档的全部分片（轻量：含分片摘要，不含正文，供 AI 按摘要跳读） */
 export async function listDocumentFragments(
   workspace: RepoWorkspace,
   docId: string
@@ -102,7 +124,8 @@ export async function listDocumentFragments(
     fragmentId: f.fragmentId,
     docId: f.docId,
     order: f.order,
-    title: f.title
+    title: f.title,
+    summary: f.summary ?? ""
   }));
 }
 
@@ -137,60 +160,53 @@ export async function readDocumentFull(
   };
 }
 
-/** 写入/更新文档分片（含自动分片：超出 2000 字时拆分） */
+/**
+ * 写入/更新文档分片（AI 自控单分片语义）
+ *
+ * - 缺省 order：追加到该文档末尾（当前最大 order + 1，无分片则 0）
+ * - 指定 order：替换该 order 的分片（不存在则新建）
+ * - 超长不报错不硬切，按 2000/4000 分级返回 warning，内容原样落库
+ * - summary：显式提供则存，否则取内容前 50 字兜底
+ */
 export async function writeDocumentFragment(
   workspace: RepoWorkspace,
   docId: string,
   content: string,
-  options: { order?: number; title?: string } = {}
-): Promise<DocumentFragment[]> {
+  options: { order?: number; title?: string; summary?: string } = {}
+): Promise<WriteFragmentResult> {
   const repos = createRepositories(workspace);
 
-  // 若内容超长，按 MAX 自动拆分
-  const chunks: string[] = [];
-  if (content.length <= MAX_FRAGMENT_CHARS) {
-    chunks.push(content);
-  } else {
-    for (let i = 0; i < content.length; i += MAX_FRAGMENT_CHARS) {
-      chunks.push(content.slice(i, i + MAX_FRAGMENT_CHARS));
-    }
+  // 缺省 order：追加到末尾
+  let order = options.order;
+  if (order === undefined) {
+    const existing = await repos.documentFragment.listByDoc(docId);
+    order = existing.length > 0 ? existing[existing.length - 1].order + 1 : 0;
   }
 
-  const fragments: DocumentFragment[] = [];
-  let order = options.order ?? 0;
   const title = options.title ?? docId;
-  for (let i = 0; i < chunks.length; i++) {
-    const fragmentId = `${docId}-f${order + i}`; // 分片ID随order递增，避免多分片时覆盖
-    const fragment: DocumentFragment = {
-      fragmentId,
-      docId,
-      order: order + i,
-      title, // 分片 title 保持纯标题（不带序号），文档标题由 meta 承载
-      content: chunks[i]
-    };
-    await repos.documentFragment.save(fragment);
-    fragments.push(fragment);
-  }
-
-  // 同步更新/创建文档 meta（标题独立 + 摘要取首分片内容）
-  await upsertDocumentMeta(
-    workspace,
+  const fragment: DocumentFragment = {
+    fragmentId: `${docId}-f${order}`,
     docId,
+    order,
     title,
-    fragments[0]?.content.slice(0, 50) ?? ""
-  );
+    content,
+    summary: options.summary ?? content.slice(0, 50)
+  };
+  await repos.documentFragment.save(fragment);
 
-  // 清理孤儿分片：本次覆盖区间 [startOrder, startOrder+chunks.length) 之后的旧分片
-  // （全量/片段编辑变短时，残留的后续分片需删除，避免索引混入脏数据）
-  const startOrder = options.order ?? 0;
-  const endOrder = startOrder + chunks.length;
-  const existing = await repos.documentFragment.listByDoc(docId);
-  for (const f of existing) {
-    if (f.order >= endOrder) {
-      await repos.documentFragment.delete(f.fragmentId);
-    }
-  }
-  return fragments;
+  // 同步更新/创建文档 meta（标题独立 + 摘要取当前分片摘要）
+  await upsertDocumentMeta(workspace, docId, title, fragment.summary);
+
+  return { fragment, warning: warningOfLength(content.length) };
+}
+
+/** 删除指定文档分片（AI 自主管理分片生命周期） */
+export async function deleteDocumentFragment(
+  workspace: RepoWorkspace,
+  fragmentId: string
+): Promise<void> {
+  const repos = createRepositories(workspace);
+  await repos.documentFragment.delete(fragmentId);
 }
 
 /** 重命名文档（标题/类型/摘要，仅更新 meta） */

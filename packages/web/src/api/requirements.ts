@@ -11,6 +11,8 @@ export interface RequirementItem {
   description?: string;
   status: RequirementStatus;
   branchName?: string;
+  /** 废弃原因（status=abandoned 时展示） */
+  abandonReason?: string;
   taskCount: number;
   /** 更新时间（T51：任务变更同步刷新，用于按活跃度排序） */
   updatedAt: number;
@@ -23,6 +25,8 @@ export interface TaskSummary {
   description?: string;
   status: TaskStatus;
   changeType: "新增" | "修改" | "删除";
+  /** 废弃原因（status=abandoned 时展示） */
+  abandonReason?: string;
 }
 
 /** 需求列表 */
@@ -52,6 +56,7 @@ export function updateRequirement(
     title: string;
     description: string;
     branchName: string;
+    abandonReason: string;
     status: RequirementStatus;
   }>
 ): Promise<Requirement> {
@@ -103,11 +108,12 @@ export function createTask(
 export function updateTaskStatus(
   projectId: string,
   taskId: string,
-  status: TaskStatus
+  status: TaskStatus,
+  abandonReason?: string
 ): Promise<Task> {
   return http.put<Task>(
     `/api/projects/${encodeURIComponent(projectId)}/tasks/${encodeURIComponent(taskId)}/status`,
-    { status }
+    { status, abandonReason }
   );
 }
 

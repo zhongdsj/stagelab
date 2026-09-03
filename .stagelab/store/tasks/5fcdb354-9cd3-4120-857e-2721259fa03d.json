@@ -1,0 +1,14 @@
+{
+  "taskId": "5fcdb354-9cd3-4120-857e-2721259fa03d",
+  "requirementId": "64db010b-c10e-4079-95f5-04bda0a377d7",
+  "title": "T6 服务层：废弃状态逻辑+需求级联+自动流转适配",
+  "description": "requirement.service.ts：updateRequirement 支持 abandoned 状态；status→abandoned 时级联置旗下未废弃任务 abandoned（abandonReason=\"需求废弃级联\"）；abandoned→dev 时级联恢复级联标记任务（回 pending）。updateTaskStatus 支持 abandoned + abandonReason。maybeAutoAdvanceRequirement 废弃任务不阻塞（done 或 abandoned 均视为完成）。listRequirements/getRequirement/listTasksByRequirement 返回 abandonReason",
+  "status": "done",
+  "acceptanceCriteria": "需求废弃级联其下任务；需求恢复级联恢复级联项（独立废弃不恢复）；废弃任务不阻断 dev→test 自动流转；列表返回 abandonReason",
+  "files": [
+    "packages/server/src/services/requirement.service.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788417827688,
+  "updatedAt": 1788418518440
+}

@@ -1,0 +1,10 @@
+{
+  "verificationId": "v-45da47",
+  "diagramId": "biz-service-class",
+  "changeType": "incremental",
+  "baseCommit": "58d43b9",
+  "verifiedCommit": "58d43b9",
+  "verifiedAt": 1788419404537,
+  "verifiedBy": "ai",
+  "note": "同步文档分片自控与废弃需求：DocumentService 补 list/deleteDocumentFragment+分级警告描述，RequirementService 补 updateTask+废弃级联描述"
+}

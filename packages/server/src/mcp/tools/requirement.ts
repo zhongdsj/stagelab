@@ -14,6 +14,7 @@ import {
   getRequirement,
   updateRequirement,
   createTask,
+  updateTask,
   updateTaskStatus,
   listTasksByRequirement,
   syncRequirementIds
@@ -78,12 +79,13 @@ export function registerRequirementTools(server: McpServer): void {
     "update_requirement",
     {
       title: "更新需求",
-      description: "更新需求（状态切换 dev/test/done、标题、描述、分支名等）",
+      description: "更新需求（状态切换 dev/test/done/abandoned、标题、描述、分支名、废弃原因等）",
       inputSchema: {
         requirementId: z.string().min(1),
         title: z.string().optional(),
         description: z.string().optional(),
         branchName: z.string().optional(),
+        abandonReason: z.string().optional(),
         status: RequirementStatusSchema.optional()
       }
     },
@@ -94,6 +96,7 @@ export function registerRequirementTools(server: McpServer): void {
           title: args.title,
           description: args.description,
           branchName: args.branchName,
+          abandonReason: args.abandonReason,
           status: args.status
         });
       })
@@ -130,16 +133,44 @@ export function registerRequirementTools(server: McpServer): void {
     "update_task_status",
     {
       title: "更新任务状态",
-      description: "更新任务完成状态（pending/in_progress/done）",
+      description: "更新任务完成状态（pending/in_progress/done/abandoned；可带废弃原因 abandonReason，废弃状态用）",
       inputSchema: {
         taskId: z.string().min(1),
-        status: TaskStatusSchema
+        status: TaskStatusSchema,
+        abandonReason: z.string().optional()
       }
     },
     async (args) =>
       safeCall(async () => {
         const ws = await getWorkspace();
-        return updateTaskStatus(ws, args.taskId, args.status);
+        return updateTaskStatus(ws, args.taskId, args.status, args.abandonReason);
+      })
+  );
+
+  server.registerTool(
+    "update_task",
+    {
+      title: "更新任务内容",
+      description: "更新任务内容（标题/描述/验收标准/涉及文件/变更类型；状态单独用 update_task_status）",
+      inputSchema: {
+        taskId: z.string().min(1),
+        title: z.string().optional(),
+        description: z.string().optional(),
+        acceptanceCriteria: z.string().optional(),
+        files: z.array(z.string()).optional(),
+        changeType: ChangeTypeSchema.optional()
+      }
+    },
+    async (args) =>
+      safeCall(async () => {
+        const ws = await getWorkspace();
+        return updateTask(ws, args.taskId, {
+          title: args.title,
+          description: args.description,
+          acceptanceCriteria: args.acceptanceCriteria,
+          files: args.files,
+          changeType: args.changeType
+        });
       })
   );
 

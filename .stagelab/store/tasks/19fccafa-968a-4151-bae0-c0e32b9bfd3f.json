@@ -1,0 +1,15 @@
+{
+  "taskId": "19fccafa-968a-4151-bae0-c0e32b9bfd3f",
+  "requirementId": "64db010b-c10e-4079-95f5-04bda0a377d7",
+  "title": "T1 shared数据模型扩展：废弃状态+abandonReason+分片summary",
+  "description": "types.ts: RequirementStatus/TaskStatus 枚举加 \"abandoned\"；Requirement/Task 加 abandonReason?; DocumentFragment 加 summary?。schemas.ts: 对应 RequirementStatusSchema/TaskStatusSchema 枚举扩展，RequirementSchema/TaskSchema 加 abandonReason optional，DocumentFragmentSchema 加 summary optional",
+  "status": "done",
+  "acceptanceCriteria": "npm run typecheck 通过；旧数据无新字段可正常读取（optional 向后兼容）；枚举含 abandoned",
+  "files": [
+    "packages/shared/src/types.ts",
+    "packages/shared/src/schemas.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788417818183,
+  "updatedAt": 1788418788580
+}
