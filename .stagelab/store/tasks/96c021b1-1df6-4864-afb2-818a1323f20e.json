@@ -1,0 +1,14 @@
+{
+  "taskId": "96c021b1-1df6-4864-afb2-818a1323f20e",
+  "requirementId": "64db010b-c10e-4079-95f5-04bda0a377d7",
+  "title": "T9 前端：需求/任务废弃展示与恢复",
+  "description": "RequirementTasks.vue：STATUS_LABELS/STATUS_ORDER/STATUS_GROUP_ORDER 加 abandoned（置底）；statusCollapsed 默认折叠废弃组；需求编辑表单状态下拉加\"废弃\"+废弃原因输入；任务状态下拉加\"废弃\"+原因；废弃任务灰显+原因展示；提供\"恢复\"按钮（需求废弃→dev 恢复，任务废弃→pending 恢复）",
+  "status": "done",
+  "acceptanceCriteria": "废弃组置底默认折叠且展示废弃原因；需求/任务可独立废弃与恢复；级联废弃/恢复与后端一致；废弃任务灰显",
+  "files": [
+    "packages/web/src/components/requirement/RequirementTasks.vue"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788417835243,
+  "updatedAt": 1788418710497
+}

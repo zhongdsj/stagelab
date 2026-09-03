@@ -19,6 +19,9 @@ function normalizeRequirementStatus(status: string): RequirementStatus {
   return status as RequirementStatus;
 }
 
+/** 需求废弃级联标记：需求废弃时其下任务统一置此原因，恢复时仅回滚该标记项（区分独立废弃） */
+const CASCADE_ABANDON_REASON = "需求废弃级联";
+
 /** 创建需求（可关联分支名） */
 export async function createRequirement(
   workspace: RepoWorkspace,
@@ -82,7 +85,7 @@ export async function syncRequirementIds(workspace: RepoWorkspace): Promise<numb
   return added;
 }
 
-/** 获取需求列表（轻量：标题/状态/分支/任务数/更新时间） */
+/** 获取需求列表（轻量：标题/状态/分支/任务数/更新时间/废弃原因） */
 export async function listRequirements(workspace: RepoWorkspace) {
   const repos = createRepositories(workspace);
   const reqs = await repos.requirement.list();
@@ -92,6 +95,7 @@ export async function listRequirements(workspace: RepoWorkspace) {
     description: r.description,
     status: normalizeRequirementStatus(r.status),
     branchName: r.branchName,
+    abandonReason: r.abandonReason,
     taskCount: r.taskIds.length,
     updatedAt: r.updatedAt
   }));
@@ -133,12 +137,19 @@ export async function getRequirement(
     tasks: tasks.map((t) => ({
       taskId: t.taskId,
       title: t.title,
-      status: t.status
+      status: t.status,
+      abandonReason: t.abandonReason
     }))
   };
 }
 
-/** 更新需求（状态切换 dev/test/done、分支名等） */
+/**
+ * 更新需求（状态切换 dev/test/done/abandoned、标题/描述/分支/废弃原因等）
+ *
+ * 废弃级联语义：
+ * - 状态 → abandoned：级联将旗下未废弃任务置 abandoned（abandonReason="需求废弃级联"）
+ * - 状态 自 abandoned 离开：级联恢复 abandonReason 为级联标记的任务（回 pending），并清除需求自身废弃原因
+ */
 export async function updateRequirement(
   workspace: RepoWorkspace,
   requirementId: string,
@@ -146,6 +157,7 @@ export async function updateRequirement(
     title: string;
     description: string;
     branchName: string;
+    abandonReason: string;
     status: RequirementStatus;
   }>
 ): Promise<Requirement> {
@@ -155,12 +167,52 @@ export async function updateRequirement(
   const cleanPatch = Object.fromEntries(
     Object.entries(patch).filter(([, v]) => v !== undefined)
   ) as Partial<Requirement>;
-  const updated: Requirement = {
+  let updated: Requirement = {
     ...req,
     ...cleanPatch,
     requirementId,
     updatedAt: Date.now()
   };
+
+  // 需求废弃/恢复级联处理（仅状态发生迁移时触发）
+  const wasAbandoned = req.status === "abandoned";
+  const nowAbandoned = updated.status === "abandoned";
+  if (cleanPatch.status !== undefined && nowAbandoned !== wasAbandoned) {
+    if (nowAbandoned) {
+      // 需求废弃：级联置旗下未废弃任务为废弃
+      updated.abandonReason = cleanPatch.abandonReason ?? CASCADE_ABANDON_REASON;
+      for (const taskId of updated.taskIds) {
+        try {
+          const t = await repos.task.get(taskId);
+          if (t.status !== "abandoned") {
+            t.status = "abandoned";
+            t.abandonReason = CASCADE_ABANDON_REASON;
+            t.updatedAt = Date.now();
+            await repos.task.save(t);
+          }
+        } catch {
+          // 任务缺失跳过
+        }
+      }
+    } else {
+      // 需求恢复：清除需求废弃原因，级联恢复标记为级联的废弃任务（独立废弃不恢复）
+      updated.abandonReason = undefined;
+      for (const taskId of updated.taskIds) {
+        try {
+          const t = await repos.task.get(taskId);
+          if (t.abandonReason === CASCADE_ABANDON_REASON) {
+            t.status = "pending";
+            t.abandonReason = undefined;
+            t.updatedAt = Date.now();
+            await repos.task.save(t);
+          }
+        } catch {
+          // 任务缺失跳过
+        }
+      }
+    }
+  }
+
   await repos.requirement.save(updated);
   return updated;
 }
@@ -219,15 +271,28 @@ export async function createTask(
   return task;
 }
 
-/** 更新任务完成状态 */
+/** 更新任务状态（支持废弃 abandoned + 废弃原因 abandonReason） */
 export async function updateTaskStatus(
   workspace: RepoWorkspace,
   taskId: string,
-  status: TaskStatus
+  status: TaskStatus,
+  abandonReason?: string
 ): Promise<Task> {
   const repos = createRepositories(workspace);
   const task = await repos.task.get(taskId);
-  const updated: Task = { ...task, status, updatedAt: Date.now() };
+  const wasAbandoned = task.status === "abandoned";
+  const nowAbandoned = status === "abandoned";
+  let updated: Task = { ...task, status, updatedAt: Date.now() };
+  if (nowAbandoned) {
+    // 废弃：记录原因（未显式提供时沿用原原因或空串）
+    updated.abandonReason = abandonReason ?? task.abandonReason ?? "";
+  } else if (wasAbandoned) {
+    // 从废弃恢复：清除废弃原因
+    updated.abandonReason = undefined;
+  } else if (abandonReason !== undefined) {
+    // 非废弃状态显式更新原因
+    updated.abandonReason = abandonReason;
+  }
   await repos.task.save(updated);
   // T51：任务状态变更即同步需求更新时间（无论是否触发自动流转）
   await touchRequirement(workspace, task.requirementId);
@@ -250,12 +315,12 @@ async function maybeAutoAdvanceRequirement(
   // 仅开发态触发（存量 active 归一化为 dev 后同样生效）
   if (normalizeRequirementStatus(req.status) !== "dev") return;
   if (req.taskIds.length === 0) return; // 空需求不触发
-  // 判断所有任务是否均已完成
+  // 判断所有任务是否均已完成（废弃任务视为完成，不阻断流转）
   let allDone = true;
   for (const taskId of req.taskIds) {
     try {
       const t = await repos.task.get(taskId);
-      if (t.status !== "done") {
+      if (t.status !== "done" && t.status !== "abandoned") {
         allDone = false;
         break;
       }
@@ -321,6 +386,7 @@ export async function listTasksByRequirement(
     description: string;
     status: TaskStatus;
     changeType: Task["changeType"];
+    abandonReason?: string;
   }> = [];
   for (const taskId of req.taskIds) {
     try {
@@ -330,7 +396,8 @@ export async function listTasksByRequirement(
         title: t.title,
         description: t.description,
         status: t.status,
-        changeType: t.changeType
+        changeType: t.changeType,
+        abandonReason: t.abandonReason
       });
     } catch {
       // 跳过缺失任务

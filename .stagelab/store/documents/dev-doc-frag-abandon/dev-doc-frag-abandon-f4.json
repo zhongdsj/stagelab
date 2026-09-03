@@ -1,0 +1,7 @@
+{
+  "fragmentId": "dev-doc-frag-abandon-f4",
+  "docId": "dev-doc-frag-abandon",
+  "order": 4,
+  "title": "文档分片自控与需求/任务废弃状态（阶段1开发文档）",
+  "content": "## 六、风险点\n\n| 风险 | 说明与对策 |\n|------|-----------|\n| 存量分片无 summary | 旧分片 summary 为空，索引/前端降级为空串处理 |\n| 超长单分片落库后读取成本高 | MCP/前端分级警告提示；AI 依据警告自行拆分，前端引导用户精简或拆分 |\n| 覆盖写入不再清理后续分片 | 语义变更需在工具 description 中明确：AI 需自行管理分片，删除走 delete_document_fragment |\n| 自动流转语义变化 | 废弃任务不阻断流转，需回归验证 dev→test 规则 |\n| 级联废弃/恢复误伤 | 以固定 abandonReason 标记区分\"级联\"与\"独立废弃\"，恢复只回滚级联项 |"
+}

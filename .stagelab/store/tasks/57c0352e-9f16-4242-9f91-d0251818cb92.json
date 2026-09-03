@@ -1,0 +1,14 @@
+{
+  "taskId": "57c0352e-9f16-4242-9f91-d0251818cb92",
+  "requirementId": "64db010b-c10e-4079-95f5-04bda0a377d7",
+  "title": "T10 前端：文档编辑分级警告",
+  "description": "DocumentFragments.vue：编辑区实时显示字符数；保存时若超 2000 提示建议拆分（warning）、超 4000 强警告（strongWarning），用户确认后作为单分片保存；不再依赖自动切分",
+  "status": "done",
+  "acceptanceCriteria": "超长保存为单分片且不切分；字符数与分级警告提示正确；取消不保存",
+  "files": [
+    "packages/web/src/components/document/DocumentFragments.vue"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788417836556,
+  "updatedAt": 1788418711326
+}

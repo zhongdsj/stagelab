@@ -1,0 +1,10 @@
+{
+  "verificationId": "v-bfacec",
+  "diagramId": "arch-system",
+  "changeType": "incremental",
+  "baseCommit": "58d43b9",
+  "verifiedCommit": "58d43b9",
+  "verifiedAt": 1788419405227,
+  "verifiedBy": "ai",
+  "note": "同步文档分片自控需求：MCP Server 工具数 25→28"
+}

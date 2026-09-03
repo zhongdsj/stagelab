@@ -1,0 +1,14 @@
+{
+  "taskId": "d9fddf0e-0de5-4d89-a624-8a00231ca27f",
+  "requirementId": "64db010b-c10e-4079-95f5-04bda0a377d7",
+  "title": "T7 HTTP层：废弃状态白名单+abandonReason透传",
+  "description": "requirements.ts 路由：REQUIREMENT_STATUS/TASK_STATUS 白名单加 \"abandoned\"；需求/任务更新接口透传 abandonReason 字段",
+  "status": "done",
+  "acceptanceCriteria": "PUT 可设 abandoned 状态与 abandonReason；非法状态仍返回 400",
+  "files": [
+    "packages/server/src/http/routes/requirements.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788417831952,
+  "updatedAt": 1788418709290
+}

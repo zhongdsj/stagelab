@@ -1,0 +1,10 @@
+{
+  "verificationId": "v-8a8c88",
+  "diagramId": "mcp-server-class",
+  "changeType": "incremental",
+  "baseCommit": "58d43b9",
+  "verifiedCommit": "58d43b9",
+  "verifiedAt": 1788419403587,
+  "verifiedBy": "ai",
+  "note": "同步文档分片自控需求：DocumentTools 工具数 4→6（新增 list/delete_document_fragment），RequirementTools 7→8（新增 update_task）"
+}

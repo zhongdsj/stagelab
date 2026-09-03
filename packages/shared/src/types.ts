@@ -18,11 +18,11 @@ export type Stage = "s1" | "s2" | "s3" | "s4";
 /** 图类型 */
 export type DiagramType = "architecture" | "class" | "flow";
 
-/** 需求生命周期状态（三态：开发/测试/完成，前端可修改；done 为终态） */
-export type RequirementStatus = "dev" | "test" | "done";
+/** 需求生命周期状态（开发/测试/完成/废弃；done 为终态，abandoned 可恢复） */
+export type RequirementStatus = "dev" | "test" | "done" | "abandoned";
 
-/** 任务状态 */
-export type TaskStatus = "pending" | "in_progress" | "done";
+/** 任务状态（待处理/进行中/已完成/废弃；abandoned 可恢复） */
+export type TaskStatus = "pending" | "in_progress" | "done" | "abandoned";
 
 /* ========== 6.1 Project 项目实体 ========== */
 
@@ -58,6 +58,8 @@ export interface Requirement {
   description?: string;
   branchName?: string; // 关联 Git 分支名（可选）
   status: RequirementStatus;
+  /** 废弃原因（status=abandoned 时留痕；需求废弃/恢复的级联标记也存于此） */
+  abandonReason?: string;
   taskIds: string[];
   createdAt: number;
   updatedAt: number;
@@ -272,6 +274,8 @@ export interface DocumentFragment {
   order: number;
   title: string;
   content: string;
+  /** 分片级摘要（可选，供索引跳读） */
+  summary?: string;
 }
 
 /* ========== 6.8 VerificationRecord 图验证历史（独立存储，防图膨胀） ========== */
@@ -339,6 +343,8 @@ export interface Task {
   title: string;
   description: string;
   status: TaskStatus;
+  /** 废弃原因（status=abandoned 时留痕） */
+  abandonReason?: string;
   acceptanceCriteria: string; // 验收标准
   files: string[]; // 涉及文件
   changeType: "新增" | "修改" | "删除";

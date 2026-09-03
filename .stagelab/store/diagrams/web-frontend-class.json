@@ -3,8 +3,13 @@
   "type": "class",
   "metadata": {
     "title": "Web 前端 - 类图",
-    "version": 140,
-    "description": "基于 packages/web 源码：Vue3 SPA 的视图/组件/API 三层结构；后端 HTTP API 层、业务服务层、布局引擎、本地存储等外部模块统一用 BackendService 占位表示"
+    "version": 141,
+    "description": "基于 packages/web 源码：Vue3 SPA 的视图/组件/API 三层结构；后端 HTTP API 层、业务服务层、布局引擎、本地存储等外部模块统一用 BackendService 占位表示",
+    "baseCommit": "58d43b9",
+    "verifiedCommit": "58d43b9",
+    "lastVerifiedAt": 1788419406168,
+    "verifiedBy": "ai",
+    "verifyNote": "同步废弃需求：RequirementTasks 补废弃/恢复方法与描述，DocumentFragments 补单分片保存+分级警告描述"
   },
   "nodes": [
     {
@@ -255,19 +260,16 @@
       "kind": "class",
       "methods": [
         {
-          "name": "load",
-          "returnType": "void"
+          "name": "load"
         },
         {
-          "name": "startEdit",
-          "returnType": "void"
+          "name": "startEdit"
         },
         {
-          "name": "save",
-          "returnType": "void"
+          "name": "save"
         }
       ],
-      "description": "文档内容：只读 markdown 渲染 + 全量编辑（标题/摘要/正文）",
+      "description": "文档内容：只读 markdown 渲染 + 全量编辑（标题/摘要/正文；单分片保存 + 超长分级警告）",
       "geometry": {
         "x": 552,
         "y": 1060,
@@ -441,8 +443,7 @@
       "kind": "class",
       "methods": [
         {
-          "name": "load",
-          "returnType": "void"
+          "name": "load"
         },
         {
           "name": "toggle",
@@ -451,24 +452,25 @@
               "name": "requirementId",
               "type": "string"
             }
-          ],
-          "returnType": "void"
+          ]
         },
         {
-          "name": "onCreateRequirement",
-          "returnType": "void"
+          "name": "onCreateRequirement"
         },
         {
-          "name": "onCreateTask",
-          "returnType": "void"
+          "name": "onCreateTask"
         },
         {
-          "name": "onStatusChange",
-          "returnType": "void"
+          "name": "onStatusChange"
         },
         {
-          "name": "onDeleteTask",
-          "returnType": "void"
+          "name": "onRestoreReq"
+        },
+        {
+          "name": "onRestoreTask"
+        },
+        {
+          "name": "onDeleteTask"
         },
         {
           "name": "renderMd",
@@ -481,12 +483,12 @@
           "returnType": "string"
         }
       ],
-      "description": "需求清单：按需求分组任务 + 状态追踪（marked+DOMPurify）",
+      "description": "需求清单：按需求分组任务 + 状态追踪 + 废弃/恢复（marked+DOMPurify）",
       "geometry": {
         "x": 378.77055814666994,
         "y": 796.5276800912512,
         "width": 250,
-        "height": 184
+        "height": 204
       },
       "codeAnchor": {
         "files": [

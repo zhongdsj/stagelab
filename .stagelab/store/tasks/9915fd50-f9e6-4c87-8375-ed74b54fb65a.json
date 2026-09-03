@@ -1,0 +1,14 @@
+{
+  "taskId": "9915fd50-f9e6-4c87-8375-ed74b54fb65a",
+  "requirementId": "64db010b-c10e-4079-95f5-04bda0a377d7",
+  "title": "T2 服务层：文档分片自控+分级警告（丢弃自动切分）",
+  "description": "document.service.ts 重构 writeDocumentFragment：丢弃 2000 字硬切与孤儿分片清理；单分片语义（缺省 order=追加到末尾，指定 order=替换该分片）；超长不报错按 2000/4000 分级返回 warning（≤2000 无警告，2001~4000 warning，>4000 strongWarning）但均原样落库；summary 支持（带则存，不带取前 50 字兜底）。createDocument 同步单分片语义。新增 deleteDocumentFragment 服务。listDocumentFragments 返回增加 summary",
+  "status": "done",
+  "acceptanceCriteria": "超长内容不报错不硬切，单分片落库；warning/strongWarning 分级正确；order 缺省追加、指定替换；deleteFragment 生效；孤儿分片不再被连带删除",
+  "files": [
+    "packages/server/src/services/document.service.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788417820640,
+  "updatedAt": 1788418515924
+}

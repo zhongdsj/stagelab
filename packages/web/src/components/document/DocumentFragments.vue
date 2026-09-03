@@ -107,13 +107,22 @@ function startEdit() {
   editing.value = true;
 }
 
-/** 保存全量编辑（meta：标题/摘要；正文：order 0 覆盖，超长自动再分片） */
+/** 保存全量编辑（meta：标题/摘要；正文：清空其他分片 + order0 单分片全量覆盖，不自动切分；超长给分级警告） */
 async function save() {
   if (!doc.value) return;
   const title = draftTitle.value.trim();
   if (!title) {
     error.value = "文档标题不能为空";
     return;
+  }
+  // 超长分级警告（不阻断，用户确认后仍作为单分片保存）
+  const len = draft.value.length;
+  if (len > 2000) {
+    const msg =
+      len > 4000
+        ? `内容已超过 4000 字（当前 ${len} 字），将作为单分片保存，后续读取成本较高。确定仍保存吗？`
+        : `内容已超过 2000 字（当前 ${len} 字）。系统不再自动切分，将作为单分片保存。确定继续吗？`;
+    if (!window.confirm(msg)) return;
   }
   saving.value = true;
   error.value = "";
@@ -123,7 +132,7 @@ async function save() {
       title,
       summary: draftSummary.value.trim()
     });
-    // 更新正文
+    // 更新正文（order0 单分片全量覆盖，不自动切分）
     await updateFullDocument(props.projectId, props.docId, draft.value, title);
     editing.value = false;
     await load();
