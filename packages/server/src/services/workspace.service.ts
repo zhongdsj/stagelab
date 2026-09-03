@@ -5,6 +5,7 @@
  */
 import {
   openWorkspace,
+  setCurrentRepo,
   getWorkspace,
   listWorkspaces,
   loadRegisteredWorkspaces,
@@ -14,16 +15,16 @@ import {
 import { initRepo } from "../storage/repo.js";
 import { createRepositories, type Repositories } from "../storage/repositories/factory.js";
 
-/** 初始化仓库项目（生成 .stagelab 与 store，返回工作区） */
+/** 初始化仓库项目（生成 .stagelab 与 store，并设为当前工作仓库） */
 export async function initRepoProject(repoRoot: string): Promise<RepoWorkspace> {
-  const ws = await openWorkspace(repoRoot);
+  const ws = await setCurrentRepo(repoRoot);
   await initRepo(repoRoot);
   return ws;
 }
 
-/** 切换当前工作仓库 */
+/** 切换当前工作仓库（显式设置 current 指针，后续读取基于新仓库） */
 export async function setWorkingRepo(repoRoot: string): Promise<RepoWorkspace> {
-  return openWorkspace(repoRoot);
+  return setCurrentRepo(repoRoot);
 }
 
 /** 获取当前工作仓库信息 */
@@ -54,7 +55,8 @@ export async function initFromArgs(argv: string[]): Promise<RepoWorkspace | null
   await loadRegisteredWorkspaces();
   const repoRoot = parseRepoArg(argv);
   if (!repoRoot) return null;
-  return openWorkspace(repoRoot);
+  // --repo 显式指定的仓库作为当前工作仓库
+  return setCurrentRepo(repoRoot);
 }
 
 /** 获取当前仓库的仓储集合（不存在则抛错） */

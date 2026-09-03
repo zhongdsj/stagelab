@@ -27,6 +27,9 @@ export interface RepoWorkspace {
 /** 已加载的仓库工作区实例 */
 const workspaces = new Map<string, RepoWorkspace>();
 
+/** 当前工作仓库根路径（setCurrentRepo 显式切换后记录；getWorkspace 无参时优先返回它） */
+let currentRoot: string | undefined;
+
 /** 校验并规范化仓库根路径 */
 function normalizeRepoRoot(repoRoot: string): string {
   return path.resolve(repoRoot);
@@ -82,15 +85,30 @@ export async function loadRegisteredWorkspaces(): Promise<RepoWorkspace[]> {
   return loaded;
 }
 
-/** 获取当前工作仓库（默认取第一个，或显式指定） */
+/**
+ * 设置当前工作仓库（加载并切换指针）
+ * 与 openWorkspace 的区别：显式把 currentRoot 指向该仓库，后续无参 getWorkspace 优先返回它
+ */
+export async function setCurrentRepo(repoRoot: string): Promise<RepoWorkspace> {
+  const ws = await openWorkspace(repoRoot);
+  currentRoot = ws.repoRoot;
+  return ws;
+}
+
+/** 获取当前工作仓库（默认取显式切换的 currentRoot，未设置则回退最近加载的实例） */
 export async function getWorkspace(repoRoot?: string): Promise<RepoWorkspace> {
   if (repoRoot) {
     return openWorkspace(repoRoot);
   }
+  // 优先返回显式切换的当前仓库
+  if (currentRoot) {
+    const ws = workspaces.get(currentRoot);
+    if (ws) return ws;
+  }
   if (workspaces.size === 0) {
     throw new Error("未加载任何仓库，请先 init 或指定 --repo");
   }
-  // 返回最近加载的实例
+  // 回退：返回最近加载的实例
   const last = Array.from(workspaces.values()).pop()!;
   return last;
 }
@@ -102,7 +120,10 @@ export function listWorkspaces(): RepoWorkspace[] {
 
 /** 移除已加载的工作区实例（项目删除后调用） */
 export function removeWorkspace(repoRoot: string): void {
-  workspaces.delete(path.resolve(repoRoot));
+  const root = path.resolve(repoRoot);
+  workspaces.delete(root);
+  // 移除的恰是当前工作仓库时清空指针，避免悬空
+  if (currentRoot === root) currentRoot = undefined;
 }
 
 /** 从进程参数解析 --repo 值 */
