@@ -168,7 +168,8 @@ export const FlowNodeSchema = z
     description: z.string().optional(),
     payload: z.record(z.string(), z.unknown()).optional(),
     geometry: NodeGeometrySchema.optional(),
-    codeAnchor: CodeAnchorSchema.optional()
+    codeAnchor: CodeAnchorSchema.optional(),
+    linkedDiagrams: z.array(LinkedDiagramSchema).optional()
   })
   .strict();
 
