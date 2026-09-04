@@ -1,0 +1,169 @@
+{
+  "start": {
+    "upstream": [],
+    "downstream": [
+      "path"
+    ],
+    "upstreamHops": 0,
+    "downstreamHops": 6,
+    "fanIn": 0,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "path": {
+    "upstream": [
+      "start"
+    ],
+    "downstream": [
+      "read"
+    ],
+    "upstreamHops": 1,
+    "downstreamHops": 5,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "read": {
+    "upstream": [
+      "path"
+    ],
+    "downstream": [
+      "cache-hit",
+      "write"
+    ],
+    "upstreamHops": 2,
+    "downstreamHops": 4,
+    "fanIn": 1,
+    "fanOut": 2,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "cache-hit": {
+    "upstream": [
+      "read"
+    ],
+    "downstream": [
+      "disk-read",
+      "end"
+    ],
+    "upstreamHops": 3,
+    "downstreamHops": 1,
+    "fanIn": 1,
+    "fanOut": 2,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "disk-read": {
+    "upstream": [
+      "cache-hit"
+    ],
+    "downstream": [
+      "end"
+    ],
+    "upstreamHops": 4,
+    "downstreamHops": 1,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "write": {
+    "upstream": [
+      "read"
+    ],
+    "downstream": [
+      "conflict"
+    ],
+    "upstreamHops": 3,
+    "downstreamHops": 3,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "conflict": {
+    "upstream": [
+      "write"
+    ],
+    "downstream": [
+      "conflict-err",
+      "atomic"
+    ],
+    "upstreamHops": 4,
+    "downstreamHops": 2,
+    "fanIn": 1,
+    "fanOut": 2,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "atomic": {
+    "upstream": [
+      "conflict"
+    ],
+    "downstream": [
+      "release"
+    ],
+    "upstreamHops": 5,
+    "downstreamHops": 2,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "release": {
+    "upstream": [
+      "atomic"
+    ],
+    "downstream": [
+      "end"
+    ],
+    "upstreamHops": 6,
+    "downstreamHops": 1,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "end": {
+    "upstream": [
+      "disk-read",
+      "cache-hit",
+      "conflict-err",
+      "release"
+    ],
+    "downstream": [],
+    "upstreamHops": 4,
+    "downstreamHops": 0,
+    "fanIn": 4,
+    "fanOut": 0,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "high"
+  },
+  "conflict-err": {
+    "upstream": [
+      "conflict"
+    ],
+    "downstream": [
+      "end"
+    ],
+    "upstreamHops": 5,
+    "downstreamHops": 1,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  }
+}

@@ -1,6 +1,6 @@
 {
   "projectId": "34a29cd8-790c-43c4-8ce9-e2c25573cfa0",
-  "version": 1788419406,
+  "version": 1788419832,
   "documentIndex": [
     {
       "docId": "dev-doc",
@@ -250,7 +250,7 @@
     {
       "requirementId": "64db010b-c10e-4079-95f5-04bda0a377d7",
       "title": "文档分片自控与需求/任务废弃状态",
-      "status": "test",
+      "status": "done",
       "branchName": "feature/frag-abandon",
       "taskCount": 11
     },
