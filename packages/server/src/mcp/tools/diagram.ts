@@ -12,6 +12,11 @@ import {
   DiagramTypeSchema,
   EdgeSchema,
   GroupSchema,
+  NodeGeometrySchema,
+  CodeAnchorSchema,
+  LinkedDiagramSchema,
+  ClassAttributeSchema,
+  ClassMethodSchema,
   VerificationActorSchema,
   VerificationChangeTypeSchema
 } from "@stagelab/shared";
@@ -33,11 +38,44 @@ import {
 import { safeCall } from "./_util.js";
 
 /**
- * 图元局部更新操作 schema
- * node 用宽松结构接收（节点类型随图 type 而定），
- * 服务层 updateDiagramElements 内部用 DiagramSchema 严格校验（防跨类型）。
+ * MCP 入口层 node 输入 schema：声明所有节点类型可能出现的字段。
+ * - 不是 .strict()，保留灵活性（服务层 DiagramSchema.safeParse 做最终严格校验）
+ * - 关键目的：让 MCP SDK 生成的 JSON schema 里 AI 能看到 required/可选字段列表/枚举值，
+ *   避免 additionalProperties: {} 导致 AI 瞎猜 node 结构
  */
-const NodeInputSchema = z.record(z.string(), z.unknown());
+const NodeInputSchema = z.object({
+  // 所有节点类型共享的必填字段
+  nodeId: z.string().min(1),
+  label: z.string().min(1),
+  // 所有类型可选通用字段
+  description: z.string().optional(),
+  payload: z.record(z.string(), z.unknown()).optional(),
+  codeAnchor: CodeAnchorSchema.optional(),
+  geometry: NodeGeometrySchema.optional(),
+  linkedDiagrams: z.array(LinkedDiagramSchema).optional(),
+  // Architecture 专属
+  layer: z.string().optional(),
+  nodeKind: z
+    .enum([
+      "service",
+      "database",
+      "mq",
+      "cache",
+      "external",
+      "gateway",
+      "start",
+      "end",
+      "process",
+      "decision",
+      "inputOutput",
+      "subprocess"
+    ])
+    .optional(),
+  // Class 专属
+  kind: z.enum(["class", "interface", "abstract", "enum"]).optional(),
+  attributes: z.array(ClassAttributeSchema).optional(),
+  methods: z.array(ClassMethodSchema).optional()
+});
 const DiagramPatchSchema = z.union([
   z.object({ action: z.literal("addNode"), node: NodeInputSchema }),
   z.object({ action: z.literal("updateNode"), node: NodeInputSchema }),
@@ -77,7 +115,12 @@ export function registerDiagramTools(server: McpServer): void {
     "create_diagram",
     {
       title: "创建结构化图",
-      description: "创建新的结构化图（architecture/class/flow，业务语义无坐标）",
+      description:
+        "创建新的结构化图（architecture/class/flow）。\n" +
+        "type 决定后续 addNode 时需要的特征字段：\n" +
+        "- architecture：node 应带 layer（如'接入层'/'服务层'）+ nodeKind（service/database/mq/cache/external/gateway）\n" +
+        "- class：node 应带 kind（class/interface/abstract/enum），可选 attributes/methods\n" +
+        "- flow：node 应带 nodeKind（start/end/process/decision/inputOutput/subprocess）",
       inputSchema: {
         diagramId: z.string().min(1),
         type: DiagramTypeSchema,
@@ -138,7 +181,17 @@ export function registerDiagramTools(server: McpServer): void {
     {
       title: "局部更新图元",
       description:
-        "局部新增/修改/删除图元节点、连线、分组（单节点/单连线 patch，不重传整图）",
+        "局部新增/修改/删除图元节点、连线、分组（单节点/单连线 patch，不重传整图）。\n" +
+        "patch action 类型：addNode / updateNode / removeNode / addEdge / updateEdge / removeEdge / addGroup / updateGroup / removeGroup\n" +
+        "\n" +
+        "⚠️ node 必填字段：nodeId, label（所有类型共享）\n" +
+        "⚠️ node 特征字段（DiagramSchema 校验，缺失会报错）：\n" +
+        "- architecture 图：node 应包含 layer 和/或 nodeKind（service/database/mq/cache/external/gateway）\n" +
+        "- class 图：node 应包含 kind（class/interface/abstract/enum），可选 attributes/methods\n" +
+        "- flow 图：node 应包含 nodeKind（start/end/process/decision/inputOutput/subprocess）\n" +
+        "\n" +
+        "edge 必填：edgeId, from, to\n" +
+        "group 必填：groupId, title, nodeIds[]",
       inputSchema: {
         diagramId: z.string().min(1),
         patches: z.array(DiagramPatchSchema)
