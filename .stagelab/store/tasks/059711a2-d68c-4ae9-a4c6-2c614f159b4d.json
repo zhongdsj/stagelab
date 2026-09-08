@@ -1,0 +1,14 @@
+{
+  "taskId": "059711a2-d68c-4ae9-a4c6-2c614f159b4d",
+  "requirementId": "5a75f391-11d1-40a8-88c0-d79d1fb32a88",
+  "title": "T8 图库右下角悬浮按钮（刷新 + 回到顶部）",
+  "description": "问题：DiagramLibrary 图库列表页目前没有右下角悬浮按钮（DocumentLibrary 文档库 / RequirementTasks 需求清单已在 T7 补齐）。本任务参照 T7 为图库页补充右下角固定悬浮、随滚动常驻的两个按钮：① 刷新当前列表（重新拉取图库列表或项目索引并重新渲染）② 回到顶部（视口滚动回顶部）。纯前端会话态、不持久化。",
+  "status": "done",
+  "acceptanceCriteria": "1. 图库页右下角固定悬浮「刷新 / 回到顶部」两个按钮、随滚动常驻；2. 刷新触发图库列表重新加载；3. 回到顶部平滑滚动回顶部；4. vue-tsc 类型检查通过。",
+  "files": [
+    "packages/web/src/components/diagram/DiagramLibrary.vue"
+  ],
+  "changeType": "新增",
+  "createdAt": 1788856073165,
+  "updatedAt": 1788856390572
+}

@@ -1,0 +1,15 @@
+{
+  "taskId": "e0325354-99ab-4db3-84e2-21cbaaa8e350",
+  "requirementId": "5a75f391-11d1-40a8-88c0-d79d1fb32a88",
+  "title": "T2 payload 三图统一",
+  "description": "ClassNodeSchema 目前缺 payload 字段（源于旧约定“类图不 payload 兜底”），导致类节点无法存放 aiRiskNote 等风险注记。本任务在 shared/schemas.ts 的 ClassNodeSchema 增加 payload: z.record(z.string(), z.unknown()).optional()，并更新主文档 6.3.2 旧约定（结构化属性/方法仍走 attributes/methods，风险注记放 payload）。",
+  "status": "done",
+  "acceptanceCriteria": "1. ClassNodeSchema 含 payload 可选字段；2. 三种图节点均支持 payload；3. 主文档 6.3.2 更新“不做 payload 兜底”约定说明。",
+  "files": [
+    "packages/shared/src/schemas.ts",
+    "packages/server/src/mcp/tools/diagram.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788845525790,
+  "updatedAt": 1788854071119
+}

@@ -1,0 +1,8 @@
+{
+  "fragmentId": "dev-doc-node-schema-align-f1",
+  "docId": "dev-doc-node-schema-align",
+  "order": 1,
+  "title": "字段语义与决策",
+  "content": "## 三、字段语义（权威定义）\n\n- **payload**：自由扩展容器 `Record<string, unknown>`。架构节点装端口/协议/依赖版本；流程节点装判断条件/超时；AI 风险注记（aiRiskNote）亦走此处。\n- **linkedDiagrams**：跨图跳转，`{ diagramId, label?, type? }[]`，占位/跨模块节点点击后跳转目标图。\n- **methods / attributes**：类图节点专用结构化字段（ClassMethod / ClassAttribute），精确读写。注意与 `edge.methods` 区分——edge.methods 是 `string[]`，表示该连线承载的调用链方法清单。\n- **codeAnchor**：节点→源码稳定锚点，`{ files: [{ path, symbols? }] }`。\n- **geometry / points**：视觉坐标，仅前端 HTTP 职责，MCP 通道不承载。\n\n## 四、决策\n\n1. **payload 三图统一**：ClassNodeSchema 增加 payload；主文档 6.3.2 更新“不做 payload 兜底”旧约定（结构化属性/方法仍走 attributes/methods，风险注记等放 payload）。\n2. **linkedDiagrams 三图统一**：ArchitectureNodeSchema 补 linkedDiagrams。\n3. **入口层收紧**：NodeInputSchema 拆成 `z.union([ArchitectureNode, ClassNode, FlowNode])` 三支；写侧入口移除 geometry / points。\n4. **merge + null 删除语义**：updateNode / updateEdge（及 updateGroup 数组）统一为 merge，字段显式传 null 表示删除；数组整体替换。\n5. **补描述引导**：工具 description + 主文档讲清字段语义与 null 删除约定。",
+  "summary": "## 三、字段语义（权威定义）\n\n- **payload**：自由扩展容器 `Record<stri"
+}

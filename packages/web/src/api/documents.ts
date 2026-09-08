@@ -1,7 +1,7 @@
 /**
  * 文档分片 API（对接 /api/projects/:id/documents/:docId/fragments 路由）
  */
-import type { DocumentFragment } from "@stagelab/shared";
+import type { DocumentFragment, DocumentStatus } from "@stagelab/shared";
 import { http } from "./client.js";
 
 /** 分片列表元信息（轻量：含摘要，不含全文 content） */
@@ -58,6 +58,7 @@ export interface FullDocument {
   docId: string;
   title: string;
   summary: string;
+  status: DocumentStatus;
   content: string;
   fragmentCount: number;
 }
@@ -90,6 +91,7 @@ export interface DocumentItem {
   docId: string;
   title: string;
   docType?: string;
+  status?: DocumentStatus;
   summary?: string;
   fragmentIds: string[];
 }
@@ -97,7 +99,7 @@ export interface DocumentItem {
 /** 新建文档（docId 后端自动生成；docType 为自由文本） */
 export function createDocument(
   projectId: string,
-  payload: { title: string; docType?: string; content?: string }
+  payload: { title: string; docType?: string; status?: DocumentStatus; content?: string }
 ): Promise<DocumentFragment> {
   return http.post<DocumentFragment>(
     `/api/projects/${encodeURIComponent(projectId)}/documents`,
@@ -105,11 +107,11 @@ export function createDocument(
   );
 }
 
-/** 重命名文档（标题/类型/摘要） */
+/** 重命名文档（标题/类型/摘要/状态） */
 export function renameDocument(
   projectId: string,
   docId: string,
-  patch: { title?: string; docType?: string; summary?: string }
+  patch: { title?: string; docType?: string; summary?: string; status?: DocumentStatus }
 ): Promise<unknown> {
   return http.put(
     `/api/projects/${encodeURIComponent(projectId)}/documents/${encodeURIComponent(docId)}`,

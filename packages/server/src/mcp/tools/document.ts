@@ -15,9 +15,17 @@ import {
   writeDocumentFragment,
   createDocument,
   listDocumentFragments,
-  deleteDocumentFragment
+  deleteDocumentFragment,
+  renameDocument
 } from "../../services/document.service.js";
 import { safeCall } from "./_util.js";
+
+/** 文档状态枚举（供 create_document / update_document_meta 复用） */
+const documentStatusSchema = z
+  .enum(["focused", "maintained", "archived"])
+  .describe(
+    "文档状态：focused 当前聚焦（默认，正在推进）| maintained 长期更新（最高可信度，需实时维护，变更时应同步更新）| archived 留档（历史/设计回顾，不再更新）"
+  );
 
 /** 注册文档操作类工具 */
 export function registerDocumentTools(server: McpServer): void {
@@ -81,7 +89,7 @@ export function registerDocumentTools(server: McpServer): void {
     "write_document_fragment",
     {
       title: "写入/更新文档分片",
-      description: "写入/更新文档分片（AI 自控单分片语义）：缺省 order 追加到末尾，指定 order 替换该分片；超长不报错不硬切，>2000 返回 warning、>4000 返回 strongWarning，内容均原样落库，由 AI 自行决定是否拆分；可带 title/summary",
+      description: "写入/更新文档分片（AI 自控单分片语义）：缺省 order 追加到末尾，指定 order 替换该分片；超长不报错不硬切，>2000 返回 warning、>4000 返回 strongWarning，内容均原样落库，由 AI 自行决定是否拆分。title/summary 为分片级元信息（仅供 list_document_fragments 跳读），不会改动文档级 meta；要改文档标题/类型/摘要请用 update_document_meta",
       inputSchema: {
         docId: z.string().min(1),
         content: z.string(),
@@ -105,19 +113,48 @@ export function registerDocumentTools(server: McpServer): void {
     "create_document",
     {
       title: "创建新文档",
-      description: "创建新文档（单分片语义：超长不截断不报错，>2000 返回 warning、>4000 返回 strongWarning，由 AI 自行决定是否拆分）；可带 docType/summary",
+      description: "创建新文档（单分片语义：超长不截断不报错，>2000 返回 warning、>4000 返回 strongWarning，由 AI 自行决定是否拆分）；可带 docType/summary/status",
       inputSchema: {
         docId: z.string().min(1),
         title: z.string().min(1),
         docType: z.string().optional().describe("文档类型（自由文本，帮助 AI 快速理解文档性质）"),
         summary: z.string().optional().describe("文档摘要（可选，帮助快速理解文档性质）"),
+        status: documentStatusSchema.optional(),
         content: z.string()
       }
     },
     async (args) =>
       safeCall(async () => {
         const ws = await getWorkspace();
-        return createDocument(ws, args.docId, args.title, args.content, args.docType, args.summary);
+        return createDocument(ws, args.docId, args.title, args.content, args.docType, args.summary, args.status);
+      })
+  );
+
+  server.registerTool(
+    "update_document_meta",
+    {
+      title: "更新文档元信息",
+      description:
+        "更新文档标题/类型/摘要/状态（仅改文档级 meta，不影响分片正文）。" +
+        "title 传空串不覆盖；summary 传空串清空摘要；docType 传空串清除类型。" +
+        "status 三态：focused 当前聚焦（默认）、maintained 长期更新（最高可信度，需实时维护，涉及变更时应同步更新提醒）、archived 留档（历史/设计回顾，不再更新）",
+      inputSchema: {
+        docId: z.string().min(1),
+        title: z.string().optional(),
+        docType: z.string().optional(),
+        summary: z.string().optional(),
+        status: documentStatusSchema.optional()
+      }
+    },
+    async (args) =>
+      safeCall(async () => {
+        const ws = await getWorkspace();
+        return renameDocument(ws, args.docId, {
+          title: args.title,
+          docType: args.docType,
+          summary: args.summary,
+          status: args.status
+        });
       })
   );
 }

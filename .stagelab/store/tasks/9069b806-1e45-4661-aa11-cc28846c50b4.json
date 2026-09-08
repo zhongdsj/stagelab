@@ -1,0 +1,14 @@
+{
+  "taskId": "9069b806-1e45-4661-aa11-cc28846c50b4",
+  "requirementId": "5a75f391-11d1-40a8-88c0-d79d1fb32a88",
+  "title": "T5 补描述引导（字段语义 + null 约定）",
+  "description": "现有 update_diagram_elements 的 description 只讲“容器规格”（必填字段、图类型特征字段），未引导 AI 填 codeAnchor、edge.methods、payload、linkedDiagrams 等排查/溯源字段，也未告知 null 删除约定。本任务在工具 description 中补字段语义与何时使用，并告知“字段值为 null 删除”约定。",
+  "status": "done",
+  "acceptanceCriteria": "1. description 说明 codeAnchor（定位源码）、edge.methods（连线调用链）、payload（扩展信息）、linkedDiagrams（跨图跳转）语义；2. description 标注 null 删除约定；3. 与服务层 schema 字段一致。",
+  "files": [
+    "packages/server/src/mcp/tools/diagram.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788845525798,
+  "updatedAt": 1788854904082
+}

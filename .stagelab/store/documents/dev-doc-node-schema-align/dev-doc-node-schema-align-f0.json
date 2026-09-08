@@ -1,0 +1,8 @@
+{
+  "fragmentId": "dev-doc-node-schema-align-f0",
+  "docId": "dev-doc-node-schema-align",
+  "order": 0,
+  "title": "图元节点 Schema 对齐与 MCP 入口收紧（变更设计）",
+  "content": "# 图元节点 Schema 对齐与 MCP 入口收紧（变更设计）\n\n**文档版本**：v0.1　**阶段**：设计/变更\n\n## 一、背景与问题\n\nMCP `update_diagram_elements` 的入口层 `NodeInputSchema` 是一个“统一超集”：把所有可选字段（description / payload / codeAnchor / geometry / linkedDiagrams / layer / nodeKind / kind / attributes / methods）一股脑暴露给三种图类型。而服务层用三个 `.strict()` 节点 schema（ArchitectureNodeSchema / ClassNodeSchema / FlowNodeSchema）做最终校验。两层字段集合不一致，导致 AI 在入口看到字段 → 填了 → 被服务层 safeParse 拒绝，且报错为笼统的 union 错误、难以定位。\n\n## 二、现状盘点（不一致清单）\n\n1. **linkedDiagrams 半实现**：schema 仅 ClassNode/FlowNode 有、ArchitectureNode 缺；主文档 6.3 三个节点接口均未记录该字段。\n2. **payload 不统一**：ArchitectureNode/FlowNode 有、ClassNode 缺（源于旧约定“类图不 payload 兜底”）。\n3. **坐标字段泄漏**：入口 NodeInputSchema 暴露 `geometry`、EdgeSchema 暴露 `points`；读侧已 strip 剔除、写侧未对齐，违反“业务/布局分离”。\n4. **updateNode/updateEdge 语义不对称**：updateEdge 为字段合并、updateNode/updateGroup 为整体替换；纯 merge 无法区分“字段缺省=不变”与“字段缺省=删除”。",
+  "summary": "对齐 MCP 入口 NodeInputSchema 与服务层三个节点 schema 的字段一致性；统一 payload/linkedDiagrams；收紧入口（拆 union、移除坐标字段）；统一 updateNode/updateEdge 为 merge+null 删除语义；补描述引导。"
+}

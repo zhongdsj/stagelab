@@ -1,0 +1,8 @@
+{
+  "fragmentId": "dev-doc-node-schema-align-f4",
+  "docId": "dev-doc-node-schema-align",
+  "order": 4,
+  "title": "问题清单：阶段切换 / 悬浮按钮 / 文档分类 / docId 展示",
+  "content": "## 问题清单：阶段切换、悬浮按钮、文档分类、docId 展示\n\n### 问题 1：进入阶段 2 只落库文档，未创建需求/任务（已拆任务 T6）\n- 根因：switchProjectStage 仅改 currentStage 字段，无前置引导；MCP description 未提醒 AI「阶段 2 需同时创建需求与任务」。\n- 方向（用户确认）：主要做在 MCP 统一描述里——switch_project_stage 的 description 补引导（阶段 2 → create_requirement + create_task）。\n- 涉及文件：packages/server/src/mcp/tools/project.ts。\n\n### 问题 3：前端缺少悬浮按钮（刷新 / 回到顶部）（已拆任务 T7）\n- 需求：固定于可视窗口右下角、随滚动常驻的两个悬浮按钮：① 刷新当前文档/需求列表 ② 回到顶部。\n- 涉及：前端列表页组件（DocumentLibrary / RequirementTasks）。\n\n### 问题 4：文档堆叠不清晰（存档 / 实时 / 当前聚焦）（已完成）\n- 需求：对文档做分类标识，区分「已存档」「需实时更新（如接口文档）」「当前聚焦」，避免堆叠。\n- 实现：新增 DocumentStatus 三态枚举（focused 当前聚焦 / maintained 长期更新 / archived 留档），前端横向 tab 切换 + 手动改状态，MCP 描述可信度与更新提醒。\n\n### 问题 5：详情页渲染标题时同步展示 docId（已完成）\n- 需求：详情页渲染正文前先渲染 title，需同时展示 docId，交互时 AI 可直接读 id，免去先读文档列表。\n- 实现：DocumentFragments.vue 的 doc-head 加可点击复制的 doc-id 标签（id: {{ docId }}）。\n- 涉及文件：packages/web/src/components/document/DocumentFragments.vue。\n- 验证：vue-tsc 类型检查通过。",
+  "summary": "问题1、3 已拆任务（T6/T7）；问题4 已完成（DocumentStatus 三态枚举 + 前端 tab + 手动改状态）；问题5 docId 展示已完成。"
+}

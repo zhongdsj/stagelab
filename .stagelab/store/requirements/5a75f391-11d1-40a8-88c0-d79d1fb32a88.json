@@ -1,0 +1,20 @@
+{
+  "requirementId": "5a75f391-11d1-40a8-88c0-d79d1fb32a88",
+  "title": "图元 Schema 对齐与 MCP 入口收紧",
+  "description": "对齐 MCP 入口 NodeInputSchema 与服务层三个节点 schema 的字段一致性，消除 AI 填错字段被 safeParse 拒的问题。设计文档见 dev-doc-node-schema-align。\n\n包含：payload 三图统一、linkedDiagrams 三图统一、入口层收紧（拆 union + 移除坐标字段）、updateNode/updateEdge 统一 merge+null 删除语义、补描述引导。",
+  "branchName": "feature/diagram-schema-align",
+  "status": "test",
+  "taskIds": [
+    "1992ed95-db24-40d3-a2ce-e5fc3a6c431f",
+    "e0325354-99ab-4db3-84e2-21cbaaa8e350",
+    "7af96e53-b475-4d23-9ab0-4d28900db1e7",
+    "9069b806-1e45-4661-aa11-cc28846c50b4",
+    "24446a8b-6e51-414a-8724-a9a51edf175c",
+    "a413d7f1-3e41-4c45-a716-f27f3b211a34",
+    "d3dc3438-b498-442e-8fe2-3cd49e63061e",
+    "059711a2-d68c-4ae9-a4c6-2c614f159b4d",
+    "a8b64fc4-8341-4499-8ab8-9656740fc3d7"
+  ],
+  "createdAt": 1788845492253,
+  "updatedAt": 1788856390643
+}

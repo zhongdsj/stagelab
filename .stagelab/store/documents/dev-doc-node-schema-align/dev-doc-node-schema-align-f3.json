@@ -1,0 +1,8 @@
+{
+  "fragmentId": "dev-doc-node-schema-align-f3",
+  "docId": "dev-doc-node-schema-align",
+  "order": 3,
+  "title": "已修复：写分片覆盖文档 Meta + 新增 update_document_meta",
+  "content": "## 已修复：写分片误覆盖文档 Meta + 新增 update_document_meta\n\n### 问题现象\n- 前端文档库列表标题从「人类可读标题」变成机器 ID（如 dev-doc-node-schema-align）或正文某段标题。\n- 文档摘要从精心编写的内容变成「某个分片正文前 50 字」。\n\n### 根因\n`writeDocumentFragment` 每次写分片末尾都会调用 `upsertDocumentMeta`，且该函数对已存在 meta：title 无条件覆盖、summary 实际无条件覆盖（上游恒有值 `options.summary ?? content.slice(0,50)`），导致分片级 title/summary 反向污染文档级 meta。\n\n### 修复方案\n1. 服务层 `document.service.ts`：`upsertDocumentMeta` 重构为 `ensureDocumentMeta`，语义改为「meta 已存在则完全不动，仅不存在时用初值创建」。\n   - `createDocument` 传 title/summary/docType 初始化 meta。\n   - `writeDocumentFragment` 仅「确保 meta 存在」，不再反向覆盖 title/summary。\n2. MCP `document.ts`：新增 `update_document_meta(docId, title?, docType?, summary?)`，复用服务层 `renameDocument`，作为 AI 改文档标题/类型/摘要的正规入口。\n\n### 涉及文件\n- packages/server/src/services/document.service.ts（ensureDocumentMeta）\n- packages/server/src/mcp/tools/document.ts（新增 update_document_meta + 更新 write_document_fragment 描述）\n\n### 验证\n- tsc 类型检查通过。\n- update_document_meta 已在本次文档整理中实际调用并生效。",
+  "summary": "写分片反向覆盖文档 meta（title/summary）的根因与修复：ensureDocumentMeta + 新增 update_document_meta 工具。已修复并 tsc 通过。"
+}

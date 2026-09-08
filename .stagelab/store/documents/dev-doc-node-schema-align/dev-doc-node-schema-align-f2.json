@@ -1,0 +1,8 @@
+{
+  "fragmentId": "dev-doc-node-schema-align-f2",
+  "docId": "dev-doc-node-schema-align",
+  "order": 2,
+  "title": "涉及文件与任务拆解",
+  "content": "## 五、涉及文件\n\n- `packages/shared/src/schemas.ts`：ArchitectureNodeSchema 加 linkedDiagrams；ClassNodeSchema 加 payload\n- `packages/server/src/mcp/tools/diagram.ts`：NodeInputSchema 拆 union、移除 geometry；description 补字段语义与 null 约定\n- `packages/server/src/services/diagram.service.ts`：updateNode/updateEdge 统一 merge + null 删除\n- `packages/server/src/mcp/tools/project.ts`：switch_project_stage description 补阶段 2 创建需求/任务引导\n- `packages/web/src/components/document/DocumentLibrary.vue`、`packages/web/src/components/RequirementTasks.vue`：右下角悬浮按钮（刷新/回到顶部）\n- 主文档 6.3 字段表留痕\n\n## 六、任务拆解\n\n本变更共 7 项任务（T1~T7），详见阶段 2 需求记录：\n\n- T1 linkedDiagrams 三图统一（补 ArchitectureNodeSchema + 文档 6.3 留痕）\n- T2 payload 三图统一（补 ClassNodeSchema + 文档 6.3.2 约定更新）\n- T3 入口层收紧（NodeInputSchema 拆三支 union + 移除 geometry/points）\n- T4 updateNode/updateEdge 统一 merge + null 删除语义\n- T5 补描述引导（工具 description + 文档字段语义 + null 约定）\n- T6 阶段切换 MCP 描述补引导（进入 s2 同步 create_requirement + create_task）\n- T7 前端悬浮按钮：刷新 + 回到顶部（右下角常驻）",
+  "summary": "涉及文件与任务拆解（T1~T7）：图元 schema 对齐 5 项 + 阶段切换 MCP 引导 1 项 + 前端悬浮按钮 1 项"
+}

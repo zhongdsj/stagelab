@@ -9,7 +9,7 @@
  * - 缺省 order=追加到末尾，指定 order=替换该分片；删除走 deleteDocumentFragment
  * - 超长不报错不硬切：≤2000 无警告，2001~4000 warning，>4000 strongWarning，内容均原样落库
  */
-import type { DocumentFragment, DocumentMeta } from "@stagelab/shared";
+import type { DocumentFragment, DocumentMeta, DocumentStatus } from "@stagelab/shared";
 import type { RepoWorkspace } from "../storage/workspace.js";
 import { createRepositories } from "../storage/repositories/factory.js";
 
@@ -32,33 +32,33 @@ function warningOfLength(len: number): FragmentWarning | undefined {
   return "strongWarning";
 }
 
-/** 确保文档元信息存在并更新标题/摘要（写分片后调用；docType 仅在显式传入时覆盖） */
-async function upsertDocumentMeta(
+/**
+ * 确保文档元信息存在（幂等）：
+ * - meta 已存在 → 不做任何改动（title/summary/docType/updatedAt 均不受分片写入影响）
+ * - meta 不存在 → 用给定初值创建（仅首次创建文档 / 兜底时）
+ * 文档标题/摘要只应在首次创建或显式 rename 时变更，写分片不得反向覆盖 meta。
+ */
+async function ensureDocumentMeta(
   workspace: RepoWorkspace,
   docId: string,
-  title: string,
-  summary?: string,
-  docType?: string
+  init: { title: string; summary?: string; docType?: string; status?: DocumentStatus }
 ): Promise<void> {
   const repos = createRepositories(workspace);
-  let meta: DocumentMeta;
   try {
-    meta = await repos.documentMeta.get(docId);
-    meta.title = title;
-    if (docType !== undefined) meta.docType = docType;
-    if (summary !== undefined) meta.summary = summary;
-    meta.updatedAt = Date.now();
+    await repos.documentMeta.get(docId);
+    // 已存在：保持原样，避免写分片副作用覆盖标题/摘要
   } catch {
-    meta = {
+    const now = Date.now();
+    await repos.documentMeta.save({
       docId,
-      title,
-      ...(docType ? { docType } : {}),
-      summary: summary ?? "",
-      createdAt: Date.now(),
-      updatedAt: Date.now()
-    };
+      title: init.title,
+      ...(init.docType ? { docType: init.docType } : {}),
+      status: init.status ?? "focused",
+      summary: init.summary ?? "",
+      createdAt: now,
+      updatedAt: now
+    });
   }
-  await repos.documentMeta.save(meta);
 }
 
 /**
@@ -70,7 +70,8 @@ export async function createDocument(
   title: string,
   content: string,
   docType?: string,
-  summary?: string
+  summary?: string,
+  status?: DocumentStatus
 ): Promise<WriteFragmentResult> {
   const repos = createRepositories(workspace);
   const fragment: DocumentFragment = {
@@ -82,7 +83,12 @@ export async function createDocument(
     summary: summary ?? content.slice(0, 50) // 未显式提供摘要时取内容前 50 字兜底
   };
   await repos.documentFragment.save(fragment);
-  await upsertDocumentMeta(workspace, docId, title, fragment.summary, docType);
+  await ensureDocumentMeta(workspace, docId, {
+    title,
+    summary: fragment.summary,
+    docType,
+    status
+  });
   return { fragment, warning: warningOfLength(content.length) };
 }
 
@@ -99,6 +105,7 @@ export async function getDocumentIndex(workspace: RepoWorkspace) {
     docId: m.docId,
     title: m.title,
     docType: m.docType,
+    status: m.status ?? "focused",
     summary: m.summary ?? "",
     fragmentCount: countMap.get(m.docId) ?? 0
   }));
@@ -137,6 +144,7 @@ export async function readDocumentFull(
   docId: string;
   title: string;
   summary: string;
+  status: DocumentStatus;
   content: string;
   fragmentCount: number;
 }> {
@@ -144,10 +152,12 @@ export async function readDocumentFull(
   const frags = await repos.documentFragment.listByDoc(docId);
   let title = docId;
   let summary = "";
+  let status: DocumentStatus = "focused";
   try {
     const meta = await repos.documentMeta.get(docId);
     title = meta.title;
     summary = meta.summary ?? "";
+    status = meta.status ?? "focused";
   } catch {
     // 无 meta 时以 docId 兜底
   }
@@ -155,6 +165,7 @@ export async function readDocumentFull(
     docId,
     title,
     summary,
+    status,
     content: frags.map((f) => f.content).join(""),
     fragmentCount: frags.length
   };
@@ -194,8 +205,8 @@ export async function writeDocumentFragment(
   };
   await repos.documentFragment.save(fragment);
 
-  // 同步更新/创建文档 meta（标题独立 + 摘要取当前分片摘要）
-  await upsertDocumentMeta(workspace, docId, title, fragment.summary);
+  // 仅确保文档 meta 存在（已存在则不改动，避免写分片反向覆盖标题/摘要）
+  await ensureDocumentMeta(workspace, docId, { title });
 
   return { fragment, warning: warningOfLength(content.length) };
 }
@@ -209,11 +220,11 @@ export async function deleteDocumentFragment(
   await repos.documentFragment.delete(fragmentId);
 }
 
-/** 重命名文档（标题/类型/摘要，仅更新 meta） */
+/** 重命名文档（标题/类型/摘要/状态，仅更新 meta） */
 export async function renameDocument(
   workspace: RepoWorkspace,
   docId: string,
-  patch: { title?: string; docType?: string; summary?: string }
+  patch: { title?: string; docType?: string; summary?: string; status?: DocumentStatus }
 ): Promise<DocumentMeta> {
   const repos = createRepositories(workspace);
   const meta = await repos.documentMeta.get(docId);
@@ -225,6 +236,9 @@ export async function renameDocument(
   }
   if (patch.summary !== undefined) {
     meta.summary = patch.summary.trim() || "";
+  }
+  if (patch.status !== undefined) {
+    meta.status = patch.status;
   }
   meta.updatedAt = Date.now();
   await repos.documentMeta.save(meta);

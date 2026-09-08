@@ -241,6 +241,7 @@ export interface ProjectIndex {
     docId: string;
     title: string;
     docType?: string; // 文档类型（自由文本，帮助 AI/人工快速理解文档性质）
+    status?: DocumentStatus; // 文档状态（缺省 focused）
     summary: string;
     fragmentIds: string[];
   }>;
@@ -326,10 +327,19 @@ export type ImpactIndexMap = Record<string, ImpactIndexEntry>;
 
 /* ========== 6.6.1 DocumentMeta 文档元信息（独立于分片，供索引与展示） ========== */
 
+/**
+ * 文档状态（可信度/生命周期）：
+ * - focused 当前聚焦：正在推进/近期关注，默认状态
+ * - maintained 长期更新：需实时更新的参考文档（如接口文档），可信度最高，变更时应同步更新
+ * - archived 留档：已完成/历史记录，仅用于回顾设计目的，不再更新
+ */
+export type DocumentStatus = "focused" | "maintained" | "archived";
+
 export interface DocumentMeta {
   docId: string;
   title: string; // 文档标题（与分片 title 解耦，索引与展示使用）
   docType?: string; // 文档类型（自由文本描述，帮助 AI/人工快速理解文档性质，不做枚举限定）
+  status?: DocumentStatus; // 文档状态（缺省 focused 当前聚焦）
   summary?: string; // 摘要
   createdAt: number;
   updatedAt: number;

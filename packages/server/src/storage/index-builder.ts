@@ -124,6 +124,7 @@ export async function rebuildIndex(
       docId: m.docId,
       title: m.title,
       docType: m.docType,
+      status: m.status ?? "focused",
       summary: m.summary ?? "",
       fragmentIds: frags.map((f) => f.fragmentId)
     };

@@ -215,6 +215,29 @@ export type DiagramElementPatch =
       groupId: string;
     };
 
+/**
+ * RFC 7396（JSON Merge Patch）式合并：patch 中显式 null 字段表示删除（从结果移除该字段），
+ * 其余字段浅合并覆盖；数组字段整体替换。
+ * 注：MCP 入口已将 null 统一转为 undefined，此处 null/undefined 均视为删除标记。
+ */
+function mergePatch<T extends object>(base: T, patch: Partial<T>): T {
+  const next: Record<string, unknown> = { ...(base as Record<string, unknown>) };
+  for (const [k, v] of Object.entries(patch)) {
+    if (v === null || v === undefined) delete next[k];
+    else next[k] = v;
+  }
+  return next as T;
+}
+
+/** 剔除 null/undefined 字段（add 操作落库前清洗，避免脏数据进入存储） */
+function cleanNulls<T extends object>(obj: T): T {
+  const next: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(obj)) {
+    if (v !== null && v !== undefined) next[k] = v;
+  }
+  return next as T;
+}
+
 /** 局部新增/修改/删除图元（单节点/单连线/分组 patch） */
 export async function updateDiagramElements(
   workspace: RepoWorkspace,
@@ -234,10 +257,11 @@ export async function updateDiagramElements(
       case "addNode":
       case "updateNode": {
         const idx = nodes.findIndex((n) => n.nodeId === patch.node.nodeId);
-        if (idx === -1) nodes.push(patch.node);
-        // 字段合并（与 updateEdge 一致）：仅覆盖传入字段，保留存储中其余字段（如 geometry 坐标），
-        // 避免 MCP updateNode 只改 label/payload 时把 geometry 整体替换丢失。
-        else nodes[idx] = { ...nodes[idx], ...patch.node };
+        const node = cleanNulls(patch.node) as NodeOfDiagram;
+        if (idx === -1) nodes.push(node);
+        // 字段合并（RFC 7396，T4）：仅覆盖传入字段，显式 null 删除字段；
+        // 保留存储中其余字段（如 geometry 坐标），避免 MCP 只改 label/payload 时丢失坐标。
+        else nodes[idx] = mergePatch(nodes[idx], node) as NodeOfDiagram;
         break;
       }
       case "removeNode": {
@@ -248,10 +272,11 @@ export async function updateDiagramElements(
       case "addEdge":
       case "updateEdge": {
         const idx = edges.findIndex((e) => e.edgeId === patch.edge.edgeId);
-        if (idx === -1) edges.push(patch.edge);
-        // 字段合并（方案A）：仅覆盖传入字段，保留存储中其余字段（如 points 坐标），
-        // 避免 MCP updateEdge 只改 methods/label 时把坐标整体替换丢失。
-        else edges[idx] = { ...edges[idx], ...patch.edge };
+        const edge = cleanNulls(patch.edge) as Edge;
+        if (idx === -1) edges.push(edge);
+        // 字段合并（RFC 7396，T4）：仅覆盖传入字段，显式 null 删除字段；
+        // 保留存储中其余字段（如 points 坐标），避免 MCP 只改 methods/label 时丢失坐标。
+        else edges[idx] = mergePatch(edges[idx], edge);
         break;
       }
       case "removeEdge": {
@@ -262,8 +287,10 @@ export async function updateDiagramElements(
       case "addGroup":
       case "updateGroup": {
         const idx = groups.findIndex((g) => g.groupId === patch.group.groupId);
-        if (idx === -1) groups.push(patch.group);
-        else groups[idx] = patch.group;
+        const group = cleanNulls(patch.group) as Group;
+        if (idx === -1) groups.push(group);
+        // T4：updateGroup 与 node/edge 统一为 merge（仅覆盖传入字段，省略字段保持原值；数组整体替换）
+        else groups[idx] = mergePatch(groups[idx], group);
         break;
       }
       case "removeGroup": {

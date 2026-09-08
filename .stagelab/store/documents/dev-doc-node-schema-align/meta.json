@@ -1,0 +1,8 @@
+{
+  "docId": "dev-doc-node-schema-align",
+  "title": "图元 Schema 对齐、MCP Meta 修复与前端体验优化（变更设计）",
+  "docType": "开发文档",
+  "summary": "对齐 MCP 入口与三节点 schema 字段（payload/linkedDiagrams/坐标），入口收紧为分型 union，updateNode/Edge 统一 merge+null 删除；已修复写分片误覆盖文档 meta 并新增 update_document_meta；待办含阶段切换引导、悬浮按钮、文档分类聚焦。",
+  "createdAt": 1788845459162,
+  "updatedAt": 1788848039697
+}

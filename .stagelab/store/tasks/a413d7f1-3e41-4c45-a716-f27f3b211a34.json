@@ -1,0 +1,15 @@
+{
+  "taskId": "a413d7f1-3e41-4c45-a716-f27f3b211a34",
+  "requirementId": "5a75f391-11d1-40a8-88c0-d79d1fb32a88",
+  "title": "T7 前端悬浮按钮：刷新 + 回到顶部（右下角常驻）",
+  "description": "问题3 需求：列表页（DocumentLibrary 文档库 / RequirementTasks 需求清单）右下角固定悬浮、随滚动常驻的两个按钮：① 刷新当前列表（重新拉取项目索引 getProjectIndex 并重新渲染文档/需求）② 回到顶部（滚动容器滚动到顶部）。纯前端会话态、不持久化。",
+  "status": "done",
+  "acceptanceCriteria": "两个悬浮按钮固定于可视窗口右下角、随滚动常驻；「刷新」触发对应列表重新加载；「回到顶部」滚动回顶部；文档库与需求清单两处均可用。vue-tsc 类型检查通过。",
+  "files": [
+    "packages/web/src/components/document/DocumentLibrary.vue",
+    "packages/web/src/components/RequirementTasks.vue"
+  ],
+  "changeType": "新增",
+  "createdAt": 1788851106618,
+  "updatedAt": 1788854904084
+}

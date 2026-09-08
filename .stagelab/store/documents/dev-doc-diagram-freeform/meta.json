@@ -4,5 +4,6 @@
   "docType": "开发文档",
   "summary": "## updateEdge 字段合并修复（变更记录）\n\n### 问题\n- MCP updateEdg",
   "createdAt": 1788226512308,
-  "updatedAt": 1788319161368
+  "updatedAt": 1788851009340,
+  "status": "archived"
 }

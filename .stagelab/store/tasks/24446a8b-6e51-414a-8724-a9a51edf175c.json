@@ -1,0 +1,14 @@
+{
+  "taskId": "24446a8b-6e51-414a-8724-a9a51edf175c",
+  "requirementId": "5a75f391-11d1-40a8-88c0-d79d1fb32a88",
+  "title": "T3 入口层收紧（拆 union + 移除坐标字段）",
+  "description": "入口层 NodeInputSchema 目前是“统一超集”，把所有字段一股脑暴露给三种图类型，并暴露 geometry（node）/points（edge）违反业务/布局分离。本任务将 NodeInputSchema 拆成 z.union([ArchitectureNodeInput, ClassNodeInput, FlowNodeInput]) 三支，并从 MCP 写侧入口移除 geometry/points（坐标仅前端 HTTP 职责）。",
+  "status": "done",
+  "acceptanceCriteria": "1. NodeInputSchema 拆成三支 union，JSON schema 呈现 anyOf 三种节点形状；2. 每支仅暴露对应图类型的字段与 nodeKind 枚举；3. 写侧入口不再暴露 geometry/points；4. 读侧 stripVisual 行为不变；5. 类型检查与构建通过。",
+  "files": [
+    "packages/server/src/mcp/tools/diagram.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788845525794,
+  "updatedAt": 1788854903877
+}
