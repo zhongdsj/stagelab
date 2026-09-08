@@ -1,8 +1,9 @@
 {
   "docId": "dev-doc",
-  "title": "四阶段MCP项目管理工具 - 开发文档",
-  "summary": "# 四阶段MCP项目管理工具 - 开发文档\n\n**文档版本**：v1.1\n**阶段**：阶段1 - ",
+  "title": "四阶段MCP项目管理工具 - 开发文档(1/4)",
+  "docType": "开发文档",
+  "summary": "### 6.3 Diagram 业务图模型（MCP读写、持久化存储）\n\n三种图共用同一图容器结构，`",
   "createdAt": 1788004073961,
-  "updatedAt": 1788319155991,
-  "docType": "开发文档"
+  "updatedAt": 1788859986624,
+  "status": "archived"
 }

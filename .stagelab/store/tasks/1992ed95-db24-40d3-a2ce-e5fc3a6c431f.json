@@ -1,0 +1,15 @@
+{
+  "taskId": "1992ed95-db24-40d3-a2ce-e5fc3a6c431f",
+  "requirementId": "5a75f391-11d1-40a8-88c0-d79d1fb32a88",
+  "title": "T1 linkedDiagrams 三图统一",
+  "description": "ArchitectureNodeSchema 目前缺 linkedDiagrams 字段（仅 ClassNode/FlowNode 有），导致架构图节点无法做跨图跳转。本任务在 shared/schemas.ts 的 ArchitectureNodeSchema 增加 linkedDiagrams: z.array(LinkedDiagramSchema).optional()，并在主文档 6.3.1 字段表补记该字段。",
+  "status": "done",
+  "acceptanceCriteria": "1. ArchitectureNodeSchema 含 linkedDiagrams 可选字段；2. 三种图节点的服务层 schema 均支持 linkedDiagrams；3. 入口 NodeInputSchema 的 linkedDiagrams 字段与服务层一致；4. 主文档 6.3.1 补 linkedDiagrams 字段说明。",
+  "files": [
+    "packages/shared/src/schemas.ts",
+    "packages/server/src/mcp/tools/diagram.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788845525637,
+  "updatedAt": 1788854071103
+}

@@ -1,0 +1,14 @@
+{
+  "taskId": "d3dc3438-b498-442e-8fe2-3cd49e63061e",
+  "requirementId": "5a75f391-11d1-40a8-88c0-d79d1fb32a88",
+  "title": "T6 阶段切换 MCP 描述补引导（进入 s2 同步创建需求与任务）",
+  "description": "问题1 根因：switchProjectStage 仅将项目 currentStage 切到 s2，MCP 工具 description 未提醒 AI「进入阶段 2 需同时创建需求并拆解任务」，导致 AI 有时只落库文档而未创建需求/任务。\n\n方向（用户确认）：主要做在 MCP 统一描述里——在 switch_project_stage 的 MCP description 补引导，明确「切到阶段 2 后应调用 create_requirement 创建需求，再按需求拆解 create_task」；必要时在 create_document 等 description 补充「阶段文档不替代需求/任务清单」。",
+  "status": "done",
+  "acceptanceCriteria": "switch_project_stage MCP description 含明确引导：进入 s2 需 create_requirement + create_task；AI 在描述指引下不再出现「仅落库文档未建需求/任务」的遗漏。server 构建通过。",
+  "files": [
+    "packages/server/src/mcp/tools/project.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788851106602,
+  "updatedAt": 1788854904082
+}

@@ -2,6 +2,14 @@
   <div class="doc-fragments">
     <div class="doc-head">
       <span class="doc-title">{{ doc?.title || title || "文档" }}</span>
+      <button
+        class="doc-id"
+        type="button"
+        :title="`文档 ID：${docId}（点击复制）`"
+        @click="copyDocId"
+      >
+        id: {{ docId }}
+      </button>
     </div>
 
     <p v-if="loading" class="hint">加载中…</p>
@@ -37,7 +45,7 @@
         </div>
       </div>
       <!-- 只读视图：摘要 + markdown 渲染 -->
-      <div v-else class="frag-view">
+      <div v-else ref="viewRef" class="frag-view">
         <div v-if="doc?.summary" class="frag-summary">
           <span class="summary-label">摘要</span>
           <span class="summary-text">{{ doc.summary }}</span>
@@ -48,11 +56,26 @@
         </div>
       </div>
     </template>
+
+    <!-- 文档大纲侧边栏：跟随视窗浮动 + scrollspy 高亮当前章节（标题数不足 2 或编辑态隐藏） -->
+    <aside v-if="!editing && outline.length >= 2" ref="outlineListRef" class="doc-outline">
+      <div class="outline-title">大纲</div>
+      <ul class="outline-list">
+        <li
+          v-for="h in outline"
+          :key="h.id"
+          class="outline-item"
+          :class="[`lv-${h.level}`, { active: activeHeadingId === h.id }]"
+        >
+          <button type="button" :title="h.text" @click="scrollToHeading(h.id)">{{ h.text }}</button>
+        </li>
+      </ul>
+    </aside>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { marked } from "marked";
 import DOMPurify from "dompurify";
 import {
@@ -85,6 +108,76 @@ const html = computed(() => {
   return DOMPurify.sanitize(raw);
 });
 
+/* ========== 文档大纲（跟随视窗浮动侧边栏 + scrollspy 高亮当前章节） ========== */
+
+/** 判定“当前章节”时使用的视口顶部偏移（px） */
+const HEAD_OFFSET = 12;
+
+const viewRef = ref<HTMLElement | null>(null);
+const outlineListRef = ref<HTMLElement | null>(null);
+/** 当前文档大纲（h1-h4 标题），标题 id 稳定注入，供 scrollspy 与点击定位 */
+const outline = ref<Array<{ id: string; level: number; text: string }>>([]);
+const activeHeadingId = ref("");
+
+/** 扫描渲染后的正文标题，注入稳定 id 并生成大纲 */
+function scanHeadings() {
+  outline.value = [];
+  activeHeadingId.value = "";
+  const md = viewRef.value?.querySelector(".md-body");
+  if (!md) return;
+  const heads = Array.from(md.querySelectorAll("h1, h2, h3, h4")) as HTMLElement[];
+  heads.forEach((el, i) => {
+    const id = `doc-h-${i}`;
+    el.id = id;
+    outline.value.push({
+      id,
+      level: Number(el.tagName[1]),
+      text: el.textContent?.trim() || `章节 ${i + 1}`
+    });
+  });
+  updateActive();
+}
+
+/** scrollspy：高亮当前正在浏览的章节（最后一个顶部越过偏移线的标题） */
+function updateActive() {
+  let current = "";
+  for (const h of outline.value) {
+    const el = document.getElementById(h.id);
+    if (!el) continue;
+    if (el.getBoundingClientRect().top <= HEAD_OFFSET) current = h.id;
+  }
+  if (current !== activeHeadingId.value) {
+    activeHeadingId.value = current;
+    // 让高亮项保持在侧边栏可视区内（页面滚动后不被卷出）
+    outlineListRef.value
+      ?.querySelector(".outline-item.active")
+      ?.scrollIntoView({ block: "nearest" });
+  }
+}
+
+/** 点击大纲条目：平滑滚动定位到对应章节 */
+function scrollToHeading(id: string) {
+  activeHeadingId.value = id;
+  const el = document.getElementById(id);
+  if (!el) return;
+  const top = el.getBoundingClientRect().top + window.scrollY - HEAD_OFFSET;
+  window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+}
+
+/** 视口滚动时刷新高亮（滚动容器为页面/视口） */
+function onWindowScroll() {
+  updateActive();
+}
+
+// 内容渲染完成后扫描标题生成大纲（flush post 保证 v-html 已更新）
+watch(
+  html,
+  () => {
+    void nextTick(scanHeadings);
+  },
+  { flush: "post" }
+);
+
 /** 加载文档全文 */
 async function load() {
   loading.value = true;
@@ -96,6 +189,23 @@ async function load() {
     error.value = e instanceof ApiError ? e.message : "加载文档失败";
   } finally {
     loading.value = false;
+  }
+}
+
+/** 复制文档 ID 到剪贴板（供 AI 交互时直接引用，免去先读文档列表） */
+async function copyDocId() {
+  const id = props.docId;
+  try {
+    await navigator.clipboard.writeText(id);
+  } catch {
+    const ta = document.createElement("textarea");
+    ta.value = id;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
   }
 }
 
@@ -143,7 +253,14 @@ async function save() {
   }
 }
 
-onMounted(load);
+onMounted(() => {
+  load();
+  // scrollspy 依赖视口滚动事件（滚动容器为页面/视口）
+  window.addEventListener("scroll", onWindowScroll);
+});
+onBeforeUnmount(() => {
+  window.removeEventListener("scroll", onWindowScroll);
+});
 watch(() => props.docId, () => {
   doc.value = null;
   load();
@@ -157,13 +274,105 @@ watch(() => props.docId, () => {
   border-radius: 8px;
   padding: 16px;
 }
+
+/* ===== 文档大纲侧边栏（fixed 跟随视窗浮动 + scrollspy 高亮） ===== */
+.doc-outline {
+  position: fixed;
+  right: 20px;
+  top: 100px;
+  width: 210px;
+  max-height: 70vh;
+  overflow-y: auto;
+  padding: 12px 10px;
+  background: #fff;
+  border: 1px solid #e4e7ed;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  z-index: 100;
+}
+.outline-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #303133;
+  padding: 0 6px 8px;
+  border-bottom: 1px solid #ebeef5;
+  margin-bottom: 6px;
+}
+.outline-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: calc(70vh - 46px);
+  overflow-y: auto;
+}
+.outline-item {
+  margin: 1px 0;
+}
+.outline-item button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 4px 6px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #606266;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.outline-item button:hover {
+  color: #409eff;
+  background: #ecf5ff;
+}
+/* 层级缩进：h1 最深，h4 最浅 */
+.outline-item.lv-1 {
+  padding-left: 0;
+}
+.outline-item.lv-2 {
+  padding-left: 12px;
+}
+.outline-item.lv-3 {
+  padding-left: 24px;
+}
+.outline-item.lv-4 {
+  padding-left: 36px;
+}
+/* 当前正在浏览的章节高亮 */
+.outline-item.active button {
+  color: #409eff;
+  font-weight: 600;
+  background: #ecf5ff;
+}
 .doc-head {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
   margin-bottom: 12px;
 }
 .doc-title {
   font-size: 15px;
   font-weight: 600;
   color: #303133;
+}
+.doc-id {
+  padding: 1px 8px;
+  font-size: 12px;
+  font-family: Consolas, Monaco, monospace;
+  color: #909399;
+  background: #f4f4f5;
+  border: 1px solid #e4e7ed;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.doc-id:hover {
+  color: #409eff;
+  border-color: #409eff;
+  background: #ecf5ff;
 }
 .frag-view {
   border: 1px solid #ebeef5;

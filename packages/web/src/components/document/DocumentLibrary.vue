@@ -7,6 +7,20 @@
       </button>
     </div>
 
+    <!-- 文档状态 tab（当前聚焦 → 长期更新 → 留档） -->
+    <div class="status-tabs">
+      <button
+        v-for="t in statusTabs"
+        :key="t.value"
+        class="status-tab"
+        :class="{ active: statusFilter === t.value }"
+        type="button"
+        @click="statusFilter = t.value"
+      >
+        {{ t.label }}
+      </button>
+    </div>
+
     <!-- 新建文档表单 -->
     <form v-if="showCreate" class="create-form" @submit.prevent="onCreate">
       <input v-model="createForm.title" class="input" placeholder="文档名称（必填）" maxlength="80" />
@@ -20,10 +34,10 @@
       <button class="btn btn-sm btn-primary" type="submit" :disabled="creating">创建</button>
     </form>
 
-    <!-- 文档 tab 列表 -->
-    <div v-if="documents.length" class="doc-tabs">
+    <!-- 文档 tab 列表（按当前状态过滤） -->
+    <div v-if="filteredDocuments.length" class="doc-tabs">
       <span
-        v-for="d in documents"
+        v-for="d in filteredDocuments"
         :key="d.docId"
         class="doc-tab"
         :class="{ active: d.docId === activeDocId }"
@@ -33,10 +47,13 @@
         <span v-if="d.docType" class="doc-type">{{ d.docType }}</span>
       </span>
     </div>
-    <p v-else class="hint">暂无文档，点击「新建文档」创建</p>
+    <p v-else class="hint">该状态下暂无文档</p>
 
-    <!-- 当前文档操作：重命名 / 删除 -->
+    <!-- 当前文档操作：改状态 / 重命名 / 删除 -->
     <div v-if="activeDoc" class="doc-actions">
+      <select v-model="statusDraft" class="status-select" @change="onChangeStatus">
+        <option v-for="t in statusTabs" :key="t.value" :value="t.value">{{ t.label }}</option>
+      </select>
       <button class="btn btn-sm" type="button" @click="openRename">重命名</button>
       <button class="btn btn-sm btn-danger" type="button" @click="onDelete">删除</button>
     </div>
@@ -58,12 +75,19 @@
       :doc-id="activeDocId"
       :title="activeDoc?.title"
     />
+
+    <!-- 悬浮操作：刷新 + 回到顶部（右下角常驻） -->
+    <div class="float-actions">
+      <button class="float-btn" type="button" title="刷新文档库" @click="load">⟳</button>
+      <button class="float-btn" type="button" title="回到顶部" @click="scrollTop">↑</button>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, watch } from "vue";
 import { getProjectIndex, createDocument, renameDocument, deleteDocument, ApiError } from "../../api/index";
+import type { DocumentStatus } from "@stagelab/shared";
 import type { DocumentItem } from "../../api/documents";
 import DocumentFragments from "./DocumentFragments.vue";
 
@@ -82,6 +106,18 @@ const renameForm = reactive({ title: "", docType: "" });
 
 const activeDoc = computed(() =>
   documents.value.find((d) => d.docId === activeDocId.value)
+);
+
+/** 文档状态三态（排序：当前聚焦 → 长期更新 → 留档） */
+const statusTabs: Array<{ value: DocumentStatus; label: string }> = [
+  { value: "focused", label: "当前聚焦" },
+  { value: "maintained", label: "长期更新" },
+  { value: "archived", label: "留档" }
+];
+const statusFilter = ref<DocumentStatus>("focused");
+const statusDraft = ref<DocumentStatus>("focused");
+const filteredDocuments = computed(() =>
+  documents.value.filter((d) => (d.status ?? "focused") === statusFilter.value)
 );
 
 /** 加载项目文档列表（来自项目索引） */
@@ -159,6 +195,19 @@ async function onRename() {
   }
 }
 
+/** 修改文档状态（当前聚焦/长期更新/留档） */
+async function onChangeStatus() {
+  if (!activeDoc.value) return;
+  try {
+    await renameDocument(props.projectId, activeDocId.value, {
+      status: statusDraft.value
+    });
+    await load();
+  } catch (e) {
+    error.value = e instanceof ApiError ? e.message : "修改状态失败";
+  }
+}
+
 /** 删除文档 */
 async function onDelete() {
   if (!activeDoc.value) return;
@@ -173,10 +222,18 @@ async function onDelete() {
   }
 }
 
+/** 回到顶部（页面/视口滚动） */
+function scrollTop() {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
 onMounted(load);
 watch(() => props.projectId, () => {
   activeDocId.value = "";
   load();
+});
+watch(activeDoc, (doc) => {
+  statusDraft.value = doc?.status ?? "focused";
 });
 </script>
 
@@ -195,6 +252,30 @@ watch(() => props.projectId, () => {
   font-size: 15px;
   font-weight: 600;
   color: #303133;
+}
+.status-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid #e4e7ed;
+}
+.status-tab {
+  flex: none;
+  padding: 7px 16px;
+  font-size: 13px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: #606266;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+.status-tab:hover {
+  color: #409eff;
+}
+.status-tab.active {
+  color: #409eff;
+  border-bottom-color: #409eff;
+  font-weight: 600;
 }
 .doc-tabs {
   display: flex;
@@ -311,5 +392,32 @@ watch(() => props.projectId, () => {
 }
 .hint.error {
   color: #f56c6c;
+}
+.float-actions {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 100;
+}
+.float-btn {
+  width: 36px;
+  height: 36px;
+  font-size: 16px;
+  line-height: 1;
+  padding: 0;
+  border: 1px solid #dcdfe6;
+  border-radius: 50%;
+  background: #fff;
+  color: #606266;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  transition: border-color 0.2s, color 0.2s;
+}
+.float-btn:hover {
+  border-color: #409eff;
+  color: #409eff;
 }
 </style>

@@ -1,12 +1,13 @@
 {
   "projectId": "34a29cd8-790c-43c4-8ce9-e2c25573cfa0",
-  "version": 1788419832,
+  "version": 1788859986,
   "documentIndex": [
     {
       "docId": "dev-doc",
-      "title": "四阶段MCP项目管理工具 - 开发文档",
+      "title": "四阶段MCP项目管理工具 - 开发文档(1/4)",
       "docType": "开发文档",
-      "summary": "# 四阶段MCP项目管理工具 - 开发文档\n\n**文档版本**：v1.1\n**阶段**：阶段1 - ",
+      "status": "archived",
+      "summary": "### 6.3 Diagram 业务图模型（MCP读写、持久化存储）\n\n三种图共用同一图容器结构，`",
       "fragmentIds": [
         "dev-doc-f0",
         "dev-doc-f1",
@@ -24,6 +25,7 @@
       "docId": "dev-doc-diagram-freeform",
       "title": "附录：updateEdge 字段合并修复（防坐标丢失）",
       "docType": "开发文档",
+      "status": "archived",
       "summary": "## updateEdge 字段合并修复（变更记录）\n\n### 问题\n- MCP updateEdg",
       "fragmentIds": [
         "dev-doc-diagram-freeform-f0",
@@ -39,6 +41,7 @@
       "docId": "dev-doc-diagram-impact",
       "title": "FourSeq 图影响面分析与可信度增强",
       "docType": "开发文档",
+      "status": "archived",
       "summary": "# FourSeq 图影响面分析与可信度增强\n\n**文档版本**：v1.1  **阶段**：阶段1/",
       "fragmentIds": [
         "dev-doc-diagram-impact-f0",
@@ -51,6 +54,7 @@
       "docId": "dev-doc-edge-arrow-orient",
       "title": "附录：连线箭头方向修正（端点垂直进入）",
       "docType": "变更记录",
+      "status": "archived",
       "summary": "## 连线箭头方向修正：端点沿节点边移动时箭头垂直于边（变更记录）\n\n### 问题\n- 端点吸附到节",
       "fragmentIds": [
         "dev-doc-edge-arrow-orient-f0"
@@ -60,6 +64,7 @@
       "docId": "dev-doc-frag-abandon",
       "title": "文档分片自控与需求/任务废弃状态（阶段1开发文档）",
       "docType": "开发文档",
+      "status": "archived",
       "summary": "## 六、风险点\n\n| 风险 | 说明与对策 |\n|------|-----------|\n| 存量",
       "fragmentIds": [
         "dev-doc-frag-abandon-f0",
@@ -67,6 +72,21 @@
         "dev-doc-frag-abandon-f2",
         "dev-doc-frag-abandon-f3",
         "dev-doc-frag-abandon-f4"
+      ]
+    },
+    {
+      "docId": "dev-doc-node-schema-align",
+      "title": "图元 Schema 对齐、MCP Meta 修复与前端体验优化（变更设计）",
+      "docType": "开发文档",
+      "status": "focused",
+      "summary": "对齐 MCP 入口与三节点 schema 字段（payload/linkedDiagrams/坐标），入口收紧为分型 union，updateNode/Edge 统一 merge+null 删除；已修复写分片误覆盖文档 meta 并新增 update_document_meta；待办含阶段切换引导、悬浮按钮、文档分类聚焦。",
+      "fragmentIds": [
+        "dev-doc-node-schema-align-f0",
+        "dev-doc-node-schema-align-f1",
+        "dev-doc-node-schema-align-f2",
+        "dev-doc-node-schema-align-f3",
+        "dev-doc-node-schema-align-f4",
+        "dev-doc-node-schema-align-f5"
       ]
     }
   ],
@@ -248,6 +268,13 @@
       "taskCount": 4
     },
     {
+      "requirementId": "5a75f391-11d1-40a8-88c0-d79d1fb32a88",
+      "title": "图元 Schema 对齐与 MCP 入口收紧",
+      "status": "test",
+      "branchName": "feature/diagram-schema-align",
+      "taskCount": 9
+    },
+    {
       "requirementId": "64db010b-c10e-4079-95f5-04bda0a377d7",
       "title": "文档分片自控与需求/任务废弃状态",
       "status": "done",
@@ -382,6 +409,12 @@
       "requirementId": "de14234b-8eae-4371-ab0d-d3c6696a6c37"
     },
     {
+      "taskId": "059711a2-d68c-4ae9-a4c6-2c614f159b4d",
+      "title": "T8 图库右下角悬浮按钮（刷新 + 回到顶部）",
+      "status": "done",
+      "requirementId": "5a75f391-11d1-40a8-88c0-d79d1fb32a88"
+    },
+    {
       "taskId": "0a96f292-b8cb-446c-a585-b6d727007fe1",
       "title": "T25 前端：构建验证与联调",
       "status": "done",
@@ -442,6 +475,12 @@
       "requirementId": "e7e0ac7a-f714-4ea3-8b56-d20210b8d5d7"
     },
     {
+      "taskId": "1992ed95-db24-40d3-a2ce-e5fc3a6c431f",
+      "title": "T1 linkedDiagrams 三图统一",
+      "status": "done",
+      "requirementId": "5a75f391-11d1-40a8-88c0-d79d1fb32a88"
+    },
+    {
       "taskId": "19fccafa-968a-4151-bae0-c0e32b9bfd3f",
       "title": "T1 shared数据模型扩展：废弃状态+abandonReason+分片summary",
       "status": "done",
@@ -494,6 +533,12 @@
       "title": "T37 前端画布变换适配无限画布",
       "status": "done",
       "requirementId": "af4b430a-b283-49ec-885b-680608580794"
+    },
+    {
+      "taskId": "24446a8b-6e51-414a-8724-a9a51edf175c",
+      "title": "T3 入口层收紧（拆 union + 移除坐标字段）",
+      "status": "done",
+      "requirementId": "5a75f391-11d1-40a8-88c0-d79d1fb32a88"
     },
     {
       "taskId": "31c7d735-e8c7-4195-bbe5-5672a1c7a924",
@@ -718,6 +763,12 @@
       "requirementId": "c055a226-b8a6-4d47-b1f6-565762654470"
     },
     {
+      "taskId": "7af96e53-b475-4d23-9ab0-4d28900db1e7",
+      "title": "T4 updateNode/updateEdge 统一 merge + null 删除语义",
+      "status": "done",
+      "requirementId": "5a75f391-11d1-40a8-88c0-d79d1fb32a88"
+    },
+    {
       "taskId": "7b3106a8-e60e-4b74-9e61-a7487d59a0e1",
       "title": "T84 MCP：get_diagram_impact 读取工具",
       "status": "done",
@@ -764,6 +815,12 @@
       "title": "节点拖动重布线：最后一段垂直进入端点边",
       "status": "done",
       "requirementId": "24176d00-fff5-4bab-9eae-aeb2b2b4a6d2"
+    },
+    {
+      "taskId": "9069b806-1e45-4661-aa11-cc28846c50b4",
+      "title": "T5 补描述引导（字段语义 + null 约定）",
+      "status": "done",
+      "requirementId": "5a75f391-11d1-40a8-88c0-d79d1fb32a88"
     },
     {
       "taskId": "94cafd0e-6b91-4433-b4b3-5327b0b8a8a6",
@@ -838,6 +895,12 @@
       "requirementId": "34e3589b-32e7-4f28-b710-15794560e4c3"
     },
     {
+      "taskId": "a413d7f1-3e41-4c45-a716-f27f3b211a34",
+      "title": "T7 前端悬浮按钮：刷新 + 回到顶部（右下角常驻）",
+      "status": "done",
+      "requirementId": "5a75f391-11d1-40a8-88c0-d79d1fb32a88"
+    },
+    {
       "taskId": "a42cadac-b6d4-4ba4-93c3-570606c323a6",
       "title": "服务端：HTTP 透传节点风险分到前端",
       "status": "done",
@@ -854,6 +917,12 @@
       "title": "T1 server 统一 CLI：start/http/mcp 子命令 + 参数解析",
       "status": "done",
       "requirementId": "ed976849-7163-4396-bacb-bb527b0132b2"
+    },
+    {
+      "taskId": "a8b64fc4-8341-4499-8ab8-9656740fc3d7",
+      "title": "T9 文档浏览大纲侧边栏：跟随视窗浮动 + scrollspy 高亮当前章节",
+      "status": "done",
+      "requirementId": "5a75f391-11d1-40a8-88c0-d79d1fb32a88"
     },
     {
       "taskId": "ace1ade1-bc56-4e3f-9f1e-6bda7c783583",
@@ -970,6 +1039,12 @@
       "requirementId": "c055a226-b8a6-4d47-b1f6-565762654470"
     },
     {
+      "taskId": "d3dc3438-b498-442e-8fe2-3cd49e63061e",
+      "title": "T6 阶段切换 MCP 描述补引导（进入 s2 同步创建需求与任务）",
+      "status": "done",
+      "requirementId": "5a75f391-11d1-40a8-88c0-d79d1fb32a88"
+    },
+    {
       "taskId": "d3f660ab-fbf7-4a6d-9432-6e764cd04e85",
       "title": "前端：节点按 structuralRisk 分级着色",
       "status": "done",
@@ -1040,6 +1115,12 @@
       "title": "T47 布局间距上调：减少连线重叠",
       "status": "done",
       "requirementId": "de14234b-8eae-4371-ab0d-d3c6696a6c37"
+    },
+    {
+      "taskId": "e0325354-99ab-4db3-84e2-21cbaaa8e350",
+      "title": "T2 payload 三图统一",
+      "status": "done",
+      "requirementId": "5a75f391-11d1-40a8-88c0-d79d1fb32a88"
     },
     {
       "taskId": "e125ff32-1051-4f31-b90a-5753d81e1933",

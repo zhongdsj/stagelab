@@ -12,11 +12,9 @@ import {
   DiagramTypeSchema,
   EdgeSchema,
   GroupSchema,
-  NodeGeometrySchema,
-  CodeAnchorSchema,
-  LinkedDiagramSchema,
-  ClassAttributeSchema,
-  ClassMethodSchema,
+  ArchitectureNodeSchema,
+  ClassNodeSchema,
+  FlowNodeSchema,
   VerificationActorSchema,
   VerificationChangeTypeSchema
 } from "@stagelab/shared";
@@ -38,50 +36,42 @@ import {
 import { safeCall } from "./_util.js";
 
 /**
- * MCP 入口层 node 输入 schema：声明所有节点类型可能出现的字段。
- * - 不是 .strict()，保留灵活性（服务层 DiagramSchema.safeParse 做最终严格校验）
- * - 关键目的：让 MCP SDK 生成的 JSON schema 里 AI 能看到 required/可选字段列表/枚举值，
- *   避免 additionalProperties: {} 导致 AI 瞎猜 node 结构
+ * MCP 入口层 node/edge 输入 schema（T3 入口收紧）：
+ * - node 按图类型拆三支 union（架构/类/流程），各自从共享节点 schema 派生（omit geometry）
+ * - 保留 .strict()：跨类型字段直接报错（如把 kind 塞进架构图节点）；geometry 传 null/值均被拒绝
+ * - edge 派生自 EdgeSchema 并 omit points：折点坐标仅前端 HTTP 职责，MCP 写侧入口不承载
+ * - null 统一转 undefined：字段显式传 null 表示删除（RFC 7396 merge 语义），服务层据此合并
  */
-const NodeInputSchema = z.object({
-  // 所有节点类型共享的必填字段
-  nodeId: z.string().min(1),
-  label: z.string().min(1),
-  // 所有类型可选通用字段
-  description: z.string().optional(),
-  payload: z.record(z.string(), z.unknown()).optional(),
-  codeAnchor: CodeAnchorSchema.optional(),
-  geometry: NodeGeometrySchema.optional(),
-  linkedDiagrams: z.array(LinkedDiagramSchema).optional(),
-  // Architecture 专属
-  layer: z.string().optional(),
-  nodeKind: z
-    .enum([
-      "service",
-      "database",
-      "mq",
-      "cache",
-      "external",
-      "gateway",
-      "start",
-      "end",
-      "process",
-      "decision",
-      "inputOutput",
-      "subprocess"
-    ])
-    .optional(),
-  // Class 专属
-  kind: z.enum(["class", "interface", "abstract", "enum"]).optional(),
-  attributes: z.array(ClassAttributeSchema).optional(),
-  methods: z.array(ClassMethodSchema).optional()
-});
+function nullToUndefined(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(nullToUndefined);
+  if (value && typeof value === "object") {
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+      out[k] = v === null ? undefined : nullToUndefined(v);
+    }
+    return out;
+  }
+  return value;
+}
+
+const ArchitectureNodeInput = ArchitectureNodeSchema.omit({ geometry: true });
+const ClassNodeInput = ClassNodeSchema.omit({ geometry: true });
+const FlowNodeInput = FlowNodeSchema.omit({ geometry: true });
+const NodeInputSchema = z.preprocess(
+  nullToUndefined,
+  z.union([ArchitectureNodeInput, ClassNodeInput, FlowNodeInput])
+);
+/** edge 入口：移除 points 折点坐标，并收紧为 strict（未知字段报错） */
+const EdgeInputSchema = z.preprocess(
+  nullToUndefined,
+  EdgeSchema.omit({ points: true }).strict()
+);
 const DiagramPatchSchema = z.union([
   z.object({ action: z.literal("addNode"), node: NodeInputSchema }),
   z.object({ action: z.literal("updateNode"), node: NodeInputSchema }),
   z.object({ action: z.literal("removeNode"), nodeId: z.string().min(1) }),
-  z.object({ action: z.literal("addEdge"), edge: EdgeSchema }),
-  z.object({ action: z.literal("updateEdge"), edge: EdgeSchema }),
+  z.object({ action: z.literal("addEdge"), edge: EdgeInputSchema }),
+  z.object({ action: z.literal("updateEdge"), edge: EdgeInputSchema }),
   z.object({ action: z.literal("removeEdge"), edgeId: z.string().min(1) }),
   z.object({ action: z.literal("addGroup"), group: GroupSchema }),
   z.object({ action: z.literal("updateGroup"), group: GroupSchema }),
@@ -120,7 +110,8 @@ export function registerDiagramTools(server: McpServer): void {
         "type 决定后续 addNode 时需要的特征字段：\n" +
         "- architecture：node 应带 layer（如'接入层'/'服务层'）+ nodeKind（service/database/mq/cache/external/gateway）\n" +
         "- class：node 应带 kind（class/interface/abstract/enum），可选 attributes/methods\n" +
-        "- flow：node 应带 nodeKind（start/end/process/decision/inputOutput/subprocess）",
+        "- flow：node 应带 nodeKind（start/end/process/decision/inputOutput/subprocess）\n" +
+        "description 参数：可选，写清这张图表达什么、覆盖哪些组件/模块（例：认证鉴权模块的过滤器链流程图），避免图建出来无主题。",
       inputSchema: {
         diagramId: z.string().min(1),
         type: DiagramTypeSchema,
@@ -184,14 +175,22 @@ export function registerDiagramTools(server: McpServer): void {
         "局部新增/修改/删除图元节点、连线、分组（单节点/单连线 patch，不重传整图）。\n" +
         "patch action 类型：addNode / updateNode / removeNode / addEdge / updateEdge / removeEdge / addGroup / updateGroup / removeGroup\n" +
         "\n" +
-        "⚠️ node 必填字段：nodeId, label（所有类型共享）\n" +
-        "⚠️ node 特征字段（DiagramSchema 校验，缺失会报错）：\n" +
-        "- architecture 图：node 应包含 layer 和/或 nodeKind（service/database/mq/cache/external/gateway）\n" +
-        "- class 图：node 应包含 kind（class/interface/abstract/enum），可选 attributes/methods\n" +
-        "- flow 图：node 应包含 nodeKind（start/end/process/decision/inputOutput/subprocess）\n" +
+        "node 必填字段：nodeId, label；可选字段按图类型：\n" +
+        "- architecture：layer（如'接入层'/'服务层'）、nodeKind（service/database/mq/cache/external/gateway）\n" +
+        "- class：kind（class/interface/abstract/enum）、attributes[]、methods[]\n" +
+        "- flow：nodeKind（start/end/process/decision/inputOutput/subprocess）\n" +
+        "- 通用：description、payload（自由扩展 Record，如 aiRiskNote 风险注记）、codeAnchor（{files:[{path,symbols?}]}）、linkedDiagrams（[{diagramId,label?,type?}] 跨图跳转）\n" +
+        "edge 必填：edgeId, from, to；可选：label、payload、methods[]（该连线承载的调用链方法清单）\n" +
+        "group 必填：groupId, title, nodeIds[]；可选：axis（vertical/horizontal）、parentGroupId、collapsible\n" +
         "\n" +
-        "edge 必填：edgeId, from, to\n" +
-        "group 必填：groupId, title, nodeIds[]",
+        "⚠️ 更新语义（updateNode/updateEdge/updateGroup）：字段按 merge 合并——省略的字段保持原值；数组（attributes/methods/linkedDiagrams 等）整体替换；字段显式传 null 表示删除该字段（如 payload: null 清除扩展信息）。\n" +
+        "⚠️ MCP 入口不承载坐标：geometry / points 仅由前端 HTTP 维护，node 传 geometry、edge 传 points 均会被拒绝。\n" +
+        "\n" +
+        "--- 排查导向引导（强烈建议填写）---\n" +
+        "• 每个 node 尽量带 codeAnchor：对应文件路径 + 类/方法符号，便于跳转定位排查（where）\n" +
+        "• flow 图 edge 尽量带 methods[]：这条线由哪个方法调用连接（例：[\"AuthFilter.filter → DefaultAuthStrategy.authenticate\"]），沿调用链排查用\n" +
+        "• 关键节点的风险/边界：description 一句话说明 + payload.aiRiskNote 记录结构化风险（例：{timeout:3000, format:\"JWT\", risk:\"过期策略\"}）\n" +
+        "• 跨图数据流：node.linkedDiagrams[] 关联其他模块图（diagramId + type + label），便于跨模块排查",
       inputSchema: {
         diagramId: z.string().min(1),
         patches: z.array(DiagramPatchSchema)
@@ -292,7 +291,8 @@ export function registerDiagramTools(server: McpServer): void {
       title: "读取图影响范围索引",
       description:
         "读取预计算的影响范围索引 impactIndex（直接上游/下游、可达跳数、扇入扇出、是否在环、结构风险分）。" +
-        "支持单节点/批量（nodeIds）或全量读取；默认返回全量。基于图拓扑预计算，AI 直接复用避免每次现算。",
+        "支持单节点/批量（nodeIds）或全量读取；默认返回全量。基于图拓扑预计算，AI 直接复用避免每次现算。" +
+        "⚠️ 变更某节点前先查影响面，避免误改扇入/扇出大的节点（高依赖/核心节点）。",
       inputSchema: {
         diagramId: z.string().min(1),
         nodeIds: z.array(z.string().min(1)).optional()

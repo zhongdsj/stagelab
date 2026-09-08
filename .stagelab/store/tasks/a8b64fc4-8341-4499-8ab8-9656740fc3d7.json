@@ -1,0 +1,15 @@
+{
+  "taskId": "a8b64fc4-8341-4499-8ab8-9656740fc3d7",
+  "requirementId": "5a75f391-11d1-40a8-88c0-d79d1fb32a88",
+  "title": "T9 文档浏览大纲侧边栏：跟随视窗浮动 + scrollspy 高亮当前章节",
+  "description": "问题：文档库浏览时无大纲导航，长文档（主文档/设计文档分片渲染）难以定位章节。本任务在文档浏览页（DocumentLibrary 渲染 DocumentFragments 分片）增加一个跟随视窗浮动的侧边栏：① 根据当前文档正文的标题（h1-h4，含 md 渲染后的 heading）自动生成大纲树；② 侧边栏 position: fixed 跟随视窗常驻；③ 滚动监听（scrollspy）：随页面滚动自动更新，高亮标识当前正在浏览的章节；④ 点击大纲条目可平滑滚动定位到对应章节（可选加分项）。纯前端会话态、不持久化，无对应章节时（无标题或标题数 < 2）自动隐藏侧边栏。",
+  "status": "done",
+  "acceptanceCriteria": "1. 侧边栏 fixed 跟随视窗常驻，展示当前文档大纲（h1-h4 标题）；2. 页面滚动时大纲高亮随浏览位置自动切换（scrollspy）；3. 点击大纲条目平滑滚动到对应章节；4. 文档无标题或标题过少时侧边栏自动隐藏、不遮挡正文；5. vue-tsc 类型检查通过。",
+  "files": [
+    "packages/web/src/components/document/DocumentLibrary.vue",
+    "packages/web/src/components/document/DocumentFragments.vue"
+  ],
+  "changeType": "新增",
+  "createdAt": 1788856073173,
+  "updatedAt": 1788856390573
+}

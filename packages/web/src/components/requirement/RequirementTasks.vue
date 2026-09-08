@@ -164,10 +164,16 @@
               </button>
             </div>
           </div>
+          </div>
         </div>
       </div>
+
+      <!-- 悬浮操作：刷新 + 回到顶部（右下角常驻） -->
+      <div class="float-actions">
+        <button class="float-btn" type="button" title="刷新需求清单" @click="load">⟳</button>
+        <button class="float-btn" type="button" title="回到顶部" @click="scrollTop">↑</button>
+      </div>
     </div>
-  </div>
 </template>
 
 <script setup lang="ts">
@@ -408,6 +414,11 @@ async function onDeleteReq(req: RequirementItem) {
   } catch (e) {
     error.value = e instanceof ApiError ? e.message : "删除需求失败";
   }
+}
+
+/** 回到页面顶部（悬浮按钮） */
+function scrollTop() {
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 async function onCreateTask(requirementId: string) {
@@ -920,5 +931,29 @@ onMounted(load);
 }
 .md-body :deep(img) {
   max-width: 100%;
+}
+/* 悬浮操作：刷新 + 回到顶部（右下角常驻） */
+.float-actions {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 100;
+}
+.float-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: #fff;
+  color: #606266;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+.float-btn:hover {
+  color: #409eff;
 }
 </style>

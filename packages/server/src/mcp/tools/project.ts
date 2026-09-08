@@ -112,7 +112,13 @@ export function registerProjectTools(server: McpServer): void {
     "switch_project_stage",
     {
       title: "切换项目当前阶段",
-      description: "切换项目当前阶段（s1/s2/s3/s4）",
+      description:
+        "切换项目当前阶段（s1/s2/s3/s4），切换后按阶段流程执行：\n" +
+        "- s1（需求/讨论）：明确目标与范围后进入 s2\n" +
+        "- s2（拆解）：先 create_requirement 创建需求（含验收标准），再针对每条需求 create_task 拆解任务\n" +
+        "- s3（编码）：按任务清单逐项实现并验证代码\n" +
+        "- s4（验收）：运行测试与验收，更新任务状态\n" +
+        "⚠️ 进入 s2 后请先建需求再拆任务，确保每个任务归属一条需求",
       inputSchema: { stage: StageSchema }
     },
     async (args) =>

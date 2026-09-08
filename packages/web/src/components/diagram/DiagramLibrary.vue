@@ -33,6 +33,12 @@
     <p v-if="diagrams.length" class="hint entry-hint">
       点击上方图可进入独立查看页面（左侧图列表 + 右侧图渲染）。
     </p>
+
+    <!-- 悬浮操作：刷新 + 回到顶部（右下角常驻） -->
+    <div class="float-actions">
+      <button class="float-btn" type="button" title="刷新图库" @click="load">⟳</button>
+      <button class="float-btn" type="button" title="回到顶部" @click="scrollTop">↑</button>
+    </div>
   </div>
 </template>
 
@@ -104,6 +110,11 @@ async function load() {
 /** T24：点击图跳转独立图查看页面（/projects/:id/diagrams/:diagramId） */
 function openDiagram(diagramId: string) {
   router.push(`/projects/${props.projectId}/diagrams/${diagramId}`);
+}
+
+/** 回到顶部（页面/视口滚动） */
+function scrollTop() {
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 onMounted(load);
@@ -196,5 +207,33 @@ watch(() => props.projectId, load);
 }
 .hint.error {
   color: #f56c6c;
+}
+/* 悬浮操作：刷新 + 回到顶部（右下角常驻） */
+.float-actions {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 100;
+}
+.float-btn {
+  width: 36px;
+  height: 36px;
+  font-size: 16px;
+  line-height: 1;
+  padding: 0;
+  border: 1px solid #dcdfe6;
+  border-radius: 50%;
+  background: #fff;
+  color: #606266;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  transition: border-color 0.2s, color 0.2s;
+}
+.float-btn:hover {
+  border-color: #409eff;
+  color: #409eff;
 }
 </style>

@@ -108,7 +108,8 @@ export const ArchitectureNodeSchema = z
     description: z.string().optional(),
     payload: z.record(z.string(), z.unknown()).optional(),
     geometry: NodeGeometrySchema.optional(),
-    codeAnchor: CodeAnchorSchema.optional()
+    codeAnchor: CodeAnchorSchema.optional(),
+    linkedDiagrams: z.array(LinkedDiagramSchema).optional()
   })
   .strict();
 
@@ -145,6 +146,7 @@ export const ClassNodeSchema = z
     attributes: z.array(ClassAttributeSchema).optional(),
     methods: z.array(ClassMethodSchema).optional(),
     description: z.string().optional(),
+    payload: z.record(z.string(), z.unknown()).optional(),
     geometry: NodeGeometrySchema.optional(),
     codeAnchor: CodeAnchorSchema.optional(),
     linkedDiagrams: z.array(LinkedDiagramSchema).optional()
@@ -303,6 +305,9 @@ export const LayoutDiagramSchema = z.object({
 
 /* ========== 6.5 ProjectIndex 项目索引 ========== */
 
+/** 文档状态枚举：focused 当前聚焦（默认）| maintained 长期更新（最高可信度）| archived 留档 */
+export const DocumentStatusSchema = z.enum(["focused", "maintained", "archived"]);
+
 export const ProjectIndexSchema = z.object({
   projectId: z.string().min(1),
   version: z.number().int().nonnegative(),
@@ -311,6 +316,7 @@ export const ProjectIndexSchema = z.object({
       docId: z.string().min(1),
       title: z.string().min(1),
       docType: z.string().optional(),
+      status: DocumentStatusSchema.optional(),
       summary: z.string(),
       fragmentIds: z.array(z.string())
     })
@@ -380,6 +386,7 @@ export const DocumentMetaSchema = z.object({
   docId: z.string().min(1),
   title: z.string().min(1),
   docType: z.string().optional(), // 文档类型（自由文本，非枚举）
+  status: DocumentStatusSchema.optional(), // 文档状态（缺省 focused）
   summary: z.string().optional(),
   createdAt: z.number().int().nonnegative(),
   updatedAt: z.number().int().nonnegative()

@@ -1,0 +1,14 @@
+{
+  "taskId": "7af96e53-b475-4d23-9ab0-4d28900db1e7",
+  "requirementId": "5a75f391-11d1-40a8-88c0-d79d1fb32a88",
+  "title": "T4 updateNode/updateEdge 统一 merge + null 删除语义",
+  "description": "当前 updateEdge 为字段合并、updateNode/updateGroup 为整体替换，语义不对称；纯 merge 无法区分“字段缺省=不变”与“字段缺省=删除”。本任务将 updateNode/updateEdge 统一为 merge 语义，并约定“字段显式传 null 表示删除该字段、数组整体替换”（对齐 RFC 7396 JSON Merge Patch），解决 updateEdge 已有的“清不掉字段”隐患。",
+  "status": "done",
+  "acceptanceCriteria": "1. updateNode/updateEdge 统一为字段合并语义；2. 字段值为 null 时删除该字段；3. 数组（methods/attributes/linkedDiagrams/nodeIds）整体替换；4. updateEdge 只传 methods/label 不丢 points 的回归通过；5. 局部 updateNode 不再清空未传字段。",
+  "files": [
+    "packages/server/src/services/diagram.service.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1788845525796,
+  "updatedAt": 1788854904073
+}
