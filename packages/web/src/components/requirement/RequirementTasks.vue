@@ -170,7 +170,7 @@
 
       <!-- 悬浮操作：刷新 + 回到顶部（右下角常驻） -->
       <div class="float-actions">
-        <button class="float-btn" type="button" title="刷新需求清单" @click="load">⟳</button>
+        <button class="float-btn" type="button" title="刷新需求清单" @click="onRefresh">⟳</button>
         <button class="float-btn" type="button" title="回到顶部" @click="scrollTop">↑</button>
       </div>
     </div>
@@ -419,6 +419,18 @@ async function onDeleteReq(req: RequirementItem) {
 /** 回到页面顶部（悬浮按钮） */
 function scrollTop() {
   window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+/** 刷新：重新拉取需求列表 + 重载所有已展开需求的任务内容（保持阅读内容同步） */
+async function onRefresh() {
+  await load();
+  for (const rid of expanded.value) {
+    try {
+      taskMap.value[rid] = await listTasks(props.projectId, rid);
+    } catch {
+      // 单需求任务加载失败不阻断整体刷新
+    }
+  }
 }
 
 async function onCreateTask(requirementId: string) {

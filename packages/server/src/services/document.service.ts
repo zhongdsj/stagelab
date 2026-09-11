@@ -23,6 +23,8 @@ export type FragmentWarning = "warning" | "strongWarning";
 export interface WriteFragmentResult {
   fragment: DocumentFragment;
   warning?: FragmentWarning;
+  /** insertAfter 插入时受影响的后移分片（旧 ID → 新 ID 映射），供调用方同步认知 */
+  shifted?: Array<{ from: string; to: string }>;
 }
 
 /** 按内容长度计算分级警告：≤2000 无警告；2001~4000 warning；>4000 strongWarning */
@@ -166,7 +168,7 @@ export async function readDocumentFull(
     title,
     summary,
     status,
-    content: frags.map((f) => f.content).join(""),
+    content: frags.map((f) => f.content.replace(/\r?\n$/, "")).join("\n"),
     fragmentCount: frags.length
   };
 }
@@ -176,6 +178,7 @@ export async function readDocumentFull(
  *
  * - 缺省 order：追加到该文档末尾（当前最大 order + 1，无分片则 0）
  * - 指定 order：替换该 order 的分片（不存在则新建）
+ * - insertAfter：在该分片之后插入新分片，其后分片整体后移重编号（fragmentId 同步变更）
  * - 超长不报错不硬切，按 2000/4000 分级返回 warning，内容原样落库
  * - summary：显式提供则存，否则取内容前 50 字兜底
  */
@@ -183,9 +186,52 @@ export async function writeDocumentFragment(
   workspace: RepoWorkspace,
   docId: string,
   content: string,
-  options: { order?: number; title?: string; summary?: string } = {}
+  options: { order?: number; title?: string; summary?: string; insertAfter?: string } = {}
 ): Promise<WriteFragmentResult> {
   const repos = createRepositories(workspace);
+
+  // insertAfter：插入语义，其后分片整体后移重编号
+  if (options.insertAfter !== undefined) {
+    const existing = await repos.documentFragment.listByDoc(docId);
+    const anchor = existing.find((f) => f.fragmentId === options.insertAfter);
+    if (!anchor) {
+      throw new Error(`插入失败：目标分片不存在 ${options.insertAfter}`);
+    }
+    const title = options.title ?? docId;
+    const newOrder = anchor.order + 1;
+    const fragment: DocumentFragment = {
+      fragmentId: `${docId}-f${newOrder}`,
+      docId,
+      order: newOrder,
+      title,
+      content,
+      summary: options.summary ?? content.slice(0, 50)
+    };
+    // 锚点之后的分片整体后移一位并重编号（fragmentId 同步，避免 ID 冲突）
+    const shifted = existing
+      .filter((f) => f.order > anchor.order)
+      .map((f) => ({
+        from: f.fragmentId,
+        to: `${docId}-f${f.order + 1}`,
+        updated: {
+          ...f,
+          order: f.order + 1,
+          fragmentId: `${docId}-f${f.order + 1}`
+        }
+      }));
+    const reordered = [
+      ...existing.filter((f) => f.order <= anchor.order),
+      fragment,
+      ...shifted.map((s) => s.updated)
+    ];
+    await repos.documentFragment.replaceAll(docId, reordered);
+    await ensureDocumentMeta(workspace, docId, { title });
+    return {
+      fragment,
+      warning: warningOfLength(content.length),
+      shifted: shifted.map((s) => ({ from: s.from, to: s.to }))
+    };
+  }
 
   // 缺省 order：追加到末尾
   let order = options.order;

@@ -90,6 +90,8 @@ const props = defineProps<{
   projectId: string;
   docId: string;
   title?: string;
+  /** 刷新信号：值变化时重新加载当前文档全文（父级刷新按钮触发） */
+  refreshTick?: number;
 }>();
 
 const loading = ref(false);
@@ -264,6 +266,11 @@ onBeforeUnmount(() => {
 watch(() => props.docId, () => {
   doc.value = null;
   load();
+});
+watch(() => props.refreshTick, () => {
+  if (props.refreshTick !== undefined) {
+    load();
+  }
 });
 </script>
 

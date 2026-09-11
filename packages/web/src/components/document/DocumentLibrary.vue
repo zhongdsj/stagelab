@@ -74,11 +74,12 @@
       :project-id="projectId"
       :doc-id="activeDocId"
       :title="activeDoc?.title"
+      :refresh-tick="refreshTick"
     />
 
     <!-- 悬浮操作：刷新 + 回到顶部（右下角常驻） -->
     <div class="float-actions">
-      <button class="float-btn" type="button" title="刷新文档库" @click="load">⟳</button>
+      <button class="float-btn" type="button" title="刷新文档库" @click="onRefresh">⟳</button>
       <button class="float-btn" type="button" title="回到顶部" @click="scrollTop">↑</button>
     </div>
   </div>
@@ -101,6 +102,7 @@ const creating = ref(false);
 const saving = ref(false);
 const showCreate = ref(false);
 const renaming = ref(false);
+const refreshTick = ref(0);
 const createForm = reactive({ title: "", docType: "", content: "" });
 const renameForm = reactive({ title: "", docType: "" });
 
@@ -225,6 +227,12 @@ async function onDelete() {
 /** 回到顶部（页面/视口滚动） */
 function scrollTop() {
   window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+/** 刷新：重新拉取文档列表 + 递增 refreshTick 让当前阅读的文档全文重新加载 */
+function onRefresh() {
+  refreshTick.value += 1;
+  load();
 }
 
 onMounted(load);
