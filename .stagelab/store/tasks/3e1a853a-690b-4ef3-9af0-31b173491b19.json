@@ -1,0 +1,15 @@
+{
+  "taskId": "3e1a853a-690b-4ef3-9af0-31b173491b19",
+  "requirementId": "ed7b1f6b-7269-4275-9aa0-b6212e28b160",
+  "title": "saveRegistry 加 rename 重试与本次 tmp 回收",
+  "description": "saveRegistry 的 renameSync 加有限重试（应对 Windows 上目标被句柄占用的 EPERM/EBUSY）；用 try/finally 保证本次调用失败时回收自己刚创建的 tmp（不涉历史孤儿，不做启动扫描）；registerRepo / replaceRegistryRepos 调用侧补 try/catch，避免写入失败抛挂启动。",
+  "status": "done",
+  "acceptanceCriteria": "rename 失败时重试后能成功写入；重试仍失败时本次调用创建的 tmp 被回收（目录内无新增残留）；注册表写入失败不再把启动流程抛挂，而是告警后继续",
+  "files": [
+    "packages/server/src/storage/registry.ts",
+    "packages/server/src/storage/workspace.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1790063035655,
+  "updatedAt": 1790070491174
+}

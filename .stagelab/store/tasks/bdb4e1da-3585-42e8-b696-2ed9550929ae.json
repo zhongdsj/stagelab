@@ -1,0 +1,14 @@
+{
+  "taskId": "bdb4e1da-3585-42e8-b696-2ed9550929ae",
+  "requirementId": "6cbc1c44-ec4d-4e8d-95dd-c9fe8a948e56",
+  "title": "新增 MCP 工具 update_diagram_meta",
+  "description": "在 registerDiagramTools 中注册 update_diagram_meta，inputSchema 为 { diagramId, title?, description? }，内部调用 updateDiagramMeta，返回 toDiagramMeta 摘要（不含节点/连线/分组内容）。description 需说明 title/description 均为可选且至少传一个。",
+  "status": "done",
+  "acceptanceCriteria": "工具可在 MCP 客户端调用；title/description 单传或同传均生效；返回值为 meta 摘要不含节点内容；description 明确至少传一个字段",
+  "files": [
+    "packages/server/src/mcp/tools/diagram.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1790062159359,
+  "updatedAt": 1790064792570
+}

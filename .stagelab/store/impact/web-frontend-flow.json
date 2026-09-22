@@ -1,0 +1,498 @@
+{
+  "start": {
+    "upstream": [],
+    "downstream": [
+      "load-projects"
+    ],
+    "upstreamHops": 0,
+    "downstreamHops": 9,
+    "fanIn": 0,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "load-projects": {
+    "upstream": [
+      "start"
+    ],
+    "downstream": [
+      "render-overview",
+      "backend"
+    ],
+    "upstreamHops": 1,
+    "downstreamHops": 8,
+    "fanIn": 1,
+    "fanOut": 2,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "render-overview": {
+    "upstream": [
+      "load-projects",
+      "project-op",
+      "tmp-clean"
+    ],
+    "downstream": [
+      "decision-op"
+    ],
+    "upstreamHops": 2,
+    "downstreamHops": 7,
+    "fanIn": 3,
+    "fanOut": 1,
+    "inCycle": true,
+    "cycleIds": [
+      "tmp-clean",
+      "project-op",
+      "decision-op",
+      "render-overview"
+    ],
+    "structuralRisk": "high"
+  },
+  "decision-op": {
+    "upstream": [
+      "render-overview"
+    ],
+    "downstream": [
+      "create-project",
+      "project-op",
+      "enter-detail",
+      "tmp-clean"
+    ],
+    "upstreamHops": 3,
+    "downstreamHops": 6,
+    "fanIn": 1,
+    "fanOut": 4,
+    "inCycle": true,
+    "cycleIds": [
+      "tmp-clean",
+      "project-op",
+      "decision-op",
+      "render-overview"
+    ],
+    "structuralRisk": "high"
+  },
+  "create-project": {
+    "upstream": [
+      "decision-op"
+    ],
+    "downstream": [
+      "enter-detail",
+      "backend"
+    ],
+    "upstreamHops": 4,
+    "downstreamHops": 6,
+    "fanIn": 1,
+    "fanOut": 2,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "project-op": {
+    "upstream": [
+      "decision-op"
+    ],
+    "downstream": [
+      "render-overview",
+      "backend",
+      "confirm-dialog"
+    ],
+    "upstreamHops": 4,
+    "downstreamHops": 8,
+    "fanIn": 1,
+    "fanOut": 3,
+    "inCycle": true,
+    "cycleIds": [
+      "tmp-clean",
+      "project-op",
+      "decision-op",
+      "render-overview"
+    ],
+    "structuralRisk": "high"
+  },
+  "enter-detail": {
+    "upstream": [
+      "create-project",
+      "decision-op"
+    ],
+    "downstream": [
+      "render-stage",
+      "backend"
+    ],
+    "upstreamHops": 4,
+    "downstreamHops": 5,
+    "fanIn": 2,
+    "fanOut": 2,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "medium"
+  },
+  "render-stage": {
+    "upstream": [
+      "enter-detail",
+      "reload-index"
+    ],
+    "downstream": [
+      "decision-stage"
+    ],
+    "upstreamHops": 5,
+    "downstreamHops": 4,
+    "fanIn": 2,
+    "fanOut": 1,
+    "inCycle": true,
+    "cycleIds": [
+      "view-diagram",
+      "task-op",
+      "view-req",
+      "reload-index",
+      "refresh-child",
+      "view-doc",
+      "decision-stage",
+      "render-stage"
+    ],
+    "structuralRisk": "high"
+  },
+  "decision-stage": {
+    "upstream": [
+      "render-stage"
+    ],
+    "downstream": [
+      "view-doc",
+      "view-req",
+      "view-diagram"
+    ],
+    "upstreamHops": 6,
+    "downstreamHops": 4,
+    "fanIn": 1,
+    "fanOut": 3,
+    "inCycle": true,
+    "cycleIds": [
+      "view-diagram",
+      "task-op",
+      "view-req",
+      "reload-index",
+      "refresh-child",
+      "view-doc",
+      "decision-stage",
+      "render-stage"
+    ],
+    "structuralRisk": "high"
+  },
+  "view-doc": {
+    "upstream": [
+      "decision-stage"
+    ],
+    "downstream": [
+      "render-md",
+      "backend",
+      "confirm-dialog",
+      "refresh-child"
+    ],
+    "upstreamHops": 7,
+    "downstreamHops": 7,
+    "fanIn": 1,
+    "fanOut": 4,
+    "inCycle": true,
+    "cycleIds": [
+      "view-diagram",
+      "task-op",
+      "view-req",
+      "reload-index",
+      "refresh-child",
+      "view-doc",
+      "decision-stage",
+      "render-stage"
+    ],
+    "structuralRisk": "high"
+  },
+  "render-md": {
+    "upstream": [
+      "view-doc",
+      "edit-doc"
+    ],
+    "downstream": [
+      "edit-doc",
+      "end"
+    ],
+    "upstreamHops": 8,
+    "downstreamHops": 2,
+    "fanIn": 2,
+    "fanOut": 2,
+    "inCycle": true,
+    "cycleIds": [
+      "edit-doc",
+      "render-md"
+    ],
+    "structuralRisk": "high"
+  },
+  "edit-doc": {
+    "upstream": [
+      "render-md"
+    ],
+    "downstream": [
+      "render-md",
+      "backend"
+    ],
+    "upstreamHops": 9,
+    "downstreamHops": 2,
+    "fanIn": 1,
+    "fanOut": 2,
+    "inCycle": true,
+    "cycleIds": [
+      "edit-doc",
+      "render-md"
+    ],
+    "structuralRisk": "high"
+  },
+  "view-diagram": {
+    "upstream": [
+      "decision-stage"
+    ],
+    "downstream": [
+      "render-svg",
+      "backend",
+      "refresh-child",
+      "confirm-dialog"
+    ],
+    "upstreamHops": 7,
+    "downstreamHops": 7,
+    "fanIn": 1,
+    "fanOut": 4,
+    "inCycle": true,
+    "cycleIds": [
+      "view-diagram",
+      "task-op",
+      "view-req",
+      "reload-index",
+      "refresh-child",
+      "view-doc",
+      "decision-stage",
+      "render-stage"
+    ],
+    "structuralRisk": "high"
+  },
+  "render-svg": {
+    "upstream": [
+      "view-diagram",
+      "fold-module"
+    ],
+    "downstream": [
+      "fold-module",
+      "end"
+    ],
+    "upstreamHops": 8,
+    "downstreamHops": 1,
+    "fanIn": 2,
+    "fanOut": 2,
+    "inCycle": true,
+    "cycleIds": [
+      "fold-module",
+      "render-svg"
+    ],
+    "structuralRisk": "high"
+  },
+  "fold-module": {
+    "upstream": [
+      "render-svg"
+    ],
+    "downstream": [
+      "render-svg"
+    ],
+    "upstreamHops": 9,
+    "downstreamHops": 2,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": true,
+    "cycleIds": [
+      "fold-module",
+      "render-svg"
+    ],
+    "structuralRisk": "high"
+  },
+  "view-req": {
+    "upstream": [
+      "decision-stage",
+      "task-op"
+    ],
+    "downstream": [
+      "task-op",
+      "backend",
+      "confirm-dialog",
+      "refresh-child"
+    ],
+    "upstreamHops": 7,
+    "downstreamHops": 7,
+    "fanIn": 2,
+    "fanOut": 4,
+    "inCycle": true,
+    "cycleIds": [
+      "view-diagram",
+      "task-op",
+      "view-req",
+      "reload-index",
+      "refresh-child",
+      "view-doc",
+      "decision-stage",
+      "render-stage"
+    ],
+    "structuralRisk": "high"
+  },
+  "task-op": {
+    "upstream": [
+      "view-req"
+    ],
+    "downstream": [
+      "view-req",
+      "end",
+      "backend"
+    ],
+    "upstreamHops": 8,
+    "downstreamHops": 8,
+    "fanIn": 1,
+    "fanOut": 3,
+    "inCycle": true,
+    "cycleIds": [
+      "view-diagram",
+      "task-op",
+      "view-req",
+      "reload-index",
+      "refresh-child",
+      "view-doc",
+      "decision-stage",
+      "render-stage"
+    ],
+    "structuralRisk": "high"
+  },
+  "backend": {
+    "upstream": [
+      "load-projects",
+      "create-project",
+      "project-op",
+      "enter-detail",
+      "view-doc",
+      "edit-doc",
+      "view-diagram",
+      "view-req",
+      "task-op",
+      "confirm-dialog",
+      "reload-index",
+      "tmp-clean"
+    ],
+    "downstream": [],
+    "upstreamHops": 3,
+    "downstreamHops": 0,
+    "fanIn": 12,
+    "fanOut": 0,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "high"
+  },
+  "end": {
+    "upstream": [
+      "render-md",
+      "task-op",
+      "render-svg"
+    ],
+    "downstream": [],
+    "upstreamHops": 9,
+    "downstreamHops": 0,
+    "fanIn": 3,
+    "fanOut": 0,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "medium"
+  },
+  "confirm-dialog": {
+    "upstream": [
+      "project-op",
+      "view-doc",
+      "view-req",
+      "view-diagram",
+      "tmp-clean"
+    ],
+    "downstream": [
+      "backend"
+    ],
+    "upstreamHops": 5,
+    "downstreamHops": 1,
+    "fanIn": 5,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "high"
+  },
+  "refresh-child": {
+    "upstream": [
+      "view-doc",
+      "view-req",
+      "view-diagram"
+    ],
+    "downstream": [
+      "reload-index"
+    ],
+    "upstreamHops": 8,
+    "downstreamHops": 6,
+    "fanIn": 3,
+    "fanOut": 1,
+    "inCycle": true,
+    "cycleIds": [
+      "view-diagram",
+      "task-op",
+      "view-req",
+      "reload-index",
+      "refresh-child",
+      "view-doc",
+      "decision-stage",
+      "render-stage"
+    ],
+    "structuralRisk": "high"
+  },
+  "reload-index": {
+    "upstream": [
+      "refresh-child"
+    ],
+    "downstream": [
+      "backend",
+      "render-stage"
+    ],
+    "upstreamHops": 9,
+    "downstreamHops": 5,
+    "fanIn": 1,
+    "fanOut": 2,
+    "inCycle": true,
+    "cycleIds": [
+      "view-diagram",
+      "task-op",
+      "view-req",
+      "reload-index",
+      "refresh-child",
+      "view-doc",
+      "decision-stage",
+      "render-stage"
+    ],
+    "structuralRisk": "high"
+  },
+  "tmp-clean": {
+    "upstream": [
+      "decision-op"
+    ],
+    "downstream": [
+      "backend",
+      "confirm-dialog",
+      "render-overview"
+    ],
+    "upstreamHops": 4,
+    "downstreamHops": 8,
+    "fanIn": 1,
+    "fanOut": 3,
+    "inCycle": true,
+    "cycleIds": [
+      "tmp-clean",
+      "project-op",
+      "decision-op",
+      "render-overview"
+    ],
+    "structuralRisk": "high"
+  }
+}

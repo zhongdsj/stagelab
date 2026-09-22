@@ -3,7 +3,7 @@
   "type": "class",
   "metadata": {
     "title": "业务服务层 - 类图",
-    "version": 8,
+    "version": 11,
     "description": "基于 packages/server/src/services 源码：项目/文档/图/索引/需求/工作区 六大服务",
     "baseCommit": "58d43b9",
     "verifiedCommit": "58d43b9",
@@ -33,7 +33,7 @@
           "name": "generateId"
         }
       ],
-      "description": "项目管理服务",
+      "description": "项目管理服务（listProjects 返回值新增 repoRoot，供发现后切换）",
       "geometry": {
         "x": 12,
         "y": 266,
@@ -107,7 +107,8 @@
           "name": "createDiagram"
         },
         {
-          "name": "getDiagramMeta"
+          "name": "getDiagramMeta",
+          "description": "返回 meta 摘要：title/description/type/version/节点/连线/分组计数（description 未设置时字段缺省）"
         },
         {
           "name": "getDiagramPartial"
@@ -116,10 +117,15 @@
           "name": "updateDiagramElements"
         },
         {
+          "name": "updateDiagramMeta",
+          "returnType": "Promise<Diagram>",
+          "description": "修改 metadata.title/description，JSON Merge Patch 语义（省略保留 / 显式 null 删除）；按 D1 不自增 version，不污染 verify_diagram 可信快照"
+        },
+        {
           "name": "deleteDiagram"
         }
       ],
-      "description": "图元 CRUD 服务",
+      "description": "图元 CRUD 服务（含元数据修改 updateDiagramMeta）",
       "geometry": {
         "x": 12,
         "y": 750,
@@ -132,7 +138,8 @@
             "path": "packages/server/src/services/diagram.service.ts",
             "symbols": [
               "DiagramService",
-              "updateDiagramElements"
+              "updateDiagramElements",
+              "updateDiagramMeta"
             ]
           }
         ]
@@ -241,7 +248,7 @@
           "name": "listWorkingRepos"
         }
       ],
-      "description": "工作区服务（仓库加载/切换）",
+      "description": "工作区服务（仓库加载/切换）：setWorkingRepo 支持 repoRoot / projectId 二选一（互斥）",
       "geometry": {
         "x": 12,
         "y": 1396,
@@ -258,6 +265,12 @@
             ]
           }
         ]
+      },
+      "payload": {
+        "aiRiskNote": {
+          "discovery": "list_projects 返回 repoRoot，打通发现→切换链路",
+          "switching": "projectId 反查 repoRoot 后切换；两者都传或都不传均报错"
+        }
       }
     }
   ],

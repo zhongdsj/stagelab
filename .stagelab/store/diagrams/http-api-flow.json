@@ -3,7 +3,7 @@
   "type": "flow",
   "metadata": {
     "title": "HTTP API - 核心流程图",
-    "version": 3,
+    "version": 5,
     "description": "基于 packages/server/src/http 源码：前端请求→路由→服务层→布局/存储 的处理流程"
   },
   "nodes": [
@@ -17,6 +17,16 @@
         "y": 64,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/web/src/api/client.ts",
+            "symbols": [
+              "http"
+            ]
+          }
+        ]
       }
     },
     {
@@ -32,18 +42,38 @@
         "y": 320,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/http/server.ts",
+            "symbols": [
+              "createHttpServer"
+            ]
+          }
+        ]
       }
     },
     {
       "nodeId": "route",
       "label": "路由匹配",
       "nodeKind": "process",
-      "description": "四类路由分发：projects/documents/diagrams/requirements",
+      "description": "五类路由分发：projects/documents/diagrams/requirements/system",
       "geometry": {
         "x": 12,
         "y": 576,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/http/server.ts",
+            "symbols": [
+              "createHttpServer"
+            ]
+          }
+        ]
       }
     },
     {
@@ -59,6 +89,19 @@
         "y": 832,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/http/routes/documents.ts"
+          },
+          {
+            "path": "packages/server/src/http/routes/diagrams.ts"
+          },
+          {
+            "path": "packages/server/src/http/routes/requirements.ts"
+          }
+        ]
       }
     },
     {
@@ -71,6 +114,17 @@
         "y": 1088,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/http/routes/_util.ts",
+            "symbols": [
+              "requireWorkspaceByProjectId",
+              "requireCurrentWorkspace"
+            ]
+          }
+        ]
       }
     },
     {
@@ -83,6 +137,25 @@
         "y": 64,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/services/project.service.ts"
+          },
+          {
+            "path": "packages/server/src/services/document.service.ts"
+          },
+          {
+            "path": "packages/server/src/services/diagram.service.ts"
+          },
+          {
+            "path": "packages/server/src/services/requirement.service.ts"
+          },
+          {
+            "path": "packages/server/src/services/index.service.ts"
+          }
+        ]
       }
     },
     {
@@ -98,6 +171,16 @@
         "y": 320,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/http/routes/diagrams.ts",
+            "symbols": [
+              "registerDiagramRoutes"
+            ]
+          }
+        ]
       }
     },
     {
@@ -113,6 +196,22 @@
         "y": 576,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/layout/worker.ts",
+            "symbols": [
+              "layoutInWorker"
+            ]
+          },
+          {
+            "path": "packages/server/src/layout/engine.ts",
+            "symbols": [
+              "computeLayout"
+            ]
+          }
+        ]
       }
     },
     {
@@ -125,6 +224,17 @@
         "y": 64,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/http/routes/_util.ts",
+            "symbols": [
+              "errorStatus",
+              "HttpError"
+            ]
+          }
+        ]
       }
     },
     {
@@ -137,6 +247,59 @@
         "y": 320,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/http/server.ts",
+            "symbols": [
+              "startHttpServer"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "nodeId": "sys-route",
+      "label": "系统运维路由",
+      "nodeKind": "decision",
+      "description": "GET/DELETE /api/system/registry-tmp：列表 / 单删 / 清空（仅手动触发，无自动清理）",
+      "payload": {
+        "aiRiskNote": {
+          "autoClean": "刻意不做自动清理，避免误删正在写入的 tmp",
+          "scope": "registry 临时文件运维，不触碰业务数据"
+        }
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/http/routes/system.ts",
+            "symbols": [
+              "registerSystemRoutes"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "nodeId": "sys-guard",
+      "label": "文件名安全校验",
+      "nodeKind": "decision",
+      "description": "正则白名单 ^registry\\.json\\.tmp-\\d+-[a-z0-9]+$ + path.resolve 后父目录必须等于注册表目录，否则 400",
+      "payload": {
+        "aiRiskNote": {
+          "security": "防路径穿越：文件名白名单 + 解析后父目录比对双重校验"
+        }
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/http/routes/system.ts",
+            "symbols": [
+              "resolveTmpFile"
+            ]
+          }
+        ]
       }
     }
   ],
@@ -372,6 +535,42 @@
           "y": 348
         }
       ]
+    },
+    {
+      "edgeId": "e13",
+      "from": "route",
+      "to": "sys-route",
+      "label": "匹配 system 路由",
+      "methods": [
+        "HttpServer.createHttpServer → SystemRoutes.registerSystemRoutes"
+      ]
+    },
+    {
+      "edgeId": "e14",
+      "from": "sys-route",
+      "to": "sys-guard",
+      "label": "单删请求",
+      "methods": [
+        "resolveTmpFile"
+      ]
+    },
+    {
+      "edgeId": "e15",
+      "from": "sys-guard",
+      "to": "err",
+      "label": "非法文件名 400"
+    },
+    {
+      "edgeId": "e16",
+      "from": "sys-guard",
+      "to": "end",
+      "label": "校验通过"
+    },
+    {
+      "edgeId": "e17",
+      "from": "sys-route",
+      "to": "end",
+      "label": "列表/清空直接返回"
     }
   ],
   "groups": [
@@ -384,7 +583,9 @@
         "cors",
         "route",
         "validate",
-        "resolver"
+        "resolver",
+        "sys-route",
+        "sys-guard"
       ]
     },
     {

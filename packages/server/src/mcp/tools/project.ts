@@ -42,12 +42,31 @@ export function registerProjectTools(server: McpServer): void {
     "set_working_repo",
     {
       title: "切换当前工作仓库",
-      description: "切换当前工作仓库（多仓库实例间切换），后续操作基于新选中仓库",
-      inputSchema: { repoRoot: z.string().min(1) }
+      description:
+        "切换当前工作仓库（多仓库实例间切换），后续操作基于新选中仓库。\n" +
+        "入参 repoRoot / projectId 二选一（互斥）：\n" +
+        "- repoRoot：仓库根目录绝对路径，直接切换（未加载则加载）\n" +
+        "- projectId：已加载仓库的项目 ID（可先用 list_working_repos / list_projects 获取），内部反查 repoRoot\n" +
+        "两者都传或都不传会返回错误提示。",
+      inputSchema: {
+        repoRoot: z
+          .string()
+          .min(1)
+          .optional()
+          .describe("仓库根目录绝对路径（与 projectId 二选一）"),
+        projectId: z
+          .string()
+          .min(1)
+          .optional()
+          .describe("已加载仓库的项目 ID（与 repoRoot 二选一，内部反查 repoRoot）")
+      }
     },
     async (args) =>
       safeCall(async () => {
-        const ws = await setWorkingRepo(args.repoRoot);
+        const ws = await setWorkingRepo({
+          repoRoot: args.repoRoot,
+          projectId: args.projectId
+        });
         return workspaceInfo(ws);
       })
   );

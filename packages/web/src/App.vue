@@ -12,11 +12,14 @@
     <main class="app-main">
       <router-view />
     </main>
+    <!-- 全站唯一的确认弹窗实例（供 confirmDialog() 调用，内容 Teleport 到 body） -->
+    <ConfirmDialog />
   </div>
 </template>
 
 <script setup lang="ts">
 import { useRouter } from "vue-router";
+import ConfirmDialog from "./components/common/ConfirmDialog.vue";
 
 const router = useRouter();
 

@@ -1,0 +1,14 @@
+{
+  "taskId": "c611fda0-1ba5-4c20-95e9-0847f6efb56a",
+  "requirementId": "ed7b1f6b-7269-4275-9aa0-b6212e28b160",
+  "title": "registerRepo 写入串行化消除并发丢记录",
+  "description": "registerRepo 是「读盘 → 改 → 覆盖写」，多进程并发时后写会覆盖先写导致丢记录。需引入跨进程互斥（复用既有 storage/lock.ts 机制）或写前重读 + 乐观重试，保证并发注册不丢条目。",
+  "status": "done",
+  "acceptanceCriteria": "两个进程并发 registerRepo 不同仓库后，registry.json 中两条记录均存在；串行化机制不会造成死锁或启动阻塞（超时有上限）",
+  "files": [
+    "packages/server/src/storage/registry.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1790063035699,
+  "updatedAt": 1790070491265
+}

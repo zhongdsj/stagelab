@@ -33,6 +33,15 @@
           <button class="btn-sm" type="button" :disabled="!manual.canRedo.value" @click="onRedo">↪ 重做</button>
         </template>
         <button class="btn-sm" type="button" @click="resetView">⟳ 重置视图</button>
+        <button class="btn-sm" type="button" @click="openRenameDialog">✎ 重命名</button>
+        <button
+          class="btn-sm danger"
+          type="button"
+          :disabled="deleting"
+          @click="onDeleteDiagram"
+        >
+          {{ deleting ? "删除中…" : "🗑 删除" }}
+        </button>
       </div>
     </div>
 
@@ -126,6 +135,35 @@
       </div>
     </div>
 
+    <!-- 图重命名弹窗（G1：仅改 title / description，不影响节点/连线/分组） -->
+    <div v-if="showRenameDialog" class="modal-mask" @click.self="showRenameDialog = false">
+      <div class="modal-panel">
+        <div class="modal-title">重命名图</div>
+        <p class="modal-desc">仅修改图的标题与描述，节点、连线、分组不受影响。</p>
+        <label class="modal-field">
+          <span>标题 *</span>
+          <input v-model="renameTitle" type="text" placeholder="图标题（必填）" maxlength="80" />
+        </label>
+        <label class="modal-field">
+          <span>描述（可选）</span>
+          <textarea
+            v-model="renameDescription"
+            rows="3"
+            placeholder="这张图表达什么、覆盖哪些模块"
+          ></textarea>
+        </label>
+        <p v-if="renameError" class="modal-error">{{ renameError }}</p>
+        <div class="modal-actions">
+          <button class="btn-sm" type="button" :disabled="renameBusy" @click="showRenameDialog = false">
+            取消
+          </button>
+          <button class="btn-sm primary" type="button" :disabled="renameBusy" @click="submitRename">
+            {{ renameBusy ? "保存中…" : "保存" }}
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- 人工确认可信度弹窗（T91） -->
     <div v-if="showVerifyDialog" class="modal-mask" @click.self="showVerifyDialog = false">
       <div class="modal-panel">
@@ -209,6 +247,8 @@ import {
   getLayout,
   getDiagramImpact,
   saveGeometry,
+  renameDiagram,
+  deleteDiagram,
   verifyDiagram as apiVerifyDiagram,
   getVerificationHistory as apiGetVerificationHistory,
   ApiError,
@@ -218,11 +258,20 @@ import {
 } from "../../api/index";
 import type { Diagram, NodeGeometry, CodeAnchorFile } from "@stagelab/shared";
 import { snapToNodeBorder, perpendicularEntryPath, type NodeBox } from "./useEdgeGeometry";
+import { confirmDialog } from "../common/ConfirmDialog.vue";
 
 const props = defineProps<{
   projectId: string;
   diagramId: string;
   title?: string;
+}>();
+
+/** 图元数据变更/删除后通知父级（父级负责重拉列表与路由回退） */
+const emit = defineEmits<{
+  /** 重命名成功：父级重拉项目索引，使侧边栏列表与标题同步 */
+  (e: "renamed", payload: { diagramId: string; title: string }): void;
+  /** 图已删除：父级回退到项目详情页 */
+  (e: "deleted", payload: { diagramId: string }): void;
 }>();
 
 const router = useRouter();
@@ -329,6 +378,80 @@ async function openHistoryDialog() {
     historyList.value = [];
   } finally {
     loadingHistory.value = false;
+  }
+}
+
+/* ========== 图元数据修改与图删除（G1 / G2） ========== */
+
+/** 重命名弹窗开关与表单状态 */
+const showRenameDialog = ref(false);
+const renameTitle = ref("");
+const renameDescription = ref("");
+const renameBusy = ref(false);
+const renameError = ref("");
+/** 删除进行中（避免重复提交） */
+const deleting = ref(false);
+
+/** 打开重命名弹窗：以当前图元数据回填 */
+function openRenameDialog() {
+  renameTitle.value = diagram.value?.metadata.title ?? "";
+  renameDescription.value = diagram.value?.metadata.description ?? "";
+  renameError.value = "";
+  showRenameDialog.value = true;
+}
+
+/** 提交重命名：仅改 title/description；成功后同步本地元数据并通知父级重拉列表 */
+async function submitRename() {
+  const title = renameTitle.value.trim();
+  if (!title) {
+    renameError.value = "标题不能为空";
+    return;
+  }
+  const trimmed = renameDescription.value.trim();
+  // 空描述按清空处理（传 null 删除该字段），避免落库空串
+  const description = trimmed ? trimmed : null;
+  renameBusy.value = true;
+  renameError.value = "";
+  try {
+    const meta = await renameDiagram(props.projectId, props.diagramId, {
+      title,
+      description
+    });
+    // 本地即时同步（父级重拉索引后 prop 亦会更新，避免中间态标题滞后）
+    if (diagram.value) {
+      const nextMeta = { ...diagram.value.metadata, title: meta.title };
+      if (description) nextMeta.description = description;
+      else delete nextMeta.description;
+      diagram.value = { ...diagram.value, metadata: nextMeta };
+    }
+    showRenameDialog.value = false;
+    emit("renamed", { diagramId: meta.diagramId, title: meta.title });
+  } catch (e) {
+    renameError.value = e instanceof ApiError ? e.message : "重命名失败";
+  } finally {
+    renameBusy.value = false;
+  }
+}
+
+/** 删除整张图：二次确认后调用 HTTP，成功后通知父级回退路由 */
+async function onDeleteDiagram() {
+  const title = diagram.value?.metadata.title ?? props.diagramId;
+  const ok = await confirmDialog({
+    title: "删除图",
+    message: `确定删除图「${title}」吗？该图的节点、连线、分组与影响范围索引将一并删除，不可恢复。`,
+    confirmText: "删除",
+    danger: true
+  });
+  if (!ok) return;
+  deleting.value = true;
+  error.value = "";
+  try {
+    await deleteDiagram(props.projectId, props.diagramId);
+    emit("deleted", { diagramId: props.diagramId });
+  } catch (e) {
+    error.value = e instanceof ApiError ? e.message : "删除图失败";
+  } finally {
+    deleting.value = false;
   }
 }
 
@@ -884,6 +1007,16 @@ function onWindowResize() {
 .btn-sm:hover {
   border-color: #409eff;
   color: #409eff;
+}
+/* 危险操作按钮（删除图） */
+.btn-sm.danger {
+  border-color: #f56c6c;
+  color: #f56c6c;
+}
+.btn-sm.danger:hover {
+  background: #fef0f0;
+  border-color: #f56c6c;
+  color: #f56c6c;
 }
 /* 画布：固定高度 + 溢出隐藏 + 可拖拽 */
 .canvas-pane {

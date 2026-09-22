@@ -1,0 +1,12 @@
+{
+  "requirementId": "cb3ef2aa-f011-41bb-97db-86c0bf53126f",
+  "title": "图描述读写补齐：MCP 支持清空 + get_diagram_meta 可读描述",
+  "description": "## 背景\n第一批「图管理能力补齐」新增 `update_diagram_meta` 后，实测发现两处能力缺口：\n① **不能清空描述**：MCP inputSchema 为 `description: z.string().optional()`，传 `null` 被 Zod 输入校验拦截（`must be string`），而服务层 `mergePatch` 本身已支持 `null` → 删除字段；HTTP `PATCH /meta` 也已支持 null。三层能力不一致。\n② **写后读不回**：`toDiagramMeta` 只输出 `diagramId/title/type/version/节点/连线/分组计数`，不含 `description`，MCP 侧没有任何读回描述的入口（`get_diagram_partial` 只返回节点/连线/分组，`search_project_content` 只返回 ID）。\n\n## 目标\n① MCP `update_diagram_meta` 接受 `description: null` 表示清空描述，与 HTTP 语义对齐；\n② `get_diagram_meta` 返回 `description`（未设置时字段缺省），MCP 侧可读回；\n③ Web 端清空描述输入框时传 `null`（而非空串），避免出现 `null` / `\"\"` 两种「无描述」表示。\n\n## 验收口径\n1. `update_diagram_meta({diagramId, description: null})` 成功返回，随后 `get_diagram_meta` 不再返回 description 字段\n2. `get_diagram_meta` 对已设描述的图返回 description 原文\n3. MCP SDK 生成的 JSON Schema 中 description 为 `{\"type\":[\"string\",\"null\"]}` 且不在 required 中\n4. Web 端清空描述后保存，图详情页与再次打开弹窗均为空\n\n## 关联文档\ndev-doc-diagram-mgmt-refresh",
+  "branchName": "feature/diagram-meta-description-rw",
+  "status": "done",
+  "taskIds": [
+    "155f66dc-f262-4cca-aef2-ceabeb10bce0"
+  ],
+  "createdAt": 1790067662469,
+  "updatedAt": 1790071893408
+}

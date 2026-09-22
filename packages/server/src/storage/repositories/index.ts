@@ -253,6 +253,43 @@ export class DocumentFragmentRepository extends EntityRepository<DocumentFragmen
     return result.sort((a, b) => a.order - b.order);
   }
 
+  /**
+   * 原子整体替换该文档的分片集合（供插入/重排等需要批量重编号的场景）
+   *
+   * 策略：先写全部新实体（同名覆盖，内容已在内存），再删除旧文件中已不存在的分片。
+   * 先写后删保证环状/链式移动（f0→f1、f1→f0 等）不丢数据；目标集合与旧集合的差集为
+   * 被移除的分片（如旧 order 不连续导致的多余文件），统一清除。
+   */
+  async replaceAll(docId: string, entities: DocumentFragment[]): Promise<void> {
+    const dir = documentDir(this.repoRoot, docId);
+    if (!fs.existsSync(dir)) {
+      throw new Error(`文档不存在: ${docId}`);
+    }
+    const oldFiles = (await fs.promises.readdir(dir)).filter(
+      (f) => f.endsWith(".json") && f !== "meta.json"
+    );
+    await this.ensureDir(docId);
+    for (const entity of entities) {
+      await writeJsonFile(
+        documentFragmentPath(this.repoRoot, docId, entity.fragmentId),
+        entity
+      );
+    }
+    const newFiles = new Set(entities.map((e) => `${e.fragmentId}.json`));
+    for (const f of oldFiles) {
+      if (!newFiles.has(f)) {
+        const fp = documentFragmentPath(
+          this.repoRoot,
+          docId,
+          f.replace(/\.json$/, "")
+        );
+        await fs.promises.unlink(fp).catch(() => {});
+        invalidateCache(fp);
+      }
+    }
+    await notifyChanged(this.repoRoot);
+  }
+
   /** 列出全部分片（跨全部文档） */
   async list(): Promise<DocumentFragment[]> {
     const ids = await this.listDocIds();

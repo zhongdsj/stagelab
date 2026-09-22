@@ -36,7 +36,12 @@ export async function createProject(
   return project;
 }
 
-/** 获取项目列表（仅元信息） */
+/**
+ * 获取项目列表（仅元信息）
+ *
+ * 返回值含 repoRoot：调用方拿到 projectId 后可直接推出仓库路径，
+ * 打通「发现项目 → 切换工作仓库」链路（G3-A）。
+ */
 export async function listProjects(workspace: RepoWorkspace) {
   const repos = createRepositories(workspace);
   try {
@@ -46,7 +51,8 @@ export async function listProjects(workspace: RepoWorkspace) {
         projectId: p.projectId,
         projectName: p.projectName,
         currentStage: p.currentStage,
-        updatedAt: p.updatedAt
+        updatedAt: p.updatedAt,
+        repoRoot: workspace.repoRoot
       }
     ];
   } catch {
@@ -104,7 +110,7 @@ export async function deleteProject(workspace: RepoWorkspace): Promise<void> {
     force: true
   });
   // 从注册表移除该仓库地址（下次启动不再恢复）
-  removeRepo(workspace.repoRoot);
+  await removeRepo(workspace.repoRoot);
   // 清空文件缓存，并从已加载工作区移除，避免后续读取残留旧数据
   clearCache();
   removeWorkspace(workspace.repoRoot);

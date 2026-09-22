@@ -1,0 +1,15 @@
+{
+  "taskId": "6343ec30-f22b-4392-9c22-4db7d67e0d8a",
+  "requirementId": "ed7b1f6b-7269-4275-9aa0-b6212e28b160",
+  "title": "replaceRegistryRepos 改增量删除并收紧失效判定",
+  "description": "将 replaceRegistryRepos 的「内存快照整体覆盖」改为增量删除（只对确认失效的路径调 removeRepo），无失效项时不写盘；同时收紧失效判定：仅 .stagelab 目录确实不存在才剔除，openWorkspace 抛错时保留记录并输出告警。",
+  "status": "done",
+  "acceptanceCriteria": "模拟 openWorkspace 抛错后重启，该仓库记录仍保留在 registry.json；仅在 .stagelab 目录确实不存在时才移除；无失效项时不产生写盘（registry.json mtime 不变）",
+  "files": [
+    "packages/server/src/storage/registry.ts",
+    "packages/server/src/storage/workspace.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1790063024359,
+  "updatedAt": 1790070491136
+}

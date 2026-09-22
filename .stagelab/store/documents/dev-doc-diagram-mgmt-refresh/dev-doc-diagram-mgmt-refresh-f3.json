@@ -1,0 +1,8 @@
+{
+  "fragmentId": "dev-doc-diagram-mgmt-refresh-f3",
+  "docId": "dev-doc-diagram-mgmt-refresh",
+  "order": 3,
+  "title": "决策结论 / 风险点 / 验收口径",
+  "content": "## 5. 决策结论\n\n| 编号 | 决策 | 状态 |\n|---|---|---|\n| D1 | 修改 title / description **不自增** `metadata.version` | 已确认 |\n| D2 | 一并支持 `description` 修改 | 默认采用（可推翻） |\n| D3 | 图重命名 / 删除入口放**图详情页**，图库保持只读 | 已确认 |\n| D4 | 自定义确认弹窗，并复用替换需求/任务/文档/项目共 7 处原生 confirm | 已确认 |\n| D5 | 刷新穿透范围 = 父级统计同步 + 当前 Tab 内容刷新（内容侧已达成，仅补统计与反馈） | 已确认 |\n\n## 6. 风险点\n\n- `metadata.version` 被 `verify_diagram` 用于漂移与可信度快照（`diagram.service.ts` 中 `version + 1` 两处），D1 已按不自增锁定，实现时不得顺手自增\n- 图删除不可逆，MCP 与 HTTP 两条删除路径需保证影响范围索引一致清理\n- 父级统计同步引入父子双向通信，需避免循环刷新\n- 文档库接入 `loading` 时需确认不引起列表/正文闪屏（需求 Tab 已有此行为，可对齐）\n- G4 替换弹窗触及 4 个既有文件，属行为变更（从同步阻塞变异步），需逐个确认调用链已改为 await / 回调形式\n\n## 7. 验收口径\n\n- G1：对已存在的图调用 `update_diagram_meta` 改标题后，`get_diagram_meta` 与项目索引均返回新标题，且节点/连线/分组数量不变、`metadata.version` 不变；图详情页标题同步更新\n- G2：图详情页可删除图，确认后 store 对应文件与影响范围索引被清理，页面回退到项目详情\n- G3：点击右下角刷新按钮后，① 顶部统计（文档/图/需求/任务 数量与状态细分）同步更新；② 文档库与需求 Tab 均有一致的刷新视觉反馈。当前 Tab 内容重载逻辑已成立，无需回归\n- G4：7 处 `window.confirm` 全部替换为自定义确认弹窗（可用 grep 校验无残留），弹窗支持点击外部关闭与取消\n",
+  "summary": "D1~D5 决策结论表（D5 已确认）、5 项风险点、G1~G4 验收口径（G3 已修正为统计同步 + 视觉反馈）"
+}

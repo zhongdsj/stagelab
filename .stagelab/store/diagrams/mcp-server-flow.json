@@ -3,7 +3,7 @@
   "type": "flow",
   "metadata": {
     "title": "MCP Server - 核心流程图",
-    "version": 4,
+    "version": 6,
     "description": "基于 packages/server/src/mcp 源码：MCP 工具调用→服务层→存储层 的请求处理流程"
   },
   "nodes": [
@@ -17,6 +17,16 @@
         "y": 64,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/mcp/server.ts",
+            "symbols": [
+              "startMcpServer"
+            ]
+          }
+        ]
       }
     },
     {
@@ -32,6 +42,16 @@
         "y": 320,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/services/workspace.service.ts",
+            "symbols": [
+              "initFromArgs"
+            ]
+          }
+        ]
       }
     },
     {
@@ -44,6 +64,16 @@
         "y": 576,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/mcp/server.ts",
+            "symbols": [
+              "startMcpServer"
+            ]
+          }
+        ]
       }
     },
     {
@@ -56,6 +86,16 @@
         "y": 832,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/mcp/server.ts",
+            "symbols": [
+              "createMcpServer"
+            ]
+          }
+        ]
       }
     },
     {
@@ -71,6 +111,17 @@
         "y": 64,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/mcp/tools/index.ts",
+            "symbols": [
+              "registerAllTools",
+              "registerAllToolsWithLog"
+            ]
+          }
+        ]
       }
     },
     {
@@ -86,6 +137,25 @@
         "y": 64,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/services/project.service.ts"
+          },
+          {
+            "path": "packages/server/src/services/document.service.ts"
+          },
+          {
+            "path": "packages/server/src/services/diagram.service.ts"
+          },
+          {
+            "path": "packages/server/src/services/requirement.service.ts"
+          },
+          {
+            "path": "packages/server/src/services/index.service.ts"
+          }
+        ]
       }
     },
     {
@@ -101,6 +171,25 @@
         "y": 64,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/mcp/tools/project.ts"
+          },
+          {
+            "path": "packages/server/src/mcp/tools/document.ts"
+          },
+          {
+            "path": "packages/server/src/mcp/tools/diagram.ts"
+          },
+          {
+            "path": "packages/server/src/mcp/tools/requirement.ts"
+          },
+          {
+            "path": "packages/server/src/mcp/tools/search.ts"
+          }
+        ]
       }
     },
     {
@@ -113,6 +202,17 @@
         "y": 320,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/mcp/tools/_util.ts",
+            "symbols": [
+              "safeCall",
+              "classifyError"
+            ]
+          }
+        ]
       }
     },
     {
@@ -125,6 +225,16 @@
         "y": 320,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/mcp/tools/_util.ts",
+            "symbols": [
+              "workspaceInfo"
+            ]
+          }
+        ]
       }
     },
     {
@@ -137,6 +247,16 @@
         "y": 576,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/mcp/server.ts",
+            "symbols": [
+              "startMcpServer"
+            ]
+          }
+        ]
       }
     },
     {
@@ -152,6 +272,60 @@
         "y": 320,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/storage/repositories/base.ts",
+            "symbols": [
+              "notifyChanged"
+            ]
+          },
+          {
+            "path": "packages/server/src/storage/io.ts",
+            "symbols": [
+              "writeJsonFile"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "nodeId": "switch-repo",
+      "label": "切换工作仓库",
+      "nodeKind": "process",
+      "description": "set_working_repo：repoRoot / projectId 二选一（互斥校验，都传或都不传报错）",
+      "payload": {
+        "aiRiskNote": {
+          "breakingChange": "入参由必填 repoRoot 改为二选一",
+          "compat": "仅传 repoRoot 行为与旧版一致"
+        }
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/mcp/tools/project.ts",
+            "symbols": [
+              "set_working_repo"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "nodeId": "resolve-root",
+      "label": "projectId 反查 repoRoot",
+      "nodeKind": "process",
+      "description": "由已加载仓库元信息反查 repoRoot 后切换/加载（list_projects 已返回 repoRoot）",
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/services/workspace.service.ts",
+            "symbols": [
+              "setWorkingRepo"
+            ]
+          }
+        ]
       }
     }
   ],
@@ -407,6 +581,39 @@
           "y": 320
         }
       ]
+    },
+    {
+      "edgeId": "e13",
+      "from": "dispatch",
+      "to": "switch-repo",
+      "label": "命中 set_working_repo",
+      "methods": [
+        "ProjectTools.registerProjectTools → setWorkingRepo"
+      ]
+    },
+    {
+      "edgeId": "e14",
+      "from": "switch-repo",
+      "to": "resolve-root",
+      "label": "传 projectId"
+    },
+    {
+      "edgeId": "e15",
+      "from": "resolve-root",
+      "to": "storage",
+      "label": "加载/切换"
+    },
+    {
+      "edgeId": "e16",
+      "from": "switch-repo",
+      "to": "storage",
+      "label": "传 repoRoot"
+    },
+    {
+      "edgeId": "e17",
+      "from": "storage",
+      "to": "meta",
+      "label": "返回仓库信息"
     }
   ],
   "groups": [
@@ -440,6 +647,14 @@
       "nodeIds": [
         "call-svc",
         "storage"
+      ]
+    },
+    {
+      "groupId": "lane-repo",
+      "title": "工作仓库切换",
+      "nodeIds": [
+        "switch-repo",
+        "resolve-root"
       ]
     }
   ]

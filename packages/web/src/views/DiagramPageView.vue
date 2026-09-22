@@ -43,6 +43,8 @@
         :project-id="props.id"
         :diagram-id="activeDiagram.diagramId"
         :title="`${typeLabel(activeDiagram.type)}：${activeDiagram.title}`"
+        @renamed="load"
+        @deleted="goBack"
       />
       <p v-else class="hint">未找到该图，请从左侧列表选择。</p>
     </main>

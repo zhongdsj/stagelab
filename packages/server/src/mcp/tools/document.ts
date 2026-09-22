@@ -89,11 +89,18 @@ export function registerDocumentTools(server: McpServer): void {
     "write_document_fragment",
     {
       title: "写入/更新文档分片",
-      description: "写入/更新文档分片（AI 自控单分片语义）：缺省 order 追加到末尾，指定 order 替换该分片；超长不报错不硬切，>2000 返回 warning、>4000 返回 strongWarning，内容均原样落库，由 AI 自行决定是否拆分。title/summary 为分片级元信息（仅供 list_document_fragments 跳读），不会改动文档级 meta；要改文档标题/类型/摘要请用 update_document_meta",
+      description:
+        "写入/更新文档分片（AI 自控单分片语义）：\n" +
+        "- 缺省 order：追加到该文档末尾；指定 order：替换该 order 的分片（不存在则新建）\n" +
+        "- insertAfter：在该分片之后插入新分片（如分片2追加内容过大需拆出并插到2和3之间，用 insertAfter=<f2 id> 一次搞定），其后分片整体后移重编号；返回 shifted 给出旧→新 ID 映射，调用方须按新 ID 更新认知\n" +
+        "- order 与 insertAfter 互斥，二选一\n" +
+        "- 超长不报错不硬切，>2000 返回 warning、>4000 返回 strongWarning，内容均原样落库，由 AI 自行决定是否拆分\n" +
+        "title/summary 为分片级元信息（仅供 list_document_fragments 跳读），不会改动文档级 meta；要改文档标题/类型/摘要请用 update_document_meta",
       inputSchema: {
         docId: z.string().min(1),
         content: z.string(),
         order: z.number().int().nonnegative().optional(),
+        insertAfter: z.string().min(1).optional(),
         title: z.string().optional(),
         summary: z.string().optional()
       }
@@ -103,6 +110,7 @@ export function registerDocumentTools(server: McpServer): void {
         const ws = await getWorkspace();
         return writeDocumentFragment(ws, args.docId, args.content, {
           order: args.order,
+          insertAfter: args.insertAfter,
           title: args.title,
           summary: args.summary
         });

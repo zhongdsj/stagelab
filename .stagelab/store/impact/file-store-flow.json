@@ -2,12 +2,13 @@
   "start": {
     "upstream": [],
     "downstream": [
-      "path"
+      "path",
+      "reg-entry"
     ],
     "upstreamHops": 0,
     "downstreamHops": 6,
     "fanIn": 0,
-    "fanOut": 1,
+    "fanOut": 2,
     "inCycle": false,
     "cycleIds": [],
     "structuralRisk": "low"
@@ -140,12 +141,14 @@
       "disk-read",
       "cache-hit",
       "conflict-err",
-      "release"
+      "release",
+      "reg-tmp-clean",
+      "reg-orphan"
     ],
     "downstream": [],
-    "upstreamHops": 4,
+    "upstreamHops": 6,
     "downstreamHops": 0,
-    "fanIn": 4,
+    "fanIn": 6,
     "fanOut": 0,
     "inCycle": false,
     "cycleIds": [],
@@ -159,6 +162,112 @@
       "end"
     ],
     "upstreamHops": 5,
+    "downstreamHops": 1,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "reg-entry": {
+    "upstream": [
+      "start"
+    ],
+    "downstream": [
+      "reg-lock"
+    ],
+    "upstreamHops": 1,
+    "downstreamHops": 6,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "reg-lock": {
+    "upstream": [
+      "reg-entry"
+    ],
+    "downstream": [
+      "reg-reload"
+    ],
+    "upstreamHops": 2,
+    "downstreamHops": 5,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "reg-reload": {
+    "upstream": [
+      "reg-lock"
+    ],
+    "downstream": [
+      "reg-prune"
+    ],
+    "upstreamHops": 3,
+    "downstreamHops": 4,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "reg-prune": {
+    "upstream": [
+      "reg-reload"
+    ],
+    "downstream": [
+      "reg-rename"
+    ],
+    "upstreamHops": 4,
+    "downstreamHops": 3,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "reg-rename": {
+    "upstream": [
+      "reg-prune"
+    ],
+    "downstream": [
+      "reg-tmp-clean",
+      "reg-orphan"
+    ],
+    "upstreamHops": 5,
+    "downstreamHops": 2,
+    "fanIn": 1,
+    "fanOut": 2,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "reg-tmp-clean": {
+    "upstream": [
+      "reg-rename"
+    ],
+    "downstream": [
+      "end"
+    ],
+    "upstreamHops": 6,
+    "downstreamHops": 1,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "reg-orphan": {
+    "upstream": [
+      "reg-rename"
+    ],
+    "downstream": [
+      "end"
+    ],
+    "upstreamHops": 6,
     "downstreamHops": 1,
     "fanIn": 1,
     "fanOut": 1,

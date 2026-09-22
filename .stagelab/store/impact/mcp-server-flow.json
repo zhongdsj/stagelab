@@ -62,12 +62,13 @@
       "recv"
     ],
     "downstream": [
-      "call-svc"
+      "call-svc",
+      "switch-repo"
     ],
     "upstreamHops": 4,
     "downstreamHops": 4,
     "fanIn": 1,
-    "fanOut": 1,
+    "fanOut": 2,
     "inCycle": false,
     "cycleIds": [],
     "structuralRisk": "low"
@@ -151,13 +152,46 @@
   },
   "storage": {
     "upstream": [
-      "call-svc"
+      "call-svc",
+      "resolve-root",
+      "switch-repo"
     ],
     "downstream": [
       "meta"
     ],
     "upstreamHops": 6,
     "downstreamHops": 2,
+    "fanIn": 3,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "medium"
+  },
+  "switch-repo": {
+    "upstream": [
+      "dispatch"
+    ],
+    "downstream": [
+      "resolve-root",
+      "storage"
+    ],
+    "upstreamHops": 5,
+    "downstreamHops": 3,
+    "fanIn": 1,
+    "fanOut": 2,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "resolve-root": {
+    "upstream": [
+      "switch-repo"
+    ],
+    "downstream": [
+      "storage"
+    ],
+    "upstreamHops": 6,
+    "downstreamHops": 3,
     "fanIn": 1,
     "fanOut": 1,
     "inCycle": false,

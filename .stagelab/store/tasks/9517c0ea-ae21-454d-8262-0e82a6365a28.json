@@ -1,0 +1,14 @@
+{
+  "taskId": "9517c0ea-ae21-454d-8262-0e82a6365a28",
+  "requirementId": "6cbc1c44-ec4d-4e8d-95dd-c9fe8a948e56",
+  "title": "新增图 meta 修改 HTTP 路由 PATCH",
+  "description": "在 registerDiagramRoutes 中新增 PATCH /api/projects/:id/diagrams/:did/meta，body 接收 { title?, description? }，调用 updateDiagramMeta 并返回 meta。项目 id 校验与错误格式与既有路由保持一致。",
+  "status": "done",
+  "acceptanceCriteria": "PATCH 改名后返回新标题；项目或图不存在时返回与既有路由一致的错误格式；不传任何字段时不改动数据",
+  "files": [
+    "packages/server/src/http/routes/diagrams.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1790062159388,
+  "updatedAt": 1790064792618
+}

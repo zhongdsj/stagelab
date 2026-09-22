@@ -1,0 +1,14 @@
+{
+  "taskId": "4eaa149a-54fa-4432-8e86-17142eddd185",
+  "requirementId": "6cbc1c44-ec4d-4e8d-95dd-c9fe8a948e56",
+  "title": "新增图删除 HTTP 路由 DELETE",
+  "description": "新增 DELETE /api/projects/:id/diagrams/:did，调用既有 deleteDiagram 服务，语义与 MCP delete_diagram 对齐，确保影响范围索引一并清理。",
+  "status": "done",
+  "acceptanceCriteria": "删除后 .stagelab/store 下对应图文件被移除；影响范围索引中该图条目被清理；重复删除返回与既有路由一致的错误格式而非 500",
+  "files": [
+    "packages/server/src/http/routes/diagrams.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1790062174956,
+  "updatedAt": 1790064792654
+}

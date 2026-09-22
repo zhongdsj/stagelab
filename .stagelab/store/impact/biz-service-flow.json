@@ -271,5 +271,61 @@
     "inCycle": false,
     "cycleIds": [],
     "structuralRisk": "medium"
+  },
+  "f5-start": {
+    "upstream": [],
+    "downstream": [
+      "f5-resolve"
+    ],
+    "upstreamHops": 0,
+    "downstreamHops": 3,
+    "fanIn": 0,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "f5-resolve": {
+    "upstream": [
+      "f5-start"
+    ],
+    "downstream": [
+      "f5-load"
+    ],
+    "upstreamHops": 1,
+    "downstreamHops": 2,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "f5-load": {
+    "upstream": [
+      "f5-resolve"
+    ],
+    "downstream": [
+      "f5-done"
+    ],
+    "upstreamHops": 2,
+    "downstreamHops": 1,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "f5-done": {
+    "upstream": [
+      "f5-load"
+    ],
+    "downstream": [],
+    "upstreamHops": 3,
+    "downstreamHops": 0,
+    "fanIn": 1,
+    "fanOut": 0,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
   }
 }

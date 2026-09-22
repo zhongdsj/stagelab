@@ -3,7 +3,7 @@
   "type": "class",
   "metadata": {
     "title": "Web 前端 - 类图",
-    "version": 141,
+    "version": 146,
     "description": "基于 packages/web 源码：Vue3 SPA 的视图/组件/API 三层结构；后端 HTTP API 层、业务服务层、布局引擎、本地存储等外部模块统一用 BackendService 占位表示",
     "baseCommit": "58d43b9",
     "verifiedCommit": "58d43b9",
@@ -363,9 +363,24 @@
           "name": "resetParams",
           "returnType": "void",
           "description": "清空布局参数覆盖并重载（T47 扩展）"
+        },
+        {
+          "name": "openRenameDialog",
+          "returnType": "void",
+          "description": "打开重命名弹窗，以当前 metadata.title/description 回填"
+        },
+        {
+          "name": "submitRename",
+          "returnType": "Promise<void>",
+          "description": "PATCH /diagrams/:id/meta 保存标题与描述；成功后同步本地元数据并 emit('renamed') 通知父级重拉索引"
+        },
+        {
+          "name": "onDeleteDiagram",
+          "returnType": "Promise<void>",
+          "description": "confirmDialog 二次确认后 DELETE 图，emit('deleted') 由父级路由回退到项目详情页"
         }
       ],
-      "description": "图视图：加载语义模型 + 实时布局；相机拖拽/缩放；连线点击豁免拖拽；布局参数面板（前端可修改布局参数）",
+      "description": "图视图：加载语义模型 + 实时布局；相机拖拽/缩放；连线点击豁免拖拽；布局参数面板；重命名/删除图入口（G1/G2，删除复用 confirmDialog 二次确认）",
       "geometry": {
         "x": 879.0261284083863,
         "y": 1032,
@@ -742,9 +757,43 @@
             }
           ],
           "returnType": "Promise<LayoutDiagram>"
+        },
+        {
+          "name": "renameDiagram",
+          "params": [
+            {
+              "name": "projectId",
+              "type": "string"
+            },
+            {
+              "name": "diagramId",
+              "type": "string"
+            },
+            {
+              "name": "patch",
+              "type": "DiagramMetaPatch"
+            }
+          ],
+          "returnType": "Promise<DiagramMeta>",
+          "description": "PATCH /diagrams/:id/meta：仅改 title/description，不影响节点/连线/分组"
+        },
+        {
+          "name": "deleteDiagram",
+          "params": [
+            {
+              "name": "projectId",
+              "type": "string"
+            },
+            {
+              "name": "diagramId",
+              "type": "string"
+            }
+          ],
+          "returnType": "Promise<{diagramId; deleted}>",
+          "description": "DELETE /diagrams/:id：联动清理影响范围索引与验证历史"
         }
       ],
-      "description": "图 API：语义模型读取 + 实时布局计算（支持模块聚焦）",
+      "description": "图 API：语义模型读取 + 实时布局计算（支持模块聚焦）+ 元数据修改/图删除（G1/G2）",
       "geometry": {
         "x": 1002,
         "y": 2002,
@@ -756,7 +805,9 @@
           {
             "path": "packages/web/src/api/diagrams.ts",
             "symbols": [
-              "DiagramsApi"
+              "DiagramsApi",
+              "renameDiagram",
+              "deleteDiagram"
             ]
           }
         ]
@@ -1038,6 +1089,94 @@
             "path": "packages/web/src/components/diagram/useManualEdit.ts",
             "symbols": [
               "useManualEdit"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "nodeId": "ConfirmDialog",
+      "label": "ConfirmDialog",
+      "kind": "class",
+      "attributes": [
+        {
+          "name": "confirmState",
+          "type": "ConfirmState",
+          "visibility": "public",
+          "static": true,
+          "description": "模块级单例响应式状态：visible/title/message/confirmText/cancelText/danger"
+        }
+      ],
+      "methods": [
+        {
+          "name": "confirmDialog",
+          "params": [
+            {
+              "name": "options",
+              "type": "ConfirmOptions | string"
+            }
+          ],
+          "returnType": "Promise<boolean>",
+          "visibility": "public",
+          "description": "打开弹窗并返回用户选择；点遮罩外部 / Esc / 取消 均 resolve false；重复调用会先按取消结算上一个 Promise"
+        },
+        {
+          "name": "onConfirm",
+          "returnType": "void",
+          "visibility": "private",
+          "description": "确认 → settle(true)"
+        },
+        {
+          "name": "onCancel",
+          "returnType": "void",
+          "visibility": "private",
+          "description": "取消 / 点遮罩 / Esc → settle(false)"
+        }
+      ],
+      "description": "全站唯一确认弹窗实例（App.vue 挂载），暴露 confirmDialog() 供各页面 await 调用；内容 Teleport 到 body，Glassmorphism 样式 + 组件级语义 token。",
+      "payload": {
+        "aiRiskNote": {
+          "risk": "模块级 resolver 为单例，同一时刻只支持一个弹窗；并发调用会取消前一个",
+          "scope": "全站"
+        }
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/web/src/components/common/ConfirmDialog.vue",
+            "symbols": [
+              "confirmDialog",
+              "confirmState",
+              "ConfirmOptions"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "nodeId": "SystemApi",
+      "label": "SystemApi",
+      "kind": "class",
+      "methods": [
+        {
+          "name": "listRegistryTmp"
+        },
+        {
+          "name": "deleteRegistryTmp"
+        },
+        {
+          "name": "clearRegistryTmp"
+        }
+      ],
+      "description": "系统级运维 API（registry 临时文件手动清理，入口在项目总览页「系统临时文件」下拉）",
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/web/src/api/system.ts",
+            "symbols": [
+              "listRegistryTmp",
+              "deleteRegistryTmp",
+              "clearRegistryTmp"
             ]
           }
         ]
@@ -1607,6 +1746,64 @@
           "y": 2794
         }
       ]
+    },
+    {
+      "edgeId": "e-App-ConfirmDialog",
+      "from": "App",
+      "to": "ConfirmDialog",
+      "label": "挂载全局实例",
+      "methods": [
+        "App.setup → <ConfirmDialog />"
+      ]
+    },
+    {
+      "edgeId": "e-ProjectListView-ConfirmDialog",
+      "from": "ProjectListView",
+      "to": "ConfirmDialog",
+      "label": "删除项目确认",
+      "methods": [
+        "ProjectListView.onDeleteProject → confirmDialog()"
+      ]
+    },
+    {
+      "edgeId": "e-RequirementTasks-ConfirmDialog",
+      "from": "RequirementTasks",
+      "to": "ConfirmDialog",
+      "label": "需求/任务确认",
+      "methods": [
+        "RequirementTasks.onDeleteReq → confirmDialog()",
+        "RequirementTasks.onRestoreReq → confirmDialog()",
+        "RequirementTasks.onDeleteTask → confirmDialog()",
+        "RequirementTasks.onRestoreTask → confirmDialog()"
+      ]
+    },
+    {
+      "edgeId": "e-DocumentLibrary-ConfirmDialog",
+      "from": "DocumentLibrary",
+      "to": "ConfirmDialog",
+      "label": "删除文档确认",
+      "methods": [
+        "DocumentLibrary.onDelete → confirmDialog()"
+      ]
+    },
+    {
+      "edgeId": "e-DocumentFragments-ConfirmDialog",
+      "from": "DocumentFragments",
+      "to": "ConfirmDialog",
+      "label": "超长保存确认",
+      "methods": [
+        "DocumentFragments.save → confirmDialog()"
+      ]
+    },
+    {
+      "edgeId": "e-sysapi-client",
+      "from": "SystemApi",
+      "to": "ApiClient"
+    },
+    {
+      "edgeId": "e-plv-sysapi",
+      "from": "ProjectListView",
+      "to": "SystemApi"
     }
   ],
   "groups": [
@@ -1633,7 +1830,8 @@
         "DiagramLibrary",
         "DiagramView",
         "DiagramSvg",
-        "RequirementTasks"
+        "RequirementTasks",
+        "ConfirmDialog"
       ],
       "collapsible": true
     },
@@ -1647,7 +1845,8 @@
         "ProjectsApi",
         "DocumentsApi",
         "DiagramsApi",
-        "RequirementsApi"
+        "RequirementsApi",
+        "SystemApi"
       ],
       "collapsible": true
     },

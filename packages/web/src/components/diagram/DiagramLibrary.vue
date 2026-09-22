@@ -36,7 +36,7 @@
 
     <!-- 悬浮操作：刷新 + 回到顶部（右下角常驻） -->
     <div class="float-actions">
-      <button class="float-btn" type="button" title="刷新图库" @click="load">⟳</button>
+      <button class="float-btn" type="button" title="刷新图库" @click="onRefresh">⟳</button>
       <button class="float-btn" type="button" title="回到顶部" @click="scrollTop">↑</button>
     </div>
   </div>
@@ -49,6 +49,11 @@ import { getProjectIndex, ApiError } from "../../api/index";
 import type { ProjectIndexResult } from "../../api/projects";
 
 const props = defineProps<{ projectId: string }>();
+
+/** 刷新完成后通知父级重拉项目索引（同步顶部统计） */
+const emit = defineEmits<{
+  (e: "refresh"): void;
+}>();
 
 const router = useRouter();
 
@@ -115,6 +120,12 @@ function openDiagram(diagramId: string) {
 /** 回到顶部（页面/视口滚动） */
 function scrollTop() {
   window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+/** 刷新：重拉图列表后通知父级同步顶部统计 */
+async function onRefresh() {
+  await load();
+  emit("refresh");
 }
 
 onMounted(load);

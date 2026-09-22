@@ -1,0 +1,14 @@
+{
+  "taskId": "d9ab5d1d-b326-427c-b977-30309216e556",
+  "requirementId": "6cbc1c44-ec4d-4e8d-95dd-c9fe8a948e56",
+  "title": "新增 updateDiagramMeta 服务",
+  "description": "新增 updateDiagramMeta(workspace, diagramId, patch)，支持修改 metadata.title / description，采用与 updateDiagramElements 一致的 JSON Merge Patch 语义（省略字段保留原值、显式 null 删除）。按决策 D1 不自增 metadata.version。",
+  "status": "done",
+  "acceptanceCriteria": "改 title 后 getDiagramMeta 返回新标题；metadata.version 保持不变；nodes/edges/groups 数量与内容不变；省略的字段保持原值",
+  "files": [
+    "packages/server/src/services/diagram.service.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1790062159295,
+  "updatedAt": 1790064792529
+}

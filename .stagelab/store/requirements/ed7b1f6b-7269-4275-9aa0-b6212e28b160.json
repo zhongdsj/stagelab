@@ -1,0 +1,14 @@
+{
+  "requirementId": "ed7b1f6b-7269-4275-9aa0-b6212e28b160",
+  "title": "修复注册表写入导致的项目记录丢失",
+  "description": "## 背景\n已注册项目会偶发从列表消失（约 20 天 2 次）。根因定位到 `loadRegisteredWorkspaces`（`packages/server/src/storage/workspace.ts`）：\n\n**路径 A：暂时性失败被永久剔除**。`isRepoInitialized(root)` 因磁盘忙/权限/网络盘抖动返回 false，或 `openWorkspace` 抛错（被 catch 当作失效跳过），该仓库即被踢出 `valid`，随后 `replaceRegistryRepos(valid)` **用内存快照整体覆盖**注册表，注册记录永久删除。\n\n**路径 B：多进程读-改-写竞态**。`listRegisteredRepos()` 读快照到 `replaceRegistryRepos(valid)` 覆盖之间存在窗口，窗口内另一个 MCP 进程（新窗口/新应用）调 `registerRepo` 注册的新仓库会被陈旧快照抹掉。\n\n另：`saveRegistry` 的 `renameSync` 无重试，失败时直接抛错且不回收本次创建的 tmp。\n\n## 目标\n① `replaceRegistryRepos` 改为**增量删除**（只对确认失效项调 `removeRepo`），不做整体覆盖；② 失效判定收紧：只有 `.stagelab` 目录确实不存在才剔除，`openWorkspace` 抛错应**保留记录**并告警；③ `saveRegistry` 加 rename 失败重试，并在本次调用失败时回收自己刚创建的 tmp（仅本次创建的，**不做启动扫描或历史孤儿清理**）。\n\n## 验收口径\n1. 模拟 `openWorkspace` 抛错后重启，该仓库记录仍保留在 registry.json 中\n2. 两个进程并发 `registerRepo` 不同仓库，两条记录均存在，无丢失\n3. 仅在 `.stagelab` 目录确实缺失时才从注册表移除\n4. 写入失败后不残留本次调用创建的 tmp 文件\n\n## 关联文档\ndev-doc-registry-tmp-and-repo-switch",
+  "branchName": "feature/registry-write-integrity",
+  "status": "done",
+  "taskIds": [
+    "6343ec30-f22b-4392-9c22-4db7d67e0d8a",
+    "3e1a853a-690b-4ef3-9af0-31b173491b19",
+    "c611fda0-1ba5-4c20-95e9-0847f6efb56a"
+  ],
+  "createdAt": 1790062792299,
+  "updatedAt": 1790071900480
+}

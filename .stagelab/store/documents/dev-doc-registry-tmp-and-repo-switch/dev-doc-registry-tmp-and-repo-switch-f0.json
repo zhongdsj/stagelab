@@ -1,0 +1,8 @@
+{
+  "fragmentId": "dev-doc-registry-tmp-and-repo-switch-f0",
+  "docId": "dev-doc-registry-tmp-and-repo-switch",
+  "order": 0,
+  "title": "registry 临时文件治理、项目记录丢失修复与按 id 切换仓库 开发文档",
+  "content": "# 阶段1 开发文档：registry 临时文件治理、项目记录丢失修复与按 id 切换仓库\n\n## 1. 业务背景\n\n三个议题，前两个同源（都指向注册表写入路径）：\n\n### 议题 A：%APPDATA%/stagelab 下堆积 registry.json.tmp-* 文件\n\n每个 MCP 客户端进程启动都会无条件重写注册表，每次写入生成一个唯一命名的临时文件后 rename。无清理兜底，rename 失败或进程中断即永久残留。\n\n### 议题 B：项目记录偶发丢失（隐患）\n\n约 20 天出现 2 次「已注册项目从列表消失」，无规律、难复现。\n\n### 议题 C：无法按 projectId 切换工作仓库\n\n只能按目录路径切换，且项目列表不返回路径，导致「发现 → 切换」链路断裂。\n\n## 2. 功能目标\n\n- G1：提供 registry 临时文件的可视化**手动**清理入口（按用户决策：不做任何自动清理）\n- G2：消除项目记录丢失隐患\n- G3：打通「列出项目 → 按 id 切换」链路\n",
+  "summary": "阶段1开发文档。三个议题：A registry.json.tmp-* 堆积（saveRegistry 唯一命名 tmp + 无兜底清理 + 每进程启动无条件重写 + Windows rename 被句柄占用会 EPERM/EBUSY）；B 项目记录偶发丢失（replaceRegistryRepos 用内存快照整体覆盖 + 暂时性失败被当永久失效 + 多进程读改写竞态）；C 无法按 projectId 切换（list_projects 不含 repoRoot，set_working_repo 只接受 repoRoot）。决策：仅手动清理不做自动清理；清理 UI 放项目总览页新建项目左侧；一并修复项目缺失根因；切换能力 A+B 叠加。"
+}

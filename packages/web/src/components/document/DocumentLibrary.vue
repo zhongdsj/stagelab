@@ -7,6 +7,9 @@
       </button>
     </div>
 
+    <!-- 刷新/加载反馈：不隐藏已有列表与正文，避免闪屏 -->
+    <p v-if="loading" class="lib-loading">加载中…</p>
+
     <!-- 文档状态 tab（当前聚焦 → 长期更新 → 留档） -->
     <div class="status-tabs">
       <button
@@ -74,11 +77,12 @@
       :project-id="projectId"
       :doc-id="activeDocId"
       :title="activeDoc?.title"
+      :refresh-tick="refreshTick"
     />
 
     <!-- 悬浮操作：刷新 + 回到顶部（右下角常驻） -->
     <div class="float-actions">
-      <button class="float-btn" type="button" title="刷新文档库" @click="load">⟳</button>
+      <button class="float-btn" type="button" title="刷新文档库" @click="onRefresh">⟳</button>
       <button class="float-btn" type="button" title="回到顶部" @click="scrollTop">↑</button>
     </div>
   </div>
@@ -90,8 +94,14 @@ import { getProjectIndex, createDocument, renameDocument, deleteDocument, ApiErr
 import type { DocumentStatus } from "@stagelab/shared";
 import type { DocumentItem } from "../../api/documents";
 import DocumentFragments from "./DocumentFragments.vue";
+import { confirmDialog } from "../common/ConfirmDialog.vue";
 
 const props = defineProps<{ projectId: string }>();
+
+/** 刷新完成后通知父级重拉项目索引（同步顶部统计） */
+const emit = defineEmits<{
+  (e: "refresh"): void;
+}>();
 
 const documents = ref<DocumentItem[]>([]);
 const activeDocId = ref<string>("");
@@ -101,6 +111,7 @@ const creating = ref(false);
 const saving = ref(false);
 const showCreate = ref(false);
 const renaming = ref(false);
+const refreshTick = ref(0);
 const createForm = reactive({ title: "", docType: "", content: "" });
 const renameForm = reactive({ title: "", docType: "" });
 
@@ -211,7 +222,12 @@ async function onChangeStatus() {
 /** 删除文档 */
 async function onDelete() {
   if (!activeDoc.value) return;
-  const ok = window.confirm(`确定删除文档「${activeDoc.value.title}」吗？该文档全部内容将被删除，不可恢复。`);
+  const ok = await confirmDialog({
+    title: "删除文档",
+    message: `确定删除文档「${activeDoc.value.title}」吗？该文档全部内容将被删除，不可恢复。`,
+    confirmText: "删除",
+    danger: true
+  });
   if (!ok) return;
   try {
     await deleteDocument(props.projectId, activeDocId.value);
@@ -225,6 +241,14 @@ async function onDelete() {
 /** 回到顶部（页面/视口滚动） */
 function scrollTop() {
   window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+/** 刷新：重新拉取文档列表 + 递增 refreshTick 让当前阅读的文档全文重新加载 */
+async function onRefresh() {
+  refreshTick.value += 1;
+  await load();
+  // 通知父级重拉项目索引，使顶部文档统计同步
+  emit("refresh");
 }
 
 onMounted(load);
@@ -252,6 +276,12 @@ watch(activeDoc, (doc) => {
   font-size: 15px;
   font-weight: 600;
   color: #303133;
+}
+/* 刷新/加载提示（与需求 Tab 的「加载中…」保持一致观感） */
+.lib-loading {
+  margin: 0;
+  font-size: 13px;
+  color: #909399;
 }
 .status-tabs {
   display: flex;

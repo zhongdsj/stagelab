@@ -1,0 +1,17 @@
+{
+  "taskId": "ed1eaf33-ebd2-4755-a266-fc59d299797d",
+  "requirementId": "5ecc9cd5-8732-4074-8aaa-0bdd4bcdd7ed",
+  "title": "替换 7 处 window.confirm 为 ConfirmDialog",
+  "description": "将 7 处原生 confirm 替换为 ConfirmDialog：ProjectListView 删除项目 1 处、RequirementTasks 恢复需求/删除需求/恢复任务/删除任务 4 处、DocumentLibrary 删除文档 1 处、DocumentFragments 超长保存确认 1 处。调用链从同步阻塞改为 await 异步，需逐个确认取消后不继续执行原操作。",
+  "status": "done",
+  "acceptanceCriteria": "packages/web/src 下 grep window.confirm 无残留；7 处均改为 await 异步且取消后不执行原操作；vue-tsc 类型检查通过",
+  "files": [
+    "packages/web/src/views/ProjectListView.vue",
+    "packages/web/src/components/requirement/RequirementTasks.vue",
+    "packages/web/src/components/document/DocumentLibrary.vue",
+    "packages/web/src/components/document/DocumentFragments.vue"
+  ],
+  "changeType": "修改",
+  "createdAt": 1790062159247,
+  "updatedAt": 1790063579383
+}

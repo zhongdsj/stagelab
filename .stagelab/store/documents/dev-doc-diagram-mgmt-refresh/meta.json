@@ -1,0 +1,9 @@
+{
+  "docId": "dev-doc-diagram-mgmt-refresh",
+  "title": "图管理能力补齐与前端刷新穿透 开发文档",
+  "docType": "开发文档",
+  "status": "focused",
+  "summary": "阶段1开发文档（4 分片：背景与目标 / 现状证据 / 方案设计 / 决策与验收）。问题：① 图 metadata.title/description 四层均无修改入口，改错只能删图重建；② 图删除在 HTTP 与 Web 缺失（仅 MCP 有 delete_diagram）；③ 刷新已实测确认生效且当前内容同步更新（原假设推翻），真实缺口为父级顶部统计不同步 + 文档库无刷新视觉反馈。方案 G1~G4：新增 updateDiagramMeta + update_diagram_meta + PATCH meta 路由 + renameDiagram；补 DELETE 路由与图详情页删除入口；刷新补父级统计同步与 loading 反馈；新增统一自定义确认弹窗替换 7 处 window.confirm。已定：D1 不自增 version、D3 入口放图详情页、D4 自定义弹窗跨模块复用、D5 仅补统计与反馈。",
+  "createdAt": 1790061168550,
+  "updatedAt": 1790061943471
+}

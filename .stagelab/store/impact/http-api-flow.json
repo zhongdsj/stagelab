@@ -1,0 +1,190 @@
+{
+  "start": {
+    "upstream": [],
+    "downstream": [
+      "cors"
+    ],
+    "upstreamHops": 0,
+    "downstreamHops": 7,
+    "fanIn": 0,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "cors": {
+    "upstream": [
+      "start"
+    ],
+    "downstream": [
+      "end",
+      "route"
+    ],
+    "upstreamHops": 1,
+    "downstreamHops": 6,
+    "fanIn": 1,
+    "fanOut": 2,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "route": {
+    "upstream": [
+      "cors"
+    ],
+    "downstream": [
+      "validate",
+      "sys-route"
+    ],
+    "upstreamHops": 2,
+    "downstreamHops": 5,
+    "fanIn": 1,
+    "fanOut": 2,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "validate": {
+    "upstream": [
+      "route"
+    ],
+    "downstream": [
+      "err",
+      "resolver"
+    ],
+    "upstreamHops": 3,
+    "downstreamHops": 4,
+    "fanIn": 1,
+    "fanOut": 2,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "resolver": {
+    "upstream": [
+      "validate"
+    ],
+    "downstream": [
+      "svc"
+    ],
+    "upstreamHops": 4,
+    "downstreamHops": 3,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "svc": {
+    "upstream": [
+      "resolver"
+    ],
+    "downstream": [
+      "layout"
+    ],
+    "upstreamHops": 5,
+    "downstreamHops": 2,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "layout": {
+    "upstream": [
+      "svc"
+    ],
+    "downstream": [
+      "engine",
+      "end"
+    ],
+    "upstreamHops": 6,
+    "downstreamHops": 1,
+    "fanIn": 1,
+    "fanOut": 2,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "engine": {
+    "upstream": [
+      "layout"
+    ],
+    "downstream": [
+      "end"
+    ],
+    "upstreamHops": 7,
+    "downstreamHops": 1,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "err": {
+    "upstream": [
+      "validate",
+      "sys-guard"
+    ],
+    "downstream": [
+      "end"
+    ],
+    "upstreamHops": 4,
+    "downstreamHops": 1,
+    "fanIn": 2,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "medium"
+  },
+  "end": {
+    "upstream": [
+      "cors",
+      "err",
+      "engine",
+      "layout",
+      "sys-guard",
+      "sys-route"
+    ],
+    "downstream": [],
+    "upstreamHops": 3,
+    "downstreamHops": 0,
+    "fanIn": 6,
+    "fanOut": 0,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "high"
+  },
+  "sys-route": {
+    "upstream": [
+      "route"
+    ],
+    "downstream": [
+      "sys-guard",
+      "end"
+    ],
+    "upstreamHops": 3,
+    "downstreamHops": 2,
+    "fanIn": 1,
+    "fanOut": 2,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  },
+  "sys-guard": {
+    "upstream": [
+      "sys-route"
+    ],
+    "downstream": [
+      "err",
+      "end"
+    ],
+    "upstreamHops": 4,
+    "downstreamHops": 1,
+    "fanIn": 1,
+    "fanOut": 2,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
+  }
+}

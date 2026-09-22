@@ -1,7 +1,7 @@
 /**
  * 图 API（对接 /api/projects/:id/diagrams 路由）
  */
-import type { Diagram, LayoutDiagram, ImpactRiskLevel, VerificationRecord, VerificationActor, VerificationChangeType } from "@stagelab/shared";
+import type { Diagram, DiagramType, LayoutDiagram, ImpactRiskLevel, VerificationRecord, VerificationActor, VerificationChangeType } from "@stagelab/shared";
 import { http } from "./client.js";
 
 /** 自由画布坐标保存载荷（T59/T60）：节点几何 + 连线折点 */
@@ -51,6 +51,49 @@ export function saveGeometry(
   return http.post<Diagram>(
     `/api/projects/${encodeURIComponent(projectId)}/diagrams/${encodeURIComponent(diagramId)}/geometry`,
     data
+  );
+}
+
+/* ========== 图元数据修改与图删除（G1 / G2） ========== */
+
+/** 图元数据摘要（服务端 toDiagramMeta 返回结构，不含节点/连线/分组内容） */
+export interface DiagramMeta {
+  diagramId: string;
+  title: string;
+  /** 图描述；未设置时字段缺省 */
+  description?: string;
+  type: DiagramType;
+  version: number;
+  nodeCount: number;
+  edgeCount: number;
+  groupCount: number;
+}
+
+/** 图元数据修改载荷：至少传一个字段；description 传 null 表示清除描述 */
+export interface DiagramMetaPatch {
+  title?: string;
+  description?: string | null;
+}
+
+/** 修改图元数据（标题/描述），不影响节点/连线/分组 */
+export function renameDiagram(
+  projectId: string,
+  diagramId: string,
+  patch: DiagramMetaPatch
+): Promise<DiagramMeta> {
+  return http.patch<DiagramMeta>(
+    `/api/projects/${encodeURIComponent(projectId)}/diagrams/${encodeURIComponent(diagramId)}/meta`,
+    patch
+  );
+}
+
+/** 删除整张图（联动清理影响范围索引与验证历史） */
+export function deleteDiagram(
+  projectId: string,
+  diagramId: string
+): Promise<{ diagramId: string; deleted: boolean }> {
+  return http.del(
+    `/api/projects/${encodeURIComponent(projectId)}/diagrams/${encodeURIComponent(diagramId)}`
   );
 }
 

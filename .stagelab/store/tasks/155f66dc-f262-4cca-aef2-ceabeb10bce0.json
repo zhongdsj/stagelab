@@ -1,0 +1,17 @@
+{
+  "taskId": "155f66dc-f262-4cca-aef2-ceabeb10bce0",
+  "requirementId": "cb3ef2aa-f011-41bb-97db-86c0bf53126f",
+  "title": "放开 MCP description null 并让 meta 摘要返回描述",
+  "description": "MCP `update_diagram_meta` 的 inputSchema 把 `description` 从 `z.string().optional()` 改为 `z.string().nullable().optional()`（null = 清空），服务层 `updateDiagramMeta` 与 `mergePatch` 已支持 null 删除，无需改动；`toDiagramMeta` 增加 `description` 字段（未设置时缺省），使 `get_diagram_meta` 可读回；Web `DiagramMeta` 类型同步补 `description?`，`DiagramView.submitRename` 空描述改传 null 并同步本地 metadata。",
+  "status": "done",
+  "acceptanceCriteria": "server tsc 与 web vue-tsc 均通过；update_diagram_meta 传 description:null 不再报 must be string；get_diagram_meta 返回 description 原文且未设置时字段缺省；生成的 JSON Schema 中 description 为 type:[string,null] 且不在 required",
+  "files": [
+    "packages/server/src/mcp/tools/diagram.ts",
+    "packages/server/src/services/diagram.service.ts",
+    "packages/web/src/api/diagrams.ts",
+    "packages/web/src/components/diagram/DiagramView.vue"
+  ],
+  "changeType": "修改",
+  "createdAt": 1790067669940,
+  "updatedAt": 1790067686120
+}

@@ -3,7 +3,7 @@
   "type": "flow",
   "metadata": {
     "title": "Web 前端 - 核心交互流程图",
-    "version": 5,
+    "version": 12,
     "description": "基于 packages/web 源码：项目总览→项目详情→四阶段内容（文档/图/需求任务）的交互流程；后端依赖统一以 BackendService 占位（横向泳道）"
   },
   "nodes": [
@@ -13,10 +13,17 @@
       "nodeKind": "start",
       "description": "浏览器打开 SPA，Vue3 挂载",
       "geometry": {
-        "x": 212,
-        "y": 320,
+        "x": 1496,
+        "y": 674,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/web/src/main.ts"
+          }
+        ]
       }
     },
     {
@@ -25,10 +32,20 @@
       "nodeKind": "process",
       "description": "listProjects() 拉取全部项目",
       "geometry": {
-        "x": 186,
-        "y": 476,
+        "x": 1470,
+        "y": 830,
         "width": 204,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/web/src/api/projects.ts",
+            "symbols": [
+              "listProjects"
+            ]
+          }
+        ]
       }
     },
     {
@@ -37,10 +54,17 @@
       "nodeKind": "process",
       "description": "项目卡片网格 + 阶段标签 + 修改/删除按钮",
       "geometry": {
-        "x": 51,
-        "y": 632,
+        "x": 1458,
+        "y": 986,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/web/src/views/ProjectListView.vue"
+          }
+        ]
       }
     },
     {
@@ -49,10 +73,17 @@
       "nodeKind": "decision",
       "description": "总览页操作分支",
       "geometry": {
-        "x": 114,
-        "y": 64,
+        "x": 1711,
+        "y": 362,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/web/src/views/ProjectListView.vue"
+          }
+        ]
       }
     },
     {
@@ -61,10 +92,20 @@
       "nodeKind": "process",
       "description": "createProject(name, repoRoot)",
       "geometry": {
-        "x": 1220,
-        "y": 320,
+        "x": 1813,
+        "y": 674,
         "width": 196,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/web/src/api/projects.ts",
+            "symbols": [
+              "createProject"
+            ]
+          }
+        ]
       }
     },
     {
@@ -73,10 +114,21 @@
       "nodeKind": "process",
       "description": "renameProject / deleteProject",
       "geometry": {
-        "x": 12,
-        "y": 320,
+        "x": 1092,
+        "y": 674,
         "width": 153,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/web/src/api/projects.ts",
+            "symbols": [
+              "renameProject",
+              "deleteProject"
+            ]
+          }
+        ]
       }
     },
     {
@@ -85,10 +137,17 @@
       "nodeKind": "process",
       "description": "getProject + getProjectIndex 并行加载",
       "geometry": {
-        "x": 1116,
-        "y": 476,
+        "x": 1724,
+        "y": 830,
         "width": 281,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/web/src/views/ProjectDetailView.vue"
+          }
+        ]
       }
     },
     {
@@ -97,10 +156,17 @@
       "nodeKind": "process",
       "description": "StageNav + 文档/图/需求/任务计数",
       "geometry": {
-        "x": 1155,
-        "y": 632,
+        "x": 1750,
+        "y": 1554,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/web/src/components/StageNav.vue"
+          }
+        ]
       }
     },
     {
@@ -109,10 +175,17 @@
       "nodeKind": "decision",
       "description": "按 currentStage 渲染内容区",
       "geometry": {
-        "x": 470,
-        "y": 476,
+        "x": 582,
+        "y": 362,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/web/src/views/ProjectDetailView.vue"
+          }
+        ]
       }
     },
     {
@@ -121,10 +194,17 @@
       "nodeKind": "process",
       "description": "s1 文档库：选择文档，加载全文",
       "geometry": {
-        "x": 675,
-        "y": 788,
+        "x": 541,
+        "y": 674,
         "width": 264,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/web/src/components/document/DocumentLibrary.vue"
+          }
+        ]
       }
     },
     {
@@ -133,10 +213,17 @@
       "nodeKind": "process",
       "description": "markdown 渲染 + XSS 消毒，展示摘要栏",
       "geometry": {
-        "x": 758,
-        "y": 944,
+        "x": 1245,
+        "y": 830,
         "width": 196,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/web/src/components/document/DocumentFragments.vue"
+          }
+        ]
       }
     },
     {
@@ -145,22 +232,43 @@
       "nodeKind": "process",
       "description": "renameDocument(标题/摘要) + updateFullDocument(正文)",
       "geometry": {
-        "x": 935,
-        "y": 632,
+        "x": 1279,
+        "y": 518,
         "width": 170,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/web/src/api/documents.ts",
+            "symbols": [
+              "renameDocument"
+            ]
+          }
+        ]
       }
     },
     {
       "nodeId": "view-diagram",
-      "label": "图查看\nGET /diagrams/:id + /layout",
+      "label": "图查看/管理\nGET /diagrams/:id + /layout\nPATCH /meta · DELETE",
       "nodeKind": "process",
-      "description": "getDiagram 语义模型 + getLayout 布局",
+      "description": "getDiagram 语义模型 + getLayout 布局；重命名（PATCH /meta，仅改元数据）与删除图（DELETE，confirmDialog 二次确认后回退项目页）",
       "geometry": {
-        "x": 124,
-        "y": 788,
-        "width": 264,
+        "x": 23,
+        "y": 674,
+        "width": 468,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/web/src/components/diagram/DiagramView.vue",
+            "symbols": [
+              "submitRename",
+              "onDeleteDiagram"
+            ]
+          }
+        ]
       }
     },
     {
@@ -169,10 +277,17 @@
       "nodeKind": "process",
       "description": "DiagramSvg 按类型渲染节点/连线/分组",
       "geometry": {
-        "x": 180,
-        "y": 944,
+        "x": 52,
+        "y": 830,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/web/src/components/diagram/DiagramSvg.vue"
+          }
+        ]
       }
     },
     {
@@ -181,10 +296,17 @@
       "nodeKind": "process",
       "description": "setFocus(moduleId) → getLayout 重算",
       "geometry": {
-        "x": 154,
-        "y": 1256,
+        "x": 27,
+        "y": 1142,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/web/src/components/diagram/DiagramView.vue"
+          }
+        ]
       }
     },
     {
@@ -193,10 +315,17 @@
       "nodeKind": "process",
       "description": "s2/s3 需求清单：展开需求懒加载任务",
       "geometry": {
-        "x": 438,
-        "y": 788,
+        "x": 855,
+        "y": 674,
         "width": 187,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/web/src/components/requirement/RequirementTasks.vue"
+          }
+        ]
       }
     },
     {
@@ -205,10 +334,17 @@
       "nodeKind": "process",
       "description": "状态切换 / 创建 / 修改 / 删除",
       "geometry": {
-        "x": 423,
-        "y": 1100,
+        "x": 1103,
+        "y": 986,
         "width": 230,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/web/src/api/requirements.ts"
+          }
+        ]
       }
     },
     {
@@ -217,10 +353,20 @@
       "nodeKind": "subprocess",
       "description": "外部模块统一占位：HTTP API 层 + 业务服务层 + 布局引擎 + 本地文件存储",
       "geometry": {
-        "x": 1536,
-        "y": 64,
+        "x": 2129,
+        "y": 362,
         "width": 162,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/http/server.ts",
+            "symbols": [
+              "createHttpServer"
+            ]
+          }
+        ]
       }
     },
     {
@@ -229,10 +375,133 @@
       "nodeKind": "end",
       "description": "页面交互完成",
       "geometry": {
-        "x": 356,
-        "y": 1256,
+        "x": 1229,
+        "y": 1142,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/web/src/App.vue"
+          }
+        ]
+      }
+    },
+    {
+      "nodeId": "confirm-dialog",
+      "label": "统一确认弹窗\nconfirmDialog()",
+      "nodeKind": "subprocess",
+      "description": "ConfirmDialog 单例 + Promise 化：全站替换 window.confirm，支持 Esc/点击遮罩取消、danger 红色确认；同一时刻仅一个弹窗",
+      "payload": {
+        "aiRiskNote": {
+          "mount": "全站唯一实例挂载在 App.vue",
+          "risk": "单例设计：并发调用时先按取消结算上一个 Promise，避免永久挂起"
+        }
+      },
+      "geometry": {
+        "x": 866,
+        "y": 986,
+        "width": 187,
+        "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/web/src/components/common/ConfirmDialog.vue",
+            "symbols": [
+              "confirmDialog",
+              "confirmState"
+            ]
+          }
+        ]
+      },
+      "linkedDiagrams": [
+        {
+          "diagramId": "web-frontend-class",
+          "label": "ConfirmDialog 组件",
+          "type": "class"
+        }
+      ]
+    },
+    {
+      "nodeId": "refresh-child",
+      "label": "子组件刷新\nonRefresh",
+      "nodeKind": "subprocess",
+      "description": "文档库/需求任务/图库刷新按钮：重拉自身数据（文档全文/任务列表/图列表）+ loading 视觉反馈，不隐藏已有内容避免闪屏",
+      "geometry": {
+        "x": 664,
+        "y": 986,
+        "width": 152,
+        "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/web/src/components/document/DocumentLibrary.vue",
+            "symbols": [
+              "onRefresh"
+            ]
+          },
+          {
+            "path": "packages/web/src/components/requirement/RequirementTasks.vue",
+            "symbols": [
+              "onRefresh"
+            ]
+          },
+          {
+            "path": "packages/web/src/components/diagram/DiagramLibrary.vue",
+            "symbols": [
+              "onRefresh"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "nodeId": "reload-index",
+      "label": "父级重拉索引\nGET /index",
+      "nodeKind": "process",
+      "description": "ProjectDetailView.reloadIndex：子组件 emit refresh 后 getProjectIndex 重拉项目索引，回填顶部文档/图/需求/任务统计",
+      "geometry": {
+        "x": 664,
+        "y": 1298,
+        "width": 152,
+        "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/web/src/views/ProjectDetailView.vue",
+            "symbols": [
+              "reloadIndex"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "nodeId": "tmp-clean",
+      "label": "系统临时文件清理",
+      "nodeKind": "process",
+      "description": "总览页「系统临时文件」下拉：GET 列表 / DELETE 单删 / DELETE all 清空；清空经 confirmDialog 二次确认",
+      "payload": {
+        "aiRiskNote": {
+          "entry": "入口仅在项目总览页，避免误操作业务数据"
+        }
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/web/src/views/ProjectListView.vue",
+            "symbols": [
+              "toggleTmpPanel"
+            ]
+          },
+          {
+            "path": "packages/web/src/api/system.ts"
+          }
+        ]
       }
     }
   ],
@@ -243,12 +512,12 @@
       "to": "load-projects",
       "points": [
         {
-          "x": 288,
-          "y": 376
+          "x": 1571.6666666666667,
+          "y": 730
         },
         {
-          "x": 288,
-          "y": 476
+          "x": 1571.6666666666667,
+          "y": 830
         }
       ]
     },
@@ -258,20 +527,12 @@
       "to": "render-overview",
       "points": [
         {
-          "x": 288,
-          "y": 532
+          "x": 1571.6666666666667,
+          "y": 886
         },
         {
-          "x": 288,
-          "y": 552
-        },
-        {
-          "x": 164.5,
-          "y": 552
-        },
-        {
-          "x": 164.5,
-          "y": 632
+          "x": 1571.6666666666667,
+          "y": 986
         }
       ]
     },
@@ -281,20 +542,28 @@
       "to": "decision-op",
       "points": [
         {
-          "x": 126.5,
-          "y": 632
+          "x": 1533.6666666666667,
+          "y": 986
         },
         {
-          "x": 126.5,
-          "y": 542
+          "x": 1533.6666666666667,
+          "y": 896
         },
         {
-          "x": 175,
-          "y": 542
+          "x": 1458.6666666666667,
+          "y": 896
         },
         {
-          "x": 175,
-          "y": 120
+          "x": 1458.6666666666667,
+          "y": 438
+        },
+        {
+          "x": 1771.6000000000001,
+          "y": 438
+        },
+        {
+          "x": 1771.6000000000001,
+          "y": 418
         }
       ]
     },
@@ -305,20 +574,20 @@
       "label": "新建",
       "points": [
         {
-          "x": 235.8,
-          "y": 120
+          "x": 1832.4,
+          "y": 418
         },
         {
-          "x": 235.8,
-          "y": 130
+          "x": 1832.4,
+          "y": 428
         },
         {
-          "x": 1318.3333333333335,
-          "y": 130
+          "x": 1911,
+          "y": 428
         },
         {
-          "x": 1318.3333333333335,
-          "y": 320
+          "x": 1911,
+          "y": 674
         }
       ]
     },
@@ -328,20 +597,12 @@
       "to": "enter-detail",
       "points": [
         {
-          "x": 1318.3333333333335,
-          "y": 376
+          "x": 1911,
+          "y": 730
         },
         {
-          "x": 1318.3333333333335,
-          "y": 386
-        },
-        {
-          "x": 1303,
-          "y": 386
-        },
-        {
-          "x": 1303,
-          "y": 476
+          "x": 1911,
+          "y": 830
         }
       ]
     },
@@ -352,20 +613,20 @@
       "label": "修改/删除",
       "points": [
         {
-          "x": 144.6,
-          "y": 120
+          "x": 1741.2000000000003,
+          "y": 418
         },
         {
-          "x": 144.6,
-          "y": 130
+          "x": 1741.2,
+          "y": 428
         },
         {
-          "x": 88.5,
-          "y": 130
+          "x": 1168.5,
+          "y": 428
         },
         {
-          "x": 88.5,
-          "y": 320
+          "x": 1168.5,
+          "y": 674
         }
       ]
     },
@@ -376,12 +637,20 @@
       "label": "刷新",
       "points": [
         {
-          "x": 88.5,
-          "y": 376
+          "x": 1194,
+          "y": 730
         },
         {
-          "x": 88.5,
-          "y": 632
+          "x": 1194,
+          "y": 906
+        },
+        {
+          "x": 1495.6666666666667,
+          "y": 906
+        },
+        {
+          "x": 1495.6666666666667,
+          "y": 986
         }
       ]
     },
@@ -392,20 +661,20 @@
       "label": "进入项目",
       "points": [
         {
-          "x": 205.39999999999998,
-          "y": 120
+          "x": 1802.0000000000002,
+          "y": 418
         },
         {
-          "x": 205.39999999999998,
-          "y": 140
+          "x": 1802,
+          "y": 740
         },
         {
-          "x": 1209.3333333333335,
-          "y": 140
+          "x": 1817.3333333333335,
+          "y": 740
         },
         {
-          "x": 1209.3333333333335,
-          "y": 476
+          "x": 1817.3333333333335,
+          "y": 830
         }
       ]
     },
@@ -415,12 +684,12 @@
       "to": "render-stage",
       "points": [
         {
-          "x": 1256.1666666666667,
-          "y": 532
+          "x": 1864.1666666666667,
+          "y": 886
         },
         {
-          "x": 1256.1666666666665,
-          "y": 632
+          "x": 1864.1666666666667,
+          "y": 1554
         }
       ]
     },
@@ -430,20 +699,28 @@
       "to": "decision-stage",
       "points": [
         {
-          "x": 1205.5,
-          "y": 632
+          "x": 1788.1666666666667,
+          "y": 1554
         },
         {
-          "x": 1205.5,
-          "y": 542
+          "x": 1788.1666666666667,
+          "y": 1474
         },
         {
-          "x": 591.8,
-          "y": 542
+          "x": 12,
+          "y": 1474
         },
         {
-          "x": 591.8000000000001,
-          "y": 532
+          "x": 12,
+          "y": 428
+        },
+        {
+          "x": 612.2,
+          "y": 428
+        },
+        {
+          "x": 612.1999999999999,
+          "y": 418
         }
       ]
     },
@@ -454,20 +731,12 @@
       "label": "s1 文档",
       "points": [
         {
-          "x": 561.4000000000001,
-          "y": 532
+          "x": 673,
+          "y": 418
         },
         {
-          "x": 561.4000000000001,
-          "y": 552
-        },
-        {
-          "x": 806.5,
-          "y": 552
-        },
-        {
-          "x": 806.5,
-          "y": 788
+          "x": 673,
+          "y": 674
         }
       ]
     },
@@ -478,12 +747,20 @@
       "label": "s2/s3 需求",
       "points": [
         {
-          "x": 531,
-          "y": 532
+          "x": 703.4,
+          "y": 418
         },
         {
-          "x": 531,
-          "y": 788
+          "x": 703.4,
+          "y": 428
+        },
+        {
+          "x": 948.5,
+          "y": 428
+        },
+        {
+          "x": 948.5,
+          "y": 674
         }
       ]
     },
@@ -494,20 +771,20 @@
       "label": "图库",
       "points": [
         {
-          "x": 500.6,
-          "y": 532
+          "x": 642.5999999999999,
+          "y": 418
         },
         {
-          "x": 500.6,
-          "y": 562
+          "x": 642.5999999999999,
+          "y": 438
         },
         {
-          "x": 255.5,
-          "y": 562
+          "x": 257,
+          "y": 438
         },
         {
-          "x": 255.5,
-          "y": 788
+          "x": 257,
+          "y": 674
         }
       ]
     },
@@ -517,12 +794,20 @@
       "to": "render-md",
       "points": [
         {
-          "x": 806.5,
-          "y": 844
+          "x": 739,
+          "y": 730
         },
         {
-          "x": 806.5,
-          "y": 944
+          "x": 739,
+          "y": 750
+        },
+        {
+          "x": 1294,
+          "y": 750
+        },
+        {
+          "x": 1294,
+          "y": 830
         }
       ]
     },
@@ -533,28 +818,12 @@
       "label": "编辑",
       "points": [
         {
-          "x": 904.5,
-          "y": 944
+          "x": 1392,
+          "y": 830
         },
         {
-          "x": 904.5,
-          "y": 864
-        },
-        {
-          "x": 1002.5,
-          "y": 864
-        },
-        {
-          "x": 1002.5,
-          "y": 698
-        },
-        {
-          "x": 1048.1666666666667,
-          "y": 698
-        },
-        {
-          "x": 1048.1666666666665,
-          "y": 688
+          "x": 1392,
+          "y": 574
         }
       ]
     },
@@ -565,20 +834,20 @@
       "label": "保存刷新",
       "points": [
         {
-          "x": 991.4999999999999,
-          "y": 688
+          "x": 1335.3333333333335,
+          "y": 574
         },
         {
-          "x": 991.5,
-          "y": 854
+          "x": 1335.3333333333335,
+          "y": 584
         },
         {
-          "x": 855.5,
-          "y": 854
+          "x": 1343,
+          "y": 584
         },
         {
-          "x": 855.5,
-          "y": 944
+          "x": 1343,
+          "y": 830
         }
       ]
     },
@@ -588,20 +857,12 @@
       "to": "end",
       "points": [
         {
-          "x": 855.5,
-          "y": 1000
+          "x": 1343,
+          "y": 886
         },
         {
-          "x": 855.5,
-          "y": 1176
-        },
-        {
-          "x": 470.1666666666667,
-          "y": 1176
-        },
-        {
-          "x": 470.1666666666667,
-          "y": 1256
+          "x": 1343,
+          "y": 1142
         }
       ]
     },
@@ -611,20 +872,28 @@
       "to": "task-op",
       "points": [
         {
-          "x": 562.1666666666666,
-          "y": 844
+          "x": 1004.6,
+          "y": 730
         },
         {
-          "x": 562.1666666666667,
-          "y": 854
+          "x": 1004.6,
+          "y": 740
         },
         {
-          "x": 576.5,
-          "y": 854
+          "x": 1001.6,
+          "y": 740
         },
         {
-          "x": 576.5,
-          "y": 1100
+          "x": 1001.6,
+          "y": 916
+        },
+        {
+          "x": 1256.3333333333335,
+          "y": 916
+        },
+        {
+          "x": 1256.3333333333333,
+          "y": 986
         }
       ]
     },
@@ -635,12 +904,20 @@
       "label": "刷新",
       "points": [
         {
-          "x": 499.83333333333337,
-          "y": 1100
+          "x": 1179.6666666666667,
+          "y": 986
         },
         {
-          "x": 499.8333333333333,
-          "y": 844
+          "x": 1179.6666666666665,
+          "y": 926
+        },
+        {
+          "x": 967.2,
+          "y": 926
+        },
+        {
+          "x": 967.2,
+          "y": 730
         }
       ]
     },
@@ -650,20 +927,20 @@
       "to": "end",
       "points": [
         {
-          "x": 538.1666666666667,
-          "y": 1156
+          "x": 1218,
+          "y": 1042
         },
         {
-          "x": 538.1666666666667,
-          "y": 1166
+          "x": 1218,
+          "y": 1052
         },
         {
-          "x": 432.1666666666667,
-          "y": 1166
+          "x": 1305,
+          "y": 1052
         },
         {
-          "x": 432.1666666666667,
-          "y": 1256
+          "x": 1305,
+          "y": 1142
         }
       ]
     },
@@ -673,12 +950,20 @@
       "to": "render-svg",
       "points": [
         {
-          "x": 255.5,
-          "y": 844
+          "x": 140,
+          "y": 730
         },
         {
-          "x": 255.5,
-          "y": 944
+          "x": 140,
+          "y": 740
+        },
+        {
+          "x": 128,
+          "y": 740
+        },
+        {
+          "x": 128,
+          "y": 830
         }
       ]
     },
@@ -689,12 +974,12 @@
       "label": "折叠/展开",
       "points": [
         {
-          "x": 255.5,
-          "y": 1000
+          "x": 128,
+          "y": 886
         },
         {
-          "x": 255.5,
-          "y": 1256
+          "x": 128.00000000000006,
+          "y": 1142
         }
       ]
     },
@@ -705,20 +990,20 @@
       "label": "重新布局",
       "points": [
         {
-          "x": 204.83333333333334,
-          "y": 1256
+          "x": 77.3333333333334,
+          "y": 1142
         },
         {
-          "x": 204.83333333333334,
-          "y": 1010
+          "x": 77.33333333333348,
+          "y": 896
         },
         {
-          "x": 217.5,
-          "y": 1010
+          "x": 90,
+          "y": 896
         },
         {
-          "x": 217.5,
-          "y": 1000
+          "x": 90,
+          "y": 886
         }
       ]
     },
@@ -728,20 +1013,28 @@
       "to": "end",
       "points": [
         {
-          "x": 293.5,
-          "y": 1000
+          "x": 166,
+          "y": 886
         },
         {
-          "x": 293.5,
-          "y": 1010
+          "x": 166,
+          "y": 936
         },
         {
-          "x": 394.1666666666667,
-          "y": 1010
+          "x": 653,
+          "y": 936
         },
         {
-          "x": 394.1666666666667,
-          "y": 1256
+          "x": 653,
+          "y": 1062
+        },
+        {
+          "x": 1267,
+          "y": 1062
+        },
+        {
+          "x": 1267,
+          "y": 1142
         }
       ]
     },
@@ -752,20 +1045,28 @@
       "label": "HTTP",
       "points": [
         {
-          "x": 390,
-          "y": 504
+          "x": 1673.6666666666667,
+          "y": 858
         },
         {
-          "x": 927.1666666666667,
-          "y": 504
+          "x": 1683.6666666666667,
+          "y": 858
         },
         {
-          "x": 927.1666666666667,
-          "y": 92
+          "x": 1683.6666666666667,
+          "y": 238
         },
         {
-          "x": 1536.3333333333335,
-          "y": 92
+          "x": 2119,
+          "y": 238
+        },
+        {
+          "x": 2119,
+          "y": 390
+        },
+        {
+          "x": 2129,
+          "y": 390
         }
       ]
     },
@@ -776,20 +1077,20 @@
       "label": "HTTP",
       "points": [
         {
-          "x": 1416.3333333333335,
-          "y": 348
+          "x": 2009,
+          "y": 702
         },
         {
-          "x": 1466.7333333333336,
-          "y": 348
+          "x": 2059.4,
+          "y": 702
         },
         {
-          "x": 1466.7333333333336,
-          "y": 92
+          "x": 2059.4,
+          "y": 390
         },
         {
-          "x": 1536.3333333333335,
-          "y": 92
+          "x": 2129,
+          "y": 390
         }
       ]
     },
@@ -800,20 +1101,20 @@
       "label": "HTTP",
       "points": [
         {
-          "x": 165,
-          "y": 348
+          "x": 1245,
+          "y": 702
         },
         {
-          "x": 850.6666666666667,
-          "y": 348
+          "x": 1687,
+          "y": 702
         },
         {
-          "x": 850.6666666666667,
-          "y": 92
+          "x": 1687,
+          "y": 390
         },
         {
-          "x": 1536.3333333333335,
-          "y": 92
+          "x": 2129,
+          "y": 390
         }
       ]
     },
@@ -824,20 +1125,20 @@
       "label": "HTTP",
       "points": [
         {
-          "x": 1396.6666666666667,
-          "y": 504
+          "x": 2004.6666666666667,
+          "y": 858
         },
         {
-          "x": 1477.6733333333334,
-          "y": 504
+          "x": 2076.78,
+          "y": 858
         },
         {
-          "x": 1477.6733333333334,
-          "y": 92
+          "x": 2076.78,
+          "y": 390
         },
         {
-          "x": 1536.3333333333335,
-          "y": 92
+          "x": 2129,
+          "y": 390
         }
       ]
     },
@@ -848,20 +1149,28 @@
       "label": "HTTP",
       "points": [
         {
-          "x": 938.5,
-          "y": 816
+          "x": 805,
+          "y": 702
         },
         {
-          "x": 1273.4166666666667,
-          "y": 816
+          "x": 815,
+          "y": 702
         },
         {
-          "x": 1273.4166666666667,
-          "y": 92
+          "x": 815,
+          "y": 102
         },
         {
-          "x": 1536.3333333333335,
-          "y": 92
+          "x": 2119,
+          "y": 102
+        },
+        {
+          "x": 2119,
+          "y": 390
+        },
+        {
+          "x": 2129,
+          "y": 390
         }
       ]
     },
@@ -872,20 +1181,24 @@
       "label": "HTTP",
       "points": [
         {
-          "x": 1104.8333333333333,
-          "y": 660
+          "x": 1448.6666666666667,
+          "y": 522.6666666666666
         },
         {
-          "x": 1284.5833333333335,
-          "y": 660
+          "x": 2315,
+          "y": 522.6666666666666
         },
         {
-          "x": 1284.5833333333335,
-          "y": 92
+          "x": 2315,
+          "y": 350
         },
         {
-          "x": 1536.3333333333335,
-          "y": 92
+          "x": 2210,
+          "y": 350
+        },
+        {
+          "x": 2210,
+          "y": 362
         }
       ]
     },
@@ -896,20 +1209,28 @@
       "label": "HTTP",
       "points": [
         {
-          "x": 387.5,
-          "y": 816
+          "x": 491,
+          "y": 702
         },
         {
-          "x": 943.9166666666667,
-          "y": 816
+          "x": 501,
+          "y": 702
         },
         {
-          "x": 943.9166666666667,
-          "y": 92
+          "x": 501,
+          "y": 34
         },
         {
-          "x": 1536.3333333333335,
-          "y": 92
+          "x": 2119,
+          "y": 34
+        },
+        {
+          "x": 2119,
+          "y": 390
+        },
+        {
+          "x": 2129,
+          "y": 390
         }
       ]
     },
@@ -920,20 +1241,28 @@
       "label": "HTTP",
       "points": [
         {
-          "x": 624.5,
-          "y": 816
+          "x": 1042,
+          "y": 702
         },
         {
-          "x": 1080.4166666666667,
-          "y": 816
+          "x": 1052,
+          "y": 702
         },
         {
-          "x": 1080.4166666666667,
-          "y": 92
+          "x": 1052,
+          "y": 0
         },
         {
-          "x": 1536.3333333333335,
-          "y": 92
+          "x": 2119,
+          "y": 0
+        },
+        {
+          "x": 2119,
+          "y": 390
+        },
+        {
+          "x": 2129,
+          "y": 390
         }
       ]
     },
@@ -944,22 +1273,371 @@
       "label": "HTTP",
       "points": [
         {
-          "x": 653.1666666666667,
-          "y": 1128
+          "x": 1333,
+          "y": 1014
         },
         {
-          "x": 1112.75,
-          "y": 1128
+          "x": 1343,
+          "y": 1014
         },
         {
-          "x": 1112.75,
-          "y": 92
+          "x": 1343,
+          "y": 238
         },
         {
-          "x": 1536.3333333333335,
-          "y": 92
+          "x": 2119,
+          "y": 238
+        },
+        {
+          "x": 2119,
+          "y": 390
+        },
+        {
+          "x": 2129,
+          "y": 390
         }
       ]
+    },
+    {
+      "edgeId": "e-project-op-confirm",
+      "from": "project-op",
+      "to": "confirm-dialog",
+      "label": "删除前确认",
+      "points": [
+        {
+          "x": 1143,
+          "y": 730
+        },
+        {
+          "x": 1143,
+          "y": 740
+        },
+        {
+          "x": 1015.6,
+          "y": 740
+        },
+        {
+          "x": 1015.6,
+          "y": 986
+        }
+      ],
+      "methods": [
+        "onDeleteProject() → confirmDialog()"
+      ]
+    },
+    {
+      "edgeId": "e-view-doc-confirm",
+      "from": "view-doc",
+      "to": "confirm-dialog",
+      "label": "删除文档/超长保存确认",
+      "points": [
+        {
+          "x": 673,
+          "y": 730
+        },
+        {
+          "x": 673,
+          "y": 896
+        },
+        {
+          "x": 940.8,
+          "y": 896
+        },
+        {
+          "x": 940.8,
+          "y": 986
+        }
+      ],
+      "methods": [
+        "onDelete() → confirmDialog()",
+        "save() → confirmDialog()"
+      ]
+    },
+    {
+      "edgeId": "e-view-req-confirm",
+      "from": "view-req",
+      "to": "confirm-dialog",
+      "label": "需求/任务删除确认",
+      "points": [
+        {
+          "x": 929.8,
+          "y": 730
+        },
+        {
+          "x": 929.8,
+          "y": 740
+        },
+        {
+          "x": 953.2,
+          "y": 740
+        },
+        {
+          "x": 953.2,
+          "y": 936
+        },
+        {
+          "x": 978.2,
+          "y": 936
+        },
+        {
+          "x": 978.2,
+          "y": 986
+        }
+      ],
+      "methods": [
+        "onDeleteReq/onDeleteTask/onRestoreReq/onRestoreTask → confirmDialog()"
+      ]
+    },
+    {
+      "edgeId": "e-confirm-dialog-backend",
+      "from": "confirm-dialog",
+      "to": "backend",
+      "label": "用户确认后提交",
+      "points": [
+        {
+          "x": 1053,
+          "y": 1014
+        },
+        {
+          "x": 1063,
+          "y": 1014
+        },
+        {
+          "x": 1063,
+          "y": 204
+        },
+        {
+          "x": 2119,
+          "y": 204
+        },
+        {
+          "x": 2119,
+          "y": 390
+        },
+        {
+          "x": 2129,
+          "y": 390
+        }
+      ],
+      "methods": [
+        "confirmDialog() resolve(true) → deleteProject/deleteRequirement/deleteTask/deleteDocument"
+      ]
+    },
+    {
+      "edgeId": "e-view-doc-refresh",
+      "from": "view-doc",
+      "to": "refresh-child",
+      "label": "点击刷新",
+      "points": [
+        {
+          "x": 607,
+          "y": 730
+        },
+        {
+          "x": 607,
+          "y": 740
+        },
+        {
+          "x": 659,
+          "y": 740
+        },
+        {
+          "x": 659,
+          "y": 906
+        },
+        {
+          "x": 740,
+          "y": 906
+        },
+        {
+          "x": 740,
+          "y": 986
+        }
+      ]
+    },
+    {
+      "edgeId": "e-view-req-refresh",
+      "from": "view-req",
+      "to": "refresh-child",
+      "label": "点击刷新",
+      "points": [
+        {
+          "x": 892.4,
+          "y": 730
+        },
+        {
+          "x": 892.4,
+          "y": 740
+        },
+        {
+          "x": 778,
+          "y": 740
+        },
+        {
+          "x": 778,
+          "y": 986
+        }
+      ]
+    },
+    {
+      "edgeId": "e-view-diagram-refresh",
+      "from": "view-diagram",
+      "to": "refresh-child",
+      "label": "点击刷新",
+      "points": [
+        {
+          "x": 257,
+          "y": 730
+        },
+        {
+          "x": 257,
+          "y": 926
+        },
+        {
+          "x": 702,
+          "y": 926
+        },
+        {
+          "x": 702,
+          "y": 986
+        }
+      ]
+    },
+    {
+      "edgeId": "e-refresh-child-emit",
+      "from": "refresh-child",
+      "to": "reload-index",
+      "label": "emit refresh",
+      "points": [
+        {
+          "x": 740,
+          "y": 1042
+        },
+        {
+          "x": 740,
+          "y": 1298
+        }
+      ],
+      "methods": [
+        "onRefresh() → emit('refresh')"
+      ]
+    },
+    {
+      "edgeId": "e-reload-index-backend",
+      "from": "reload-index",
+      "to": "backend",
+      "label": "getProjectIndex",
+      "points": [
+        {
+          "x": 816,
+          "y": 1302.6666666666665
+        },
+        {
+          "x": 2325,
+          "y": 1302.6666666666665
+        },
+        {
+          "x": 2325,
+          "y": 350
+        },
+        {
+          "x": 2210,
+          "y": 350
+        },
+        {
+          "x": 2210,
+          "y": 362
+        }
+      ],
+      "methods": [
+        "reloadIndex() → getProjectIndex()"
+      ]
+    },
+    {
+      "edgeId": "e-reload-index-render-stage",
+      "from": "reload-index",
+      "to": "render-stage",
+      "label": "回填顶部统计",
+      "points": [
+        {
+          "x": 740,
+          "y": 1354
+        },
+        {
+          "x": 740,
+          "y": 1464
+        },
+        {
+          "x": 1826.1666666666667,
+          "y": 1464
+        },
+        {
+          "x": 1826.1666666666667,
+          "y": 1554
+        }
+      ]
+    },
+    {
+      "edgeId": "e-view-diagram-confirm",
+      "from": "view-diagram",
+      "to": "confirm-dialog",
+      "label": "删除图确认",
+      "points": [
+        {
+          "x": 374,
+          "y": 730
+        },
+        {
+          "x": 374,
+          "y": 750
+        },
+        {
+          "x": 645,
+          "y": 750
+        },
+        {
+          "x": 645,
+          "y": 916
+        },
+        {
+          "x": 903.4,
+          "y": 916
+        },
+        {
+          "x": 903.4,
+          "y": 986
+        }
+      ],
+      "methods": [
+        "onDeleteDiagram() → confirmDialog()"
+      ]
+    },
+    {
+      "edgeId": "e-view-tmp",
+      "from": "decision-op",
+      "to": "tmp-clean",
+      "label": "系统运维"
+    },
+    {
+      "edgeId": "e-tmp-backend",
+      "from": "tmp-clean",
+      "to": "backend",
+      "label": "HTTP",
+      "methods": [
+        "SystemApi.listRegistryTmp / deleteRegistryTmp / clearRegistryTmp"
+      ]
+    },
+    {
+      "edgeId": "e-tmp-confirm",
+      "from": "tmp-clean",
+      "to": "confirm-dialog",
+      "label": "清空前确认"
+    },
+    {
+      "edgeId": "e-tmp-refresh",
+      "from": "tmp-clean",
+      "to": "render-overview",
+      "label": "删除后刷新列表"
     }
   ],
   "groups": [
@@ -985,7 +1663,11 @@
         "fold-module",
         "view-req",
         "task-op",
-        "end"
+        "tmp-clean",
+        "end",
+        "confirm-dialog",
+        "refresh-child",
+        "reload-index"
       ]
     },
     {
