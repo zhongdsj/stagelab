@@ -1,0 +1,12 @@
+{
+  "requirementId": "efef9887-1553-43e4-ae58-3d59f2254a13",
+  "title": "刷新穿透补强：父级统计不同步 + 文档库无刷新反馈",
+  "description": "## 背景（已修正）\n原假设「刷新按钮无法刷新当前文档正文与任务内容」**已被实测推翻**：点击刷新能看到请求发出，文档正文/大纲、需求列表/任务内容均会同步重渲染。逐层核对确认代码链路成立，无缺陷。\n\n真正剩下的两处缺口：\n1. **父级统计不同步**：`packages/web/src/views/ProjectDetailView.vue` 的 `index` 仅在 onMounted / props.id 变化 / 切阶段时加载，三个 Tab 的刷新按钮均不通知父级 → 顶部「文档/图/需求/任务」数量与状态细分保持旧值\n2. **文档库无刷新反馈**：`packages/web/src/components/document/DocumentLibrary.vue` 的 `loading` 为死状态（L99 声明、L127 置 true、L139 置 false，但模板从未使用）→ 刷新为「原地无声替换」，小改动时用户无感，误以为未刷新；需求 Tab 有 `v-if=\"loading\"` 的「加载中…」闪现，行为不一致\n\n## 目标\n① 点击刷新后顶部统计同步更新；② 文档库与需求 Tab 有一致的刷新视觉反馈。不修改已成立的内容重载逻辑。\n\n## 验收口径\n点击右下角刷新按钮后：① 顶部统计（文档/图/需求/任务 数量与状态细分）同步更新；② 文档库与需求 Tab 均有一致的刷新视觉反馈。\n\n## 关联文档\ndev-doc-diagram-mgmt-refresh",
+  "status": "done",
+  "taskIds": [
+    "37d7061b-fb99-4fbe-a554-8c1b902a9bd4",
+    "ec673506-602f-40f1-8949-9e9429080337"
+  ],
+  "createdAt": 1790061168566,
+  "updatedAt": 1790071885329
+}

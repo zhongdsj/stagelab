@@ -1,0 +1,15 @@
+{
+  "taskId": "a03b3426-9b59-4117-b37e-b628baefa39e",
+  "requirementId": "66b41e1b-1e42-4860-a9c6-e41eb4d13631",
+  "title": "set_working_repo 支持 repoRoot/projectId 二选一",
+  "description": "set_working_repo 入参改为 repoRoot? 与 projectId? 二选一（schema 由必填变可选，属破坏性变更）。传 projectId 时通过 listWorkingRepos() 反查 repoRoot 后再切换；两种入参互斥校验与错误提示在服务层实现。",
+  "status": "done",
+  "acceptanceCriteria": "仅传 projectId 能成功切换；仅传 repoRoot 行为与现在一致（向后兼容）；两者都传或都不传时返回清晰错误；projectId 不存在于已加载仓库时返回明确错误",
+  "files": [
+    "packages/server/src/mcp/tools/project.ts",
+    "packages/server/src/services/workspace.service.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1790063035769,
+  "updatedAt": 1790070491365
+}

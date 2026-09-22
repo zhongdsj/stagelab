@@ -5,6 +5,7 @@
  * - Node 服务接收 --repo /path/to/your-git-repo
  * - 支持同时打开多个仓库实例，每个仓库一套独立项目
  */
+import fs from "node:fs";
 import path from "node:path";
 import {
   initRepo,
@@ -15,8 +16,15 @@ import {
 import {
   registerRepo,
   listRegisteredRepos,
-  replaceRegistryRepos
+  pruneRegistryRepos
 } from "./registry.js";
+import { stagelabRoot } from "./paths.js";
+import { errLog } from "../logger.js";
+
+/** 错误 → 可读消息 */
+function errMessage(err: unknown): string {
+  return err instanceof Error ? err.message : String(err);
+}
 
 /** 仓库工作区状态 */
 export interface RepoWorkspace {
@@ -55,33 +63,50 @@ export async function openWorkspace(repoRoot: string): Promise<RepoWorkspace> {
 
   const ws: RepoWorkspace = { repoRoot: root, entry };
   workspaces.set(root, ws);
-  // 登记到注册表，便于服务重启后自动恢复（幂等）
-  registerRepo(root);
+  // 登记到注册表，便于服务重启后自动恢复（幂等）；
+  // 写入失败不影响工作区加载，避免把启动/切换流程抛挂
+  try {
+    await registerRepo(root);
+  } catch (err) {
+    errLog("registry", `仓库登记失败（不影响本次加载）: ${root} - ${errMessage(err)}`);
+  }
   return ws;
 }
 
 /**
  * 启动时从注册表恢复仓库工作区
  *
- * - 逐个校验仓库仍有效（.stagelab/project.meta.json 存在）
- * - 有效 → 加载进内存；无效 → 跳过（视为失效，不保留）
- * - 回写注册表，自动清理失效项
+ * - 失效判定收紧：仅 `.stagelab` 目录确实不存在才剔除，暂时性失败一律保留记录
+ * - openWorkspace 抛错（磁盘忙/权限/网络盘抖动）→ 保留记录并告警，下次启动重试
+ * - 失效项走增量删除，不再用内存快照整体覆盖（避免抹掉并发窗口内新注册的记录）
  */
 export async function loadRegisteredWorkspaces(): Promise<RepoWorkspace[]> {
   const roots = listRegisteredRepos();
   const loaded: RepoWorkspace[] = [];
-  const valid: string[] = [];
+  const invalid: string[] = [];
   for (const root of roots) {
+    // 只有 .stagelab 目录确实不存在才视为永久失效
+    if (!fs.existsSync(stagelabRoot(root))) {
+      invalid.push(root);
+      continue;
+    }
     try {
-      if (!isRepoInitialized(root)) continue; // 仓库已失效（.stagelab 被删）
       const ws = await openWorkspace(root);
       loaded.push(ws);
-      valid.push(root);
-    } catch {
-      // 加载失败视为失效，跳过
+    } catch (err) {
+      // 暂时性失败：保留注册记录，仅告警，留待下次启动重试
+      errLog(
+        "registry",
+        `仓库加载失败，保留注册记录待下次重试: ${root} - ${errMessage(err)}`
+      );
     }
   }
-  replaceRegistryRepos(valid);
+  // 增量删除确认失效项（无失效项时不写盘）
+  try {
+    await pruneRegistryRepos(invalid);
+  } catch (err) {
+    errLog("registry", `注册表清理失败（不影响启动）: ${errMessage(err)}`);
+  }
   return loaded;
 }
 

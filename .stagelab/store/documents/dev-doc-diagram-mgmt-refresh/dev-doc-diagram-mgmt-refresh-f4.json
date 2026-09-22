@@ -1,0 +1,8 @@
+{
+  "fragmentId": "dev-doc-diagram-mgmt-refresh-f4",
+  "docId": "dev-doc-diagram-mgmt-refresh",
+  "order": 4,
+  "title": "附录：图描述读写补齐（变更记录）",
+  "content": "## 附录：图描述读写补齐（变更记录）\n\n**关联需求**：cb3ef2aa（图描述读写补齐：MCP 支持清空 + get_diagram_meta 可读描述）\n\nG1 落地后实测发现两处能力缺口，本次补齐：\n\n### 1. MCP 不能清空描述\n- **现象**：`update_diagram_meta({ diagramId, description: null })` 返回 `Parameter validation failed: root.description: must be string`\n- **原因**：MCP inputSchema 为 `z.string().optional()`，`null` 在 MCP 输入层被 Zod 拦截，根本传不到服务层\n- **修复**：改为 `z.string().nullable().optional()`。服务层 `updateDiagramMeta` + `mergePatch` 原本已支持 `null` → 删除字段，无需改动\n- **坑**：不能照搬项目既有的 `z.preprocess(null → undefined)` 约定——此处 `null` 的语义是「删除字段」，转成 `undefined` 会变成「省略字段」，语义相反\n- **实测**：`zodToJsonSchema` 输出 `description: {\"type\":[\"string\",\"null\"]}`，且不在 `required` 中，MCP 客户端校验可通过\n\n### 2. MCP 写后读不回描述\n- **现象**：`get_diagram_meta` 返回体只有 `diagramId/title/type/version/nodeCount/edgeCount/groupCount`，不含 `description`；`get_diagram_partial` 只返回节点/连线/分组，`search_project_content` 只返回 ID，MCP 侧无任何读回描述的入口\n- **修复**：`toDiagramMeta` 增加 `description: d.metadata.description`（未设置时 JSON 序列化自动丢弃该字段）\n\n### 3. Web 清空语义对齐\n- `DiagramView.submitRename` 原先把空描述作为 `\"\"` 落库，与 `null` 形成两种「无描述」表示\n- 改为空串 → 传 `null`；本地 metadata 同步 `delete metadata.description`\n\n### 验证\n- `tsc -p tsconfig.json`（server）EXIT=0；`vue-tsc -b --force`（web）EXIT=0\n- 直测 `zodToJsonSchema`：`description` → `{\"type\":[\"string\",\"null\"]}`，不在 `required` 中",
+  "summary": "MCP update_diagram_meta 放开 description null 清空；toDiagramMeta 增加 description 使 get_diagram_meta 可读回；Web 空描述改传 null"
+}

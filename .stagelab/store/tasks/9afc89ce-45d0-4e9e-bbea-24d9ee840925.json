@@ -1,0 +1,14 @@
+{
+  "taskId": "9afc89ce-45d0-4e9e-bbea-24d9ee840925",
+  "requirementId": "9a7afeba-d360-4ffc-9d82-b67b03727aa7",
+  "title": "项目总览页新增临时文件清理下拉入口",
+  "description": "在项目总览页「新建项目」左侧新增下拉入口，全部列出 registry 临时文件（文件名 + 从名字内时间戳解析的可读时间），每行带删除按钮，顶部一键清空（复用 ConfirmDialog 二次确认）。入口文案需标明是「系统临时文件」，避免误认为项目数据。",
+  "status": "done",
+  "acceptanceCriteria": "下拉位于「新建项目」左侧；展开后列出全部 tmp 且每行显示可读时间；每行删除按钮可单删；顶部一键清空有二次确认；列表为空时有空态提示；删除后列表即时刷新",
+  "files": [
+    "packages/web/src/views/ProjectListView.vue"
+  ],
+  "changeType": "修改",
+  "createdAt": 1790063024337,
+  "updatedAt": 1790070491074
+}

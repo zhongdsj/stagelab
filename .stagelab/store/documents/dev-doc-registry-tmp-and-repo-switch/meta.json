@@ -1,0 +1,9 @@
+{
+  "docId": "dev-doc-registry-tmp-and-repo-switch",
+  "title": "registry 临时文件治理、项目记录丢失修复与按 id 切换仓库 开发文档",
+  "docType": "开发文档",
+  "status": "focused",
+  "summary": "阶段1开发文档。三个议题：A registry.json.tmp-* 堆积（saveRegistry 唯一命名 tmp + 无兜底清理 + 每进程启动无条件重写 + Windows rename 被句柄占用会 EPERM/EBUSY）；B 项目记录偶发丢失（replaceRegistryRepos 用内存快照整体覆盖 + 暂时性失败被当永久失效 + 多进程读改写竞态）；C 无法按 projectId 切换（list_projects 不含 repoRoot，set_working_repo 只接受 repoRoot）。决策：仅手动清理不做自动清理；清理 UI 放项目总览页新建项目左侧；一并修复项目缺失根因；切换能力 A+B 叠加。",
+  "createdAt": 1790062792257,
+  "updatedAt": 1790062792257
+}

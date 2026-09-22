@@ -61,6 +61,8 @@ export function toDiagramMeta(d: Diagram) {
   return {
     diagramId: d.diagramId,
     title: d.metadata.title,
+    // 未设置描述时字段缺省（JSON 序列化会丢弃 undefined）
+    description: d.metadata.description,
     type: d.type,
     version: d.metadata.version,
     nodeCount: d.nodes.length,
@@ -322,6 +324,44 @@ export async function updateDiagramElements(
   await repos.diagram.save(updated);
   // 写图后增量维护影响范围索引（拓扑可能变化，重算该图）
   await refreshImpactIndex(workspace, updated);
+  return updated;
+}
+
+/**
+ * 修改图元数据（title / description），不影响节点/连线/分组。
+ * 更新语义：省略字段保留原值；description 显式传 null 表示删除该字段（title 为必填，不支持删除）。
+ * 按决策 D1：元信息变更不自增 metadata.version，避免污染 verify_diagram 的漂移判定与可信快照。
+ */
+export async function updateDiagramMeta(
+  workspace: RepoWorkspace,
+  diagramId: string,
+  patch: { title?: string; description?: string | null }
+): Promise<Diagram> {
+  const repos = createRepositories(workspace);
+  const d = await repos.diagram.get(diagramId);
+
+  // 仅收集调用方显式传入的字段（undefined 视为省略，null 交由 mergePatch 删除）
+  const metaPatch: Record<string, unknown> = {};
+  if (patch.title !== undefined) metaPatch.title = patch.title;
+  if (patch.description !== undefined) metaPatch.description = patch.description;
+
+  const updated: Diagram = {
+    ...d,
+    metadata: mergePatch(d.metadata, metaPatch as Partial<Diagram["metadata"]>)
+  };
+
+  // Zod 校验通过后落盘（title 为必填，缺失或空串会在此被拦截）
+  const parsed = DiagramSchema.safeParse(updated);
+  if (!parsed.success) {
+    throw new Error(
+      `图元数据更新校验失败: ${parsed.error.issues
+        .map((i) => i.message)
+        .join("; ")}`
+    );
+  }
+
+  await repos.diagram.save(updated);
+  // 元信息变更不影响拓扑，无需重算影响范围索引；title 变更由 getProjectIndex 重建索引时自动进入
   return updated;
 }
 

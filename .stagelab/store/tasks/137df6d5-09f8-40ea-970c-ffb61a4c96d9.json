@@ -1,0 +1,14 @@
+{
+  "taskId": "137df6d5-09f8-40ea-970c-ffb61a4c96d9",
+  "requirementId": "5ecc9cd5-8732-4074-8aaa-0bdd4bcdd7ed",
+  "title": "新增可复用确认弹窗组件 ConfirmDialog",
+  "description": "新增 ConfirmDialog 组件供全站二次确认复用。需支持标题/正文/确认取消文案、Promise 化调用（await 返回 boolean）、点击遮罩外部关闭等价于取消、Esc 关闭；样式沿用项目 Glassmorphism 风格与语义 token。",
+  "status": "done",
+  "acceptanceCriteria": "支持 await 调用并返回 boolean；点击遮罩外部与取消按钮均返回 false 且不执行原操作；Esc 可关闭；vue-tsc 类型检查通过",
+  "files": [
+    "packages/web/src/components/common/ConfirmDialog.vue"
+  ],
+  "changeType": "新增",
+  "createdAt": 1790062159179,
+  "updatedAt": 1790063579305
+}

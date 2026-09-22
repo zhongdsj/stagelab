@@ -1,0 +1,8 @@
+{
+  "fragmentId": "dev-doc-diagram-mgmt-refresh-f0",
+  "docId": "dev-doc-diagram-mgmt-refresh",
+  "order": 0,
+  "title": "图管理能力补齐与前端刷新穿透 开发文档",
+  "content": "# 阶段1 开发文档：图管理能力补齐 + 前端刷新穿透修复\n\n## 1. 业务背景\n\nstagelab 四阶段体系中，「图」与「文档」是并列的一等工程资产：文档承载需求与设计意图，图承载结构化架构与调用链。但两者在管理能力上不对等，导致三处缺口。\n\n### 问题 A：图的 title / description 无法修改\n\n`Diagram.metadata` 含 `title / version / description`，但仅在 `createDiagram` 时写入。建图后若标题写错、业务改名或图定位调整，唯一手段是 `delete_diagram` + `create_diagram` 重建——这会连带清空全部 nodes / edges / groups，代价极高；直改 `.stagelab/store` 又违反「禁止绕过 MCP 读写存储」的铁律。\n\n### 问题 B：前端无图删除入口\n\nMCP 已有 `delete_diagram`，但 HTTP 层与 Web 前端均无对应能力，Web 端无法删除废弃图。\n\n### 问题 C：刷新按钮无法刷新当前文档正文与任务内容\n\n文档库 / 需求 Tab 右下角刷新按钮点击后，当前打开文档的正文、已展开需求下的任务内容不更新，必须整页刷新或切换 Tab 才能看到最新数据。\n\n## 2. 功能目标\n\n- G1：图 title / description 可通过 MCP、HTTP、Web 三层修改，且不影响 nodes / edges / groups\n- G2：Web 端提供图删除入口，删除前二次确认\n- G3：刷新按钮真正穿透到「当前打开的文档正文」与「已展开需求的任务内容」\n",
+  "summary": "阶段1开发文档。问题：① 图 metadata.title/description 四层均无修改入口，改错只能删图重建；② 图删除在 HTTP 与 Web 缺失（仅 MCP 有 delete_diagram）；③ 文档库/需求 Tab 刷新按钮无法刷新当前文档正文与已展开需求的任务内容，另发现父级统计不参与刷新。方案：新增 updateDiagramMeta 服务 + update_diagram_meta MCP 工具 + PATCH meta 路由 + 重命名 UI；补 DELETE 路由与删除入口；刷新穿透由父级统一 refreshTick。含 D1~D4 待决策项与验收口径。"
+}

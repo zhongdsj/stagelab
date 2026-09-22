@@ -1,0 +1,13 @@
+{
+  "requirementId": "66b41e1b-1e42-4860-a9c6-e41eb4d13631",
+  "title": "打通按 projectId 切换工作仓库链路",
+  "description": "## 背景\n切换工作仓库只能按目录路径，无法按 projectId。现状：\n- `list_projects`（`packages/server/src/mcp/tools/project.ts`）返回 `projectId / projectName / currentStage / updatedAt`，**不含 repoRoot**；且内部为 `getWorkingRepo() + listProjects(ws)`，**只列当前工作仓库的项目**\n- `set_working_repo` 入参**只有 `repoRoot`**，不接受 projectId\n- `list_working_repos` 是唯一能拿到 `repoRoot ↔ projectId` 映射的入口\n\n导致「读项目列表 → 按名称/目录找到目标 id → 切换」链路断在两处：拿不到路径、传不进 id。\n\n## 目标\nA + B 叠加：① `list_projects` 增加 `repoRoot` 字段；② `set_working_repo` 支持 `repoRoot` 与 `projectId` 二选一，传 projectId 时内部通过已加载仓库反查 repoRoot。\n\n## 验收口径\n1. `list_projects` 返回值含 `repoRoot`\n2. 仅传 `projectId` 调 `set_working_repo` 能成功切换\n3. 两者都传或都不传时返回清晰错误提示，而非静默行为\n4. `projectId` 不存在于已加载仓库时返回明确错误\n\n## 关联文档\ndev-doc-registry-tmp-and-repo-switch",
+  "branchName": "feature/switch-repo-by-project-id",
+  "status": "done",
+  "taskIds": [
+    "25694d27-b30b-4129-9a84-a32eea3ffa43",
+    "a03b3426-9b59-4117-b37e-b628baefa39e"
+  ],
+  "createdAt": 1790062792320,
+  "updatedAt": 1790071902606
+}

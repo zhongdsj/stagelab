@@ -1,0 +1,16 @@
+{
+  "requirementId": "6cbc1c44-ec4d-4e8d-95dd-c9fe8a948e56",
+  "title": "图管理能力补齐：元数据可修改 + 删除入口",
+  "description": "## 背景\n图（architecture/class/flow）的 `metadata.title / description` 仅在 `createDiagram` 时可写。建图后标题写错或业务改名，只能 `delete_diagram` + `create_diagram` 重建，会连带清空全部 nodes/edges/groups；直改 `.stagelab/store` 违反 MCP 铁律。同时 MCP 已有 `delete_diagram`，但 HTTP 与 Web 前端都没有删除入口，Web 端无法删除废弃图。\n\n## 目标\n① 图 title / description 可在 MCP、HTTP、Web 三层修改，修改不影响节点/连线/分组；② Web 端提供图删除入口，删除前二次确认，删除后同步清理影响范围索引。\n\n## 现状证据\n- MCP：`packages/server/src/mcp/tools/diagram.ts` 10 个工具全无 meta 写入，`update_diagram_elements` 的 patch 动作仅限 node/edge/group\n- Service：`packages/server/src/services/diagram.service.ts` 无 `updateDiagramMeta`，`metadata.title` 仅 createDiagram 写入\n- HTTP：`packages/server/src/http/routes/diagrams.ts` 8 条路由无 meta 写入，也无 DELETE 路由\n- Web：`packages/web/src/components/diagram/DiagramLibrary.vue` 只读渲染 title，无重命名/删除入口\n- 对照：文档已有 `update_document_meta` + `renameDocument` + 重命名表单，需求/任务有 `update_requirement` / `update_task`\n\n## 验收口径\n1. 对已存在的图调用 `update_diagram_meta` 改标题后，`get_diagram_meta` 与项目索引均返回新标题，且节点/连线/分组数量不变\n2. Web 端图库与图详情页标题同步更新\n3. Web 端可删除图，二次确认后列表移除，store 对应文件与影响范围索引被清理\n\n## 关联文档\ndev-doc-diagram-mgmt-refresh",
+  "status": "done",
+  "taskIds": [
+    "d9ab5d1d-b326-427c-b977-30309216e556",
+    "bdb4e1da-3585-42e8-b696-2ed9550929ae",
+    "9517c0ea-ae21-454d-8262-0e82a6365a28",
+    "4eaa149a-54fa-4432-8e86-17142eddd185",
+    "e6bcb3e1-3a00-4bab-91fb-92fdba1a6a25",
+    "8a0494a5-29b1-4a5a-916e-67e5f80c009b"
+  ],
+  "createdAt": 1790061168548,
+  "updatedAt": 1790071890885
+}

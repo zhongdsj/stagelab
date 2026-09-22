@@ -24,6 +24,7 @@ import {
   getDiagramMeta,
   getDiagramPartial,
   updateDiagramElements,
+  updateDiagramMeta,
   deleteDiagram,
   getDiagramGroup,
   getNodeGroups,
@@ -132,7 +133,9 @@ export function registerDiagramTools(server: McpServer): void {
     "get_diagram_meta",
     {
       title: "获取图元数据",
-      description: "获取图元数据（标题、类型、节点数、连线数，不含详情）",
+      description:
+        "获取图元数据（标题、描述、类型、版本、节点/连线/分组数量，不含详情）。\n" +
+        "description 未设置时该字段缺省。",
       inputSchema: { diagramId: z.string().min(1) }
     },
     async (args) =>
@@ -164,6 +167,38 @@ export function registerDiagramTools(server: McpServer): void {
         });
         // 剔除坐标（geometry/points）：MCP 读侧只返回语义，坐标走 HTTP
         return stripVisual(raw);
+      })
+  );
+
+  server.registerTool(
+    "update_diagram_meta",
+    {
+      title: "修改图元数据",
+      description:
+        "修改图的 metadata.title / description，不影响节点、连线、分组（改标题无需删图重建）。\n" +
+        "title 与 description 均为可选，但至少要传一个，否则返回错误提示。\n" +
+        "更新语义：省略的字段保持原值；传入的值整体覆盖原值；description 传 null 表示清空描述。\n" +
+        "元信息变更不自增 metadata.version，不影响 verify_diagram 的可信快照。\n" +
+        "适用场景：建图时标题写错、业务改名、补充/修正/清空图描述。",
+      inputSchema: {
+        diagramId: z.string().min(1),
+        title: z.string().min(1).optional(),
+        // null 表示清空描述（title 为必填字段，不支持清空）
+        description: z.string().nullable().optional()
+      }
+    },
+    async (args) =>
+      safeCall(async () => {
+        if (args.title === undefined && args.description === undefined) {
+          throw new Error("title 与 description 至少传一个");
+        }
+        const ws = await getWorkspace();
+        const d = await updateDiagramMeta(ws, args.diagramId, {
+          title: args.title,
+          description: args.description
+        });
+        // T31：写操作只返回 meta 摘要，不返回节点/连线/分组内容
+        return toDiagramMeta(d);
       })
   );
 

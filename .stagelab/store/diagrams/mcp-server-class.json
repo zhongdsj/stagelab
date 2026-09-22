@@ -3,7 +3,7 @@
   "type": "class",
   "metadata": {
     "title": "MCP Server - 类图",
-    "version": 6,
+    "version": 7,
     "description": "基于 packages/server/src/mcp 源码：MCP Server(stdin/stdout) + 五类工具注册层",
     "baseCommit": "58d43b9",
     "verifiedCommit": "58d43b9",
@@ -152,6 +152,13 @@
             ]
           }
         ]
+      },
+      "payload": {
+        "aiRiskNote": {
+          "breakingChange": "set_working_repo 入参由必填 repoRoot 改为 repoRoot / projectId 二选一",
+          "compat": "仅传 repoRoot 时行为与旧版一致",
+          "listProjects": "返回值新增 repoRoot 字段，可据此打通「发现→切换」链路"
+        }
       }
     },
     {

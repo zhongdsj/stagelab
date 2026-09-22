@@ -1,0 +1,15 @@
+{
+  "taskId": "e6bcb3e1-3a00-4bab-91fb-92fdba1a6a25",
+  "requirementId": "6cbc1c44-ec4d-4e8d-95dd-c9fe8a948e56",
+  "title": "前端新增 renameDiagram / deleteDiagram API",
+  "description": "按既有 api 模块风格新增 renameDiagram(projectId, diagramId, {title?, description?}) 与 deleteDiagram(projectId, diagramId)，并在 api/index.ts 中导出。",
+  "status": "done",
+  "acceptanceCriteria": "两个函数请求路径与后端路由一致；类型定义完整；可从 packages/web/src/api/index.ts 直接导入",
+  "files": [
+    "packages/web/src/api/diagrams.ts",
+    "packages/web/src/api/index.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1790062175007,
+  "updatedAt": 1790064792705
+}

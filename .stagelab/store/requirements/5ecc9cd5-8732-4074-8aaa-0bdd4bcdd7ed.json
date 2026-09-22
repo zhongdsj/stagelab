@@ -1,0 +1,12 @@
+{
+  "requirementId": "5ecc9cd5-8732-4074-8aaa-0bdd4bcdd7ed",
+  "title": "统一自定义确认弹窗并替换原生 confirm",
+  "description": "## 背景\n前端目前 7 处二次确认均使用浏览器原生 `window.confirm`，样式不可控、与项目 Glassmorphism 交互风格不一致，且不支持点击外部关闭。\n\n## 目标\n新增一个可复用的自定义确认弹窗组件（Glassmorphism 风格，支持点击外部关闭与取消），并替换全部 7 处原生 confirm：\n- `packages/web/src/views/ProjectListView.vue` 删除项目\n- `packages/web/src/components/requirement/RequirementTasks.vue` 恢复需求 / 删除需求 / 恢复任务 / 删除任务（4 处）\n- `packages/web/src/components/document/DocumentLibrary.vue` 删除文档\n- `packages/web/src/components/document/DocumentFragments.vue` 超长保存确认\n图删除（见需求「图管理能力补齐」）直接复用该组件，不另写弹窗。\n\n## 验收口径\n1. 全局 grep `window.confirm` 在 `packages/web/src` 下无残留\n2. 弹窗支持点击外部关闭与取消，取消后不执行原操作\n3. 所有替换点仍为异步语义（await / 回调），不因从同步改异步而产生逻辑漏洞\n\n## 关联文档\ndev-doc-diagram-mgmt-refresh",
+  "status": "done",
+  "taskIds": [
+    "137df6d5-09f8-40ea-970c-ffb61a4c96d9",
+    "ed1eaf33-ebd2-4755-a266-fc59d299797d"
+  ],
+  "createdAt": 1790061323716,
+  "updatedAt": 1790071888344
+}

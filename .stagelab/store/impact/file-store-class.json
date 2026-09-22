@@ -32,26 +32,29 @@
   },
   "Lock": {
     "upstream": [
-      "StorageIO"
+      "StorageIO",
+      "Registry"
     ],
     "downstream": [],
-    "upstreamHops": 3,
+    "upstreamHops": 2,
     "downstreamHops": 0,
-    "fanIn": 1,
+    "fanIn": 2,
     "fanOut": 0,
     "inCycle": false,
     "cycleIds": [],
-    "structuralRisk": "low"
+    "structuralRisk": "medium"
   },
   "Registry": {
     "upstream": [
       "RepoWorkspace"
     ],
-    "downstream": [],
+    "downstream": [
+      "Lock"
+    ],
     "upstreamHops": 1,
-    "downstreamHops": 0,
+    "downstreamHops": 1,
     "fanIn": 1,
-    "fanOut": 0,
+    "fanOut": 1,
     "inCycle": false,
     "cycleIds": [],
     "structuralRisk": "low"

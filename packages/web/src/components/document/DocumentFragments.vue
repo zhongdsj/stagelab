@@ -85,6 +85,7 @@ import {
   ApiError
 } from "../../api/index";
 import type { FullDocument } from "../../api/documents";
+import { confirmDialog } from "../common/ConfirmDialog.vue";
 
 const props = defineProps<{
   projectId: string;
@@ -230,11 +231,17 @@ async function save() {
   // 超长分级警告（不阻断，用户确认后仍作为单分片保存）
   const len = draft.value.length;
   if (len > 2000) {
-    const msg =
-      len > 4000
-        ? `内容已超过 4000 字（当前 ${len} 字），将作为单分片保存，后续读取成本较高。确定仍保存吗？`
-        : `内容已超过 2000 字（当前 ${len} 字）。系统不再自动切分，将作为单分片保存。确定继续吗？`;
-    if (!window.confirm(msg)) return;
+    const overLimit = len > 4000;
+    const msg = overLimit
+      ? `内容已超过 4000 字（当前 ${len} 字），将作为单分片保存，后续读取成本较高。确定仍保存吗？`
+      : `内容已超过 2000 字（当前 ${len} 字）。系统不再自动切分，将作为单分片保存。确定继续吗？`;
+    const ok = await confirmDialog({
+      title: overLimit ? "内容超长提醒" : "内容偏长提醒",
+      message: msg,
+      confirmText: "仍要保存",
+      danger: overLimit
+    });
+    if (!ok) return;
   }
   saving.value = true;
   error.value = "";

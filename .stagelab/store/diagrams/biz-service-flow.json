@@ -3,7 +3,7 @@
   "type": "flow",
   "metadata": {
     "title": "业务服务层 - 核心流程图",
-    "version": 3,
+    "version": 6,
     "description": "基于 packages/server/src/services 源码：项目初始化、文档分片、需求-任务、索引查询 服务调用流程"
   },
   "nodes": [
@@ -17,6 +17,16 @@
         "y": 64,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/services/workspace.service.ts",
+            "symbols": [
+              "initRepoProject"
+            ]
+          }
+        ]
       }
     },
     {
@@ -29,6 +39,16 @@
         "y": 320,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/storage/repo.ts",
+            "symbols": [
+              "initRepo"
+            ]
+          }
+        ]
       }
     },
     {
@@ -41,6 +61,16 @@
         "y": 576,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/services/project.service.ts",
+            "symbols": [
+              "createProject"
+            ]
+          }
+        ]
       }
     },
     {
@@ -53,6 +83,16 @@
         "y": 832,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/services/project.service.ts",
+            "symbols": [
+              "createProject"
+            ]
+          }
+        ]
       }
     },
     {
@@ -65,6 +105,16 @@
         "y": 64,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/services/document.service.ts",
+            "symbols": [
+              "writeDocumentFragment"
+            ]
+          }
+        ]
       }
     },
     {
@@ -80,6 +130,16 @@
         "y": 320,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/services/document.service.ts",
+            "symbols": [
+              "MAX_FRAGMENT_CHARS"
+            ]
+          }
+        ]
       }
     },
     {
@@ -92,6 +152,16 @@
         "y": 576,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/services/document.service.ts",
+            "symbols": [
+              "writeDocumentFragment"
+            ]
+          }
+        ]
       }
     },
     {
@@ -104,6 +174,16 @@
         "y": 832,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/services/document.service.ts",
+            "symbols": [
+              "deleteDocumentFragment"
+            ]
+          }
+        ]
       }
     },
     {
@@ -115,6 +195,16 @@
         "y": 1088,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/services/document.service.ts",
+            "symbols": [
+              "listDocumentFragments"
+            ]
+          }
+        ]
       }
     },
     {
@@ -127,6 +217,16 @@
         "y": 64,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/services/requirement.service.ts",
+            "symbols": [
+              "createTask"
+            ]
+          }
+        ]
       }
     },
     {
@@ -139,6 +239,16 @@
         "y": 320,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/services/requirement.service.ts",
+            "symbols": [
+              "createTask"
+            ]
+          }
+        ]
       }
     },
     {
@@ -151,6 +261,16 @@
         "y": 576,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/services/requirement.service.ts",
+            "symbols": [
+              "syncRequirementIds"
+            ]
+          }
+        ]
       }
     },
     {
@@ -166,6 +286,16 @@
         "y": 832,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/services/requirement.service.ts",
+            "symbols": [
+              "updateTaskStatus"
+            ]
+          }
+        ]
       }
     },
     {
@@ -178,6 +308,17 @@
         "y": 1088,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/services/requirement.service.ts",
+            "symbols": [
+              "updateTaskStatus",
+              "updateRequirement"
+            ]
+          }
+        ]
       }
     },
     {
@@ -189,6 +330,16 @@
         "y": 1344,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/services/requirement.service.ts",
+            "symbols": [
+              "getRequirement"
+            ]
+          }
+        ]
       }
     },
     {
@@ -201,6 +352,16 @@
         "y": 64,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/services/index.service.ts",
+            "symbols": [
+              "getProjectIndex"
+            ]
+          }
+        ]
       }
     },
     {
@@ -216,6 +377,16 @@
         "y": 320,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/storage/index-builder.ts",
+            "symbols": [
+              "readIndex"
+            ]
+          }
+        ]
       }
     },
     {
@@ -228,6 +399,16 @@
         "y": 576,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/storage/index-builder.ts",
+            "symbols": [
+              "rebuildIndex"
+            ]
+          }
+        ]
       }
     },
     {
@@ -240,6 +421,80 @@
         "y": 832,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/services/index.service.ts",
+            "symbols": [
+              "getProjectIndex"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "nodeId": "f5-start",
+      "label": "发现→切换工作仓库",
+      "nodeKind": "start",
+      "description": "先 list_projects 拿 projectId（返回值已含 repoRoot）",
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/services/project.service.ts",
+            "symbols": [
+              "listProjects"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "nodeId": "f5-resolve",
+      "label": "入参二选一",
+      "nodeKind": "decision",
+      "description": "传 repoRoot 直接用；传 projectId 反查 repoRoot；两者都传/都不传报错",
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/services/workspace.service.ts",
+            "symbols": [
+              "setWorkingRepo"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "nodeId": "f5-load",
+      "label": "加载/切换工作区",
+      "nodeKind": "process",
+      "description": "openWorkspace 后设为当前工作仓库",
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/storage/workspace.ts",
+            "symbols": [
+              "openWorkspace"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "nodeId": "f5-done",
+      "label": "返回仓库信息",
+      "nodeKind": "end",
+      "description": "repoRoot / projectId / schemaVersion",
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/mcp/tools/_util.ts",
+            "symbols": [
+              "workspaceInfo"
+            ]
+          }
+        ]
       }
     }
   ],
@@ -563,6 +818,30 @@
           "y": 832
         }
       ]
+    },
+    {
+      "edgeId": "e19",
+      "from": "f5-start",
+      "to": "f5-resolve",
+      "label": "调用 set_working_repo",
+      "methods": [
+        "ProjectService.listProjects → WorkspaceService.setWorkingRepo"
+      ]
+    },
+    {
+      "edgeId": "e20",
+      "from": "f5-resolve",
+      "to": "f5-load",
+      "label": "repoRoot / 反查所得",
+      "methods": [
+        "setWorkingRepo → openWorkspace"
+      ]
+    },
+    {
+      "edgeId": "e21",
+      "from": "f5-load",
+      "to": "f5-done",
+      "label": "切换完成"
     }
   ],
   "groups": [
@@ -611,6 +890,16 @@
         "f4-check",
         "f4-rebuild",
         "f4-return"
+      ]
+    },
+    {
+      "groupId": "lane-repo",
+      "title": "工作仓库切换",
+      "nodeIds": [
+        "f5-start",
+        "f5-resolve",
+        "f5-load",
+        "f5-done"
       ]
     }
   ]

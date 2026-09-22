@@ -3,7 +3,7 @@
   "type": "class",
   "metadata": {
     "title": "HTTP API - 类图",
-    "version": 134,
+    "version": 136,
     "description": "基于 packages/server/src/http 源码：Fastify 路由层（项目/文档/图/需求）+ 错误工具"
   },
   "nodes": [
@@ -108,7 +108,7 @@
           "name": "registerDiagramRoutes"
         }
       ],
-      "description": "图路由：读取图/计算布局",
+      "description": "图路由：读取图/计算布局/元数据修改 PATCH /meta/删除图 DELETE（删除联动清理影响范围索引与验证历史）",
       "geometry": {
         "x": 96.1289422563633,
         "y": 556.282555416621,
@@ -120,7 +120,7 @@
           {
             "path": "packages/server/src/http/routes/diagrams.ts",
             "symbols": [
-              "DiagramRoutes"
+              "registerDiagramRoutes"
             ]
           }
         ]
@@ -238,6 +238,34 @@
             "path": "packages/server/src/http/routes/_util.ts",
             "symbols": [
               "requireWorkspaceByProjectId"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "nodeId": "SystemRoutes",
+      "label": "SystemRoutes",
+      "kind": "class",
+      "methods": [
+        {
+          "name": "registerSystemRoutes"
+        }
+      ],
+      "description": "系统级运维路由（registry 临时文件 列表/单删/清空）：文件名白名单 + path.resolve 前缀双重校验，不做任何自动清理",
+      "payload": {
+        "aiRiskNote": {
+          "endpoints": "GET /api/system/registry-tmp；DELETE /api/system/registry-tmp?name=；DELETE /api/system/registry-tmp/all",
+          "security": "仅接受 ^registry\\.json\\.tmp-\\d+-[a-z0-9]+$ 且解析后父目录必须等于注册表目录"
+        }
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/http/routes/system.ts",
+            "symbols": [
+              "registerSystemRoutes",
+              "resolveTmpFile"
             ]
           }
         ]
@@ -572,6 +600,16 @@
           "y": 1361.3329454020413
         }
       ]
+    },
+    {
+      "edgeId": "e15",
+      "from": "HttpServer",
+      "to": "SystemRoutes"
+    },
+    {
+      "edgeId": "e16",
+      "from": "SystemRoutes",
+      "to": "HttpError"
     }
   ],
   "groups": [
@@ -592,7 +630,8 @@
         "ProjectRoutes",
         "DocumentRoutes",
         "DiagramRoutes",
-        "RequirementRoutes"
+        "RequirementRoutes",
+        "SystemRoutes"
       ],
       "collapsible": true
     },

@@ -3,7 +3,7 @@
   "type": "class",
   "metadata": {
     "title": "本地存储层 - 类图",
-    "version": 9,
+    "version": 10,
     "description": "基于 packages/server/src/storage 源码：IO/路径/锁/注册表/缓存/索引构建/仓储/工作区"
   },
   "nodes": [
@@ -121,10 +121,19 @@
           "name": "registerRepo"
         },
         {
+          "name": "removeRepo"
+        },
+        {
+          "name": "pruneRegistryRepos"
+        },
+        {
           "name": "listRegisteredRepos"
+        },
+        {
+          "name": "saveRegistry"
         }
       ],
-      "description": "仓库注册表（用户级持久化）",
+      "description": "仓库注册表（用户级持久化）：写操作先取跨进程文件锁，锁内重读→改→落盘；失效项只做增量删除（不再整体覆盖）；原子写 rename 失败有限重试并回收本次 tmp",
       "geometry": {
         "x": 384,
         "y": 1594,
@@ -136,10 +145,21 @@
           {
             "path": "packages/server/src/storage/registry.ts",
             "symbols": [
-              "Registry"
+              "registerRepo",
+              "removeRepo",
+              "pruneRegistryRepos",
+              "saveRegistry",
+              "renameWithRetry"
             ]
           }
         ]
+      },
+      "payload": {
+        "aiRiskNote": {
+          "concurrency": "多进程并发写注册表会丢记录",
+          "mitigation": "复用 storage/lock.ts 文件锁 + 锁内重读",
+          "tmp": "registry.json.tmp-* 仅手动清理（G1），无自动清理"
+        }
       }
     },
     {
@@ -474,6 +494,15 @@
           "x": 137,
           "y": 1594
         }
+      ]
+    },
+    {
+      "edgeId": "e09",
+      "from": "Registry",
+      "to": "Lock",
+      "label": "写入互斥",
+      "methods": [
+        "Registry.saveRegistry → Lock.withLock"
       ]
     }
   ],

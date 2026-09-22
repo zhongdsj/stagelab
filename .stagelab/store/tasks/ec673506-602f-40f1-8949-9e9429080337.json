@@ -1,0 +1,14 @@
+{
+  "taskId": "ec673506-602f-40f1-8949-9e9429080337",
+  "requirementId": "efef9887-1553-43e4-ae58-3d59f2254a13",
+  "title": "文档库补齐刷新视觉反馈",
+  "description": "DocumentLibrary 的 loading 为死状态（L99 声明、L127 置 true、L139 置 false，但模板从未使用），刷新为原地无声替换，小改动时用户无感。模板接入 loading，对齐需求 Tab 的「加载中…」反馈。",
+  "status": "done",
+  "acceptanceCriteria": "点击刷新时出现加载中提示，与需求 Tab 表现一致；加载完成后提示消失；不引起列表与正文闪屏",
+  "files": [
+    "packages/web/src/components/document/DocumentLibrary.vue"
+  ],
+  "changeType": "修改",
+  "createdAt": 1790062175157,
+  "updatedAt": 1790063579509
+}

@@ -11,7 +11,7 @@ import type { FastifyInstance } from "fastify";
 import type { ImpactRiskLevel, VerificationActor, VerificationChangeType } from "@stagelab/shared";
 import { readDiagram } from "../../services/index.service.js";
 import { layoutInWorker, type LayoutOverrides } from "../../layout/worker.js";
-import { getDiagramGroup, getNodeGroups, saveDiagramGeometry, verifyDiagram, getVerificationHistory } from "../../services/diagram.service.js";
+import { getDiagramGroup, getNodeGroups, saveDiagramGeometry, verifyDiagram, getVerificationHistory, updateDiagramMeta, deleteDiagram, toDiagramMeta } from "../../services/diagram.service.js";
 import { getImpactIndex } from "../../services/impact.service.js";
 import { getLayoutParams } from "../../layout/params.js";
 import { requireWorkspaceByProjectId, HttpError } from "./_util.js";
@@ -23,6 +23,41 @@ export function registerDiagramRoutes(app: FastifyInstance): void {
     const { id, did } = request.params as { id: string; did: string };
     const ws = requireWorkspaceByProjectId(id);
     return readDiagram(ws, did);
+  });
+
+  // G1：修改图元数据（title / description），不影响节点/连线/分组
+  app.patch("/api/projects/:id/diagrams/:did/meta", async (request) => {
+    const { id, did } = request.params as { id: string; did: string };
+    const ws = requireWorkspaceByProjectId(id);
+    const body = (request.body ?? {}) as { title?: unknown; description?: unknown };
+
+    const hasTitle = body.title !== undefined;
+    const hasDesc = body.description !== undefined;
+    if (!hasTitle && !hasDesc) {
+      throw new HttpError(400, "请求体需包含 title 或 description");
+    }
+    // title 为必填字段，仅接受非空字符串（不支持置空删除）
+    if (hasTitle && (typeof body.title !== "string" || body.title.trim() === "")) {
+      throw new HttpError(400, "title 必须为非空字符串");
+    }
+    // description 接受字符串或 null（null 表示清除描述）
+    if (hasDesc && body.description !== null && typeof body.description !== "string") {
+      throw new HttpError(400, "description 必须为字符串或 null");
+    }
+
+    const d = await updateDiagramMeta(ws, did, {
+      title: hasTitle ? (body.title as string) : undefined,
+      description: hasDesc ? (body.description as string | null) : undefined
+    });
+    return toDiagramMeta(d);
+  });
+
+  // G2：删除整张图（语义对齐 MCP delete_diagram，联动清理影响范围索引与验证历史）
+  app.delete("/api/projects/:id/diagrams/:did", async (request) => {
+    const { id, did } = request.params as { id: string; did: string };
+    const ws = requireWorkspaceByProjectId(id);
+    await deleteDiagram(ws, did);
+    return { diagramId: did, deleted: true };
   });
 
   // 实时布局（支持前端覆盖布局参数：nodeNodeSpacing/layerSpacing/baseNodeWidth/baseNodeHeight/colGap/rowGap/cellPadding）

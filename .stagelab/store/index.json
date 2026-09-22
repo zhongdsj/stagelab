@@ -1,6 +1,6 @@
 {
   "projectId": "34a29cd8-790c-43c4-8ce9-e2c25573cfa0",
-  "version": 1788859986,
+  "version": 1790072412,
   "documentIndex": [
     {
       "docId": "dev-doc",
@@ -51,6 +51,20 @@
       ]
     },
     {
+      "docId": "dev-doc-diagram-mgmt-refresh",
+      "title": "图管理能力补齐与前端刷新穿透 开发文档",
+      "docType": "开发文档",
+      "status": "focused",
+      "summary": "阶段1开发文档（4 分片：背景与目标 / 现状证据 / 方案设计 / 决策与验收）。问题：① 图 metadata.title/description 四层均无修改入口，改错只能删图重建；② 图删除在 HTTP 与 Web 缺失（仅 MCP 有 delete_diagram）；③ 刷新已实测确认生效且当前内容同步更新（原假设推翻），真实缺口为父级顶部统计不同步 + 文档库无刷新视觉反馈。方案 G1~G4：新增 updateDiagramMeta + update_diagram_meta + PATCH meta 路由 + renameDiagram；补 DELETE 路由与图详情页删除入口；刷新补父级统计同步与 loading 反馈；新增统一自定义确认弹窗替换 7 处 window.confirm。已定：D1 不自增 version、D3 入口放图详情页、D4 自定义弹窗跨模块复用、D5 仅补统计与反馈。",
+      "fragmentIds": [
+        "dev-doc-diagram-mgmt-refresh-f0",
+        "dev-doc-diagram-mgmt-refresh-f1",
+        "dev-doc-diagram-mgmt-refresh-f2",
+        "dev-doc-diagram-mgmt-refresh-f3",
+        "dev-doc-diagram-mgmt-refresh-f4"
+      ]
+    },
+    {
       "docId": "dev-doc-edge-arrow-orient",
       "title": "附录：连线箭头方向修正（端点垂直进入）",
       "docType": "变更记录",
@@ -78,7 +92,7 @@
       "docId": "dev-doc-node-schema-align",
       "title": "图元 Schema 对齐、MCP Meta 修复与前端体验优化（变更设计）",
       "docType": "开发文档",
-      "status": "focused",
+      "status": "archived",
       "summary": "对齐 MCP 入口与三节点 schema 字段（payload/linkedDiagrams/坐标），入口收紧为分型 union，updateNode/Edge 统一 merge+null 删除；已修复写分片误覆盖文档 meta 并新增 update_document_meta；待办含阶段切换引导、悬浮按钮、文档分类聚焦。",
       "fragmentIds": [
         "dev-doc-node-schema-align-f0",
@@ -87,6 +101,19 @@
         "dev-doc-node-schema-align-f3",
         "dev-doc-node-schema-align-f4",
         "dev-doc-node-schema-align-f5"
+      ]
+    },
+    {
+      "docId": "dev-doc-registry-tmp-and-repo-switch",
+      "title": "registry 临时文件治理、项目记录丢失修复与按 id 切换仓库 开发文档",
+      "docType": "开发文档",
+      "status": "focused",
+      "summary": "阶段1开发文档。三个议题：A registry.json.tmp-* 堆积（saveRegistry 唯一命名 tmp + 无兜底清理 + 每进程启动无条件重写 + Windows rename 被句柄占用会 EPERM/EBUSY）；B 项目记录偶发丢失（replaceRegistryRepos 用内存快照整体覆盖 + 暂时性失败被当永久失效 + 多进程读改写竞态）；C 无法按 projectId 切换（list_projects 不含 repoRoot，set_working_repo 只接受 repoRoot）。决策：仅手动清理不做自动清理；清理 UI 放项目总览页新建项目左侧；一并修复项目缺失根因；切换能力 A+B 叠加。",
+      "fragmentIds": [
+        "dev-doc-registry-tmp-and-repo-switch-f0",
+        "dev-doc-registry-tmp-and-repo-switch-f1",
+        "dev-doc-registry-tmp-and-repo-switch-f2",
+        "dev-doc-registry-tmp-and-repo-switch-f3"
       ]
     }
   ],
@@ -109,36 +136,36 @@
       "diagramId": "biz-service-flow",
       "title": "业务服务层 - 核心流程图",
       "type": "flow",
-      "nodeCount": 19,
-      "edgeCount": 18
+      "nodeCount": 23,
+      "edgeCount": 21
     },
     {
       "diagramId": "file-store-class",
       "title": "本地存储层 - 类图",
       "type": "class",
       "nodeCount": 8,
-      "edgeCount": 8
+      "edgeCount": 9
     },
     {
       "diagramId": "file-store-flow",
       "title": "本地存储层 - 核心流程图",
       "type": "flow",
-      "nodeCount": 11,
-      "edgeCount": 13
+      "nodeCount": 18,
+      "edgeCount": 22
     },
     {
       "diagramId": "http-api-class",
       "title": "HTTP API - 类图",
       "type": "class",
-      "nodeCount": 8,
-      "edgeCount": 14
+      "nodeCount": 9,
+      "edgeCount": 16
     },
     {
       "diagramId": "http-api-flow",
       "title": "HTTP API - 核心流程图",
       "type": "flow",
-      "nodeCount": 10,
-      "edgeCount": 12
+      "nodeCount": 12,
+      "edgeCount": 17
     },
     {
       "diagramId": "layout-engine-class",
@@ -165,8 +192,8 @@
       "diagramId": "mcp-server-flow",
       "title": "MCP Server - 核心流程图",
       "type": "flow",
-      "nodeCount": 11,
-      "edgeCount": 12
+      "nodeCount": 13,
+      "edgeCount": 17
     },
     {
       "diagramId": "sys-flow",
@@ -179,15 +206,15 @@
       "diagramId": "web-frontend-class",
       "title": "Web 前端 - 类图",
       "type": "class",
-      "nodeCount": 19,
-      "edgeCount": 22
+      "nodeCount": 21,
+      "edgeCount": 29
     },
     {
       "diagramId": "web-frontend-flow",
       "title": "Web 前端 - 核心交互流程图",
       "type": "flow",
-      "nodeCount": 19,
-      "edgeCount": 33
+      "nodeCount": 23,
+      "edgeCount": 48
     }
   ],
   "requirementIndex": [
@@ -270,9 +297,15 @@
     {
       "requirementId": "5a75f391-11d1-40a8-88c0-d79d1fb32a88",
       "title": "图元 Schema 对齐与 MCP 入口收紧",
-      "status": "test",
+      "status": "done",
       "branchName": "feature/diagram-schema-align",
       "taskCount": 9
+    },
+    {
+      "requirementId": "5ecc9cd5-8732-4074-8aaa-0bdd4bcdd7ed",
+      "title": "统一自定义确认弹窗并替换原生 confirm",
+      "status": "done",
+      "taskCount": 2
     },
     {
       "requirementId": "64db010b-c10e-4079-95f5-04bda0a377d7",
@@ -285,6 +318,13 @@
       "requirementId": "65917ee2-c639-4b2f-9c39-74e5b13a76ec",
       "title": "接口：MCP服务与HTTP API",
       "status": "done",
+      "taskCount": 2
+    },
+    {
+      "requirementId": "66b41e1b-1e42-4860-a9c6-e41eb4d13631",
+      "title": "打通按 projectId 切换工作仓库链路",
+      "status": "done",
+      "branchName": "feature/switch-repo-by-project-id",
       "taskCount": 2
     },
     {
@@ -307,6 +347,12 @@
       "taskCount": 4
     },
     {
+      "requirementId": "6cbc1c44-ec4d-4e8d-95dd-c9fe8a948e56",
+      "title": "图管理能力补齐：元数据可修改 + 删除入口",
+      "status": "done",
+      "taskCount": 6
+    },
+    {
       "requirementId": "71b8c0fe-3809-48f2-93b7-a26d50ec0967",
       "title": "前端：工程框架/图表渲染/联调",
       "status": "done",
@@ -317,6 +363,13 @@
       "title": "前端 impactIndex 风险着色",
       "status": "done",
       "branchName": "feature/diagram-risk-color",
+      "taskCount": 3
+    },
+    {
+      "requirementId": "9a7afeba-d360-4ffc-9d82-b67b03727aa7",
+      "title": "registry 临时文件手动清理入口",
+      "status": "done",
+      "branchName": "feature/registry-tmp-cleanup",
       "taskCount": 3
     },
     {
@@ -355,6 +408,13 @@
       "taskCount": 6
     },
     {
+      "requirementId": "cb3ef2aa-f011-41bb-97db-86c0bf53126f",
+      "title": "图描述读写补齐：MCP 支持清空 + get_diagram_meta 可读描述",
+      "status": "done",
+      "branchName": "feature/diagram-meta-description-rw",
+      "taskCount": 1
+    },
+    {
       "requirementId": "de14234b-8eae-4371-ab0d-d3c6696a6c37",
       "title": "连线优化：标签居中、减少重叠与点击高亮",
       "status": "done",
@@ -376,11 +436,24 @@
       "taskCount": 8
     },
     {
+      "requirementId": "ed7b1f6b-7269-4275-9aa0-b6212e28b160",
+      "title": "修复注册表写入导致的项目记录丢失",
+      "status": "done",
+      "branchName": "feature/registry-write-integrity",
+      "taskCount": 3
+    },
+    {
       "requirementId": "ed976849-7163-4396-bacb-bb527b0132b2",
       "title": "打包发布：单一 npm CLI 包（server+web 一体，MCP 独立子命令）",
       "status": "done",
       "branchName": "release/npm-package",
       "taskCount": 6
+    },
+    {
+      "requirementId": "efef9887-1553-43e4-ae58-3d59f2254a13",
+      "title": "刷新穿透补强：父级统计不同步 + 文档库无刷新反馈",
+      "status": "done",
+      "taskCount": 2
     }
   ],
   "taskIndex": [
@@ -451,10 +524,22 @@
       "requirementId": "34e3589b-32e7-4f28-b710-15794560e4c3"
     },
     {
+      "taskId": "137df6d5-09f8-40ea-970c-ffb61a4c96d9",
+      "title": "新增可复用确认弹窗组件 ConfirmDialog",
+      "status": "done",
+      "requirementId": "5ecc9cd5-8732-4074-8aaa-0bdd4bcdd7ed"
+    },
+    {
       "taskId": "13b780f2-09e8-4804-848b-d4849345bb3a",
       "title": "手动拖端点/线段：箭头随端点所在边保持垂直",
       "status": "done",
       "requirementId": "24176d00-fff5-4bab-9eae-aeb2b2b4a6d2"
+    },
+    {
+      "taskId": "155f66dc-f262-4cca-aef2-ceabeb10bce0",
+      "title": "放开 MCP description null 并让 meta 摘要返回描述",
+      "status": "done",
+      "requirementId": "cb3ef2aa-f011-41bb-97db-86c0bf53126f"
     },
     {
       "taskId": "15e4c0d1-2793-47e8-b318-8381f5687bc5",
@@ -541,6 +626,12 @@
       "requirementId": "5a75f391-11d1-40a8-88c0-d79d1fb32a88"
     },
     {
+      "taskId": "25694d27-b30b-4129-9a84-a32eea3ffa43",
+      "title": "list_projects 返回值增加 repoRoot 字段",
+      "status": "done",
+      "requirementId": "66b41e1b-1e42-4860-a9c6-e41eb4d13631"
+    },
+    {
       "taskId": "31c7d735-e8c7-4195-bbe5-5672a1c7a924",
       "title": "T4 构建验证与联调",
       "status": "done",
@@ -565,6 +656,12 @@
       "requirementId": "24176d00-fff5-4bab-9eae-aeb2b2b4a6d2"
     },
     {
+      "taskId": "37d7061b-fb99-4fbe-a554-8c1b902a9bd4",
+      "title": "刷新按钮同步父级顶部统计",
+      "status": "done",
+      "requirementId": "efef9887-1553-43e4-ae58-3d59f2254a13"
+    },
+    {
       "taskId": "3c8fb6a6-0633-4b23-8909-2a0e9c1f23a7",
       "title": "T40 节点悬停：气泡描述提示",
       "status": "done",
@@ -575,6 +672,12 @@
       "title": "T02 数据模型与Zod Schema",
       "status": "done",
       "requirementId": "311621a6-ca26-4050-b682-ac3ac2bba4d5"
+    },
+    {
+      "taskId": "3e1a853a-690b-4ef3-9af0-31b173491b19",
+      "title": "saveRegistry 加 rename 重试与本次 tmp 回收",
+      "status": "done",
+      "requirementId": "ed7b1f6b-7269-4275-9aa0-b6212e28b160"
     },
     {
       "taskId": "3fa6cfed-d899-4fdb-8c6d-80f3397d60c6",
@@ -667,6 +770,12 @@
       "requirementId": "ed976849-7163-4396-bacb-bb527b0132b2"
     },
     {
+      "taskId": "4eaa149a-54fa-4432-8e86-17142eddd185",
+      "title": "新增图删除 HTTP 路由 DELETE",
+      "status": "done",
+      "requirementId": "6cbc1c44-ec4d-4e8d-95dd-c9fe8a948e56"
+    },
+    {
       "taskId": "527548c3-5dd4-4363-8842-2f62bc5a946e",
       "title": "T88 构建验证与联调",
       "status": "done",
@@ -707,6 +816,12 @@
       "title": "T45 MCP 工具 + HTTP 接口：分区读取与反向查询",
       "status": "done",
       "requirementId": "6a437b63-f03a-4567-9198-ceccd1d734cc"
+    },
+    {
+      "taskId": "6343ec30-f22b-4392-9c22-4db7d67e0d8a",
+      "title": "replaceRegistryRepos 改增量删除并收紧失效判定",
+      "status": "done",
+      "requirementId": "ed7b1f6b-7269-4275-9aa0-b6212e28b160"
     },
     {
       "taskId": "686df85e-f538-43dd-8d75-50b77d6ca54a",
@@ -811,6 +926,12 @@
       "requirementId": "6c3990f0-4296-4f32-aad9-c23f3d53c2e8"
     },
     {
+      "taskId": "8a0494a5-29b1-4a5a-916e-67e5f80c009b",
+      "title": "图详情页新增重命名与删除入口",
+      "status": "done",
+      "requirementId": "6cbc1c44-ec4d-4e8d-95dd-c9fe8a948e56"
+    },
+    {
       "taskId": "8e557a2f-b2ba-436a-aed5-2dc6f07ad96f",
       "title": "节点拖动重布线：最后一段垂直进入端点边",
       "status": "done",
@@ -835,6 +956,12 @@
       "requirementId": "6c85f4f9-8ea2-4281-83c3-954dff6b80ee"
     },
     {
+      "taskId": "9517c0ea-ae21-454d-8262-0e82a6365a28",
+      "title": "新增图 meta 修改 HTTP 路由 PATCH",
+      "status": "done",
+      "requirementId": "6cbc1c44-ec4d-4e8d-95dd-c9fe8a948e56"
+    },
+    {
       "taskId": "96c021b1-1df6-4864-afb2-818a1323f20e",
       "title": "T9 前端：需求/任务废弃展示与恢复",
       "status": "done",
@@ -857,6 +984,12 @@
       "title": "T52 详情页：内容区改为文档库/需求/图库 Tab 切换",
       "status": "done",
       "requirementId": "0f047e44-d20a-4737-9d99-0dea6eb7b6ea"
+    },
+    {
+      "taskId": "9afc89ce-45d0-4e9e-bbea-24d9ee840925",
+      "title": "项目总览页新增临时文件清理下拉入口",
+      "status": "done",
+      "requirementId": "9a7afeba-d360-4ffc-9d82-b67b03727aa7"
     },
     {
       "taskId": "9c461764-ba6d-41f5-aedd-9847ff8d8b86",
@@ -887,6 +1020,12 @@
       "title": "T12 前端：图表SVG渲染与交互",
       "status": "done",
       "requirementId": "71b8c0fe-3809-48f2-93b7-a26d50ec0967"
+    },
+    {
+      "taskId": "a03b3426-9b59-4117-b37e-b628baefa39e",
+      "title": "set_working_repo 支持 repoRoot/projectId 二选一",
+      "status": "done",
+      "requirementId": "66b41e1b-1e42-4860-a9c6-e41eb4d13631"
     },
     {
       "taskId": "a1fdb8e5-a746-4974-855f-06f2db8d6a16",
@@ -931,6 +1070,12 @@
       "requirementId": "2e45ae8f-d841-4f74-8017-f42a072bd944"
     },
     {
+      "taskId": "b0eb13cd-7b83-4e9e-a106-68441fc6a43c",
+      "title": "新增 registry 临时文件系统级 HTTP 路由",
+      "status": "done",
+      "requirementId": "9a7afeba-d360-4ffc-9d82-b67b03727aa7"
+    },
+    {
       "taskId": "b33402b1-f02d-46b8-9131-1030c1e025d6",
       "title": "T33 服务层：需求自动流转",
       "status": "done",
@@ -955,6 +1100,12 @@
       "requirementId": "6c85f4f9-8ea2-4281-83c3-954dff6b80ee"
     },
     {
+      "taskId": "bdb4e1da-3585-42e8-b696-2ed9550929ae",
+      "title": "新增 MCP 工具 update_diagram_meta",
+      "status": "done",
+      "requirementId": "6cbc1c44-ec4d-4e8d-95dd-c9fe8a948e56"
+    },
+    {
       "taskId": "c11bfb93-c7da-4148-80dc-bc492c4e13a3",
       "title": "构建验证与联调",
       "status": "done",
@@ -977,6 +1128,12 @@
       "title": "T34 前端：需求状态三态展示与修改",
       "status": "done",
       "requirementId": "23a5d5d0-4d16-42e7-a8da-614df27d783a"
+    },
+    {
+      "taskId": "c611fda0-1ba5-4c20-95e9-0847f6efb56a",
+      "title": "registerRepo 写入串行化消除并发丢记录",
+      "status": "done",
+      "requirementId": "ed7b1f6b-7269-4275-9aa0-b6212e28b160"
     },
     {
       "taskId": "c6eac23e-a397-4c83-8e1e-bb4efc923651",
@@ -1081,6 +1238,12 @@
       "requirementId": "bfc97a97-8c75-41bb-8428-83bf6ad9efcf"
     },
     {
+      "taskId": "d9ab5d1d-b326-427c-b977-30309216e556",
+      "title": "新增 updateDiagramMeta 服务",
+      "status": "done",
+      "requirementId": "6cbc1c44-ec4d-4e8d-95dd-c9fe8a948e56"
+    },
+    {
       "taskId": "d9fddf0e-0de5-4d89-a624-8a00231ca27f",
       "title": "T7 HTTP层：废弃状态白名单+abandonReason透传",
       "status": "done",
@@ -1129,6 +1292,18 @@
       "requirementId": "64db010b-c10e-4079-95f5-04bda0a377d7"
     },
     {
+      "taskId": "e4eec145-902d-403a-a4bc-8570a10c8306",
+      "title": "前端新增 registry tmp 清理 API",
+      "status": "done",
+      "requirementId": "9a7afeba-d360-4ffc-9d82-b67b03727aa7"
+    },
+    {
+      "taskId": "e6bcb3e1-3a00-4bab-91fb-92fdba1a6a25",
+      "title": "前端新增 renameDiagram / deleteDiagram API",
+      "status": "done",
+      "requirementId": "6cbc1c44-ec4d-4e8d-95dd-c9fe8a948e56"
+    },
+    {
       "taskId": "eb14ad41-f7ca-426c-9979-d5c5bc81632b",
       "title": "T44 服务层：节点-分区反向查询服务",
       "status": "done",
@@ -1139,6 +1314,18 @@
       "title": "T89 共享层：metadata 扩展 + VerificationRecord 类型/Schema",
       "status": "done",
       "requirementId": "c055a226-b8a6-4d47-b1f6-565762654470"
+    },
+    {
+      "taskId": "ec673506-602f-40f1-8949-9e9429080337",
+      "title": "文档库补齐刷新视觉反馈",
+      "status": "done",
+      "requirementId": "efef9887-1553-43e4-ae58-3d59f2254a13"
+    },
+    {
+      "taskId": "ed1eaf33-ebd2-4755-a266-fc59d299797d",
+      "title": "替换 7 处 window.confirm 为 ConfirmDialog",
+      "status": "done",
+      "requirementId": "5ecc9cd5-8732-4074-8aaa-0bdd4bcdd7ed"
     },
     {
       "taskId": "f103e037-cf79-4680-bd7c-1277951451e0",

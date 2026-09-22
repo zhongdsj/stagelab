@@ -194,8 +194,14 @@ import {
 } from "../../api/index";
 import type { RequirementItem, TaskSummary } from "../../api/requirements";
 import type { RequirementStatus, TaskStatus } from "@stagelab/shared";
+import { confirmDialog } from "../common/ConfirmDialog.vue";
 
 const props = defineProps<{ projectId: string }>();
+
+/** 刷新完成后通知父级重拉项目索引（同步顶部统计） */
+const emit = defineEmits<{
+  (e: "refresh"): void;
+}>();
 
 /** Markdown 渲染（marked 解析 + DOMPurify 消毒防 XSS） */
 function renderMd(src: string): string {
@@ -390,7 +396,11 @@ async function onSaveReq() {
 
 /** 恢复废弃需求（abandoned → dev，后端级联恢复其下因级联而废弃的任务） */
 async function onRestoreReq(req: RequirementItem) {
-  const ok = window.confirm(`确定恢复需求「${req.title}」吗？其下因该需求废弃而废弃的任务将一并恢复。`);
+  const ok = await confirmDialog({
+    title: "恢复需求",
+    message: `确定恢复需求「${req.title}」吗？其下因该需求废弃而废弃的任务将一并恢复。`,
+    confirmText: "恢复"
+  });
   if (!ok) return;
   try {
     await updateRequirement(props.projectId, req.requirementId, { status: "dev" });
@@ -402,9 +412,12 @@ async function onRestoreReq(req: RequirementItem) {
 
 /** 删除需求（级联删除其下任务，需用户确认） */
 async function onDeleteReq(req: RequirementItem) {
-  const ok = window.confirm(
-    `确定删除需求「${req.title}」吗？该需求下的 ${req.taskCount} 个任务将一并删除，不可恢复。`
-  );
+  const ok = await confirmDialog({
+    title: "删除需求",
+    message: `确定删除需求「${req.title}」吗？该需求下的 ${req.taskCount} 个任务将一并删除，不可恢复。`,
+    confirmText: "删除",
+    danger: true
+  });
   if (!ok) return;
   try {
     await deleteRequirement(props.projectId, req.requirementId);
@@ -431,6 +444,8 @@ async function onRefresh() {
       // 单需求任务加载失败不阻断整体刷新
     }
   }
+  // 通知父级重拉项目索引，使顶部需求/任务统计同步
+  emit("refresh");
 }
 
 async function onCreateTask(requirementId: string) {
@@ -480,7 +495,11 @@ async function onStatusChange(requirementId: string, taskId: string, status: Tas
 
 /** 恢复废弃任务（abandoned → pending，后端清除废弃原因） */
 async function onRestoreTask(requirementId: string, t: TaskSummary) {
-  const ok = window.confirm(`确定恢复任务「${t.title}」吗？`);
+  const ok = await confirmDialog({
+    title: "恢复任务",
+    message: `确定恢复任务「${t.title}」吗？`,
+    confirmText: "恢复"
+  });
   if (!ok) return;
   try {
     await updateTaskStatus(props.projectId, t.taskId, "pending");
@@ -527,7 +546,12 @@ async function onSaveTask(requirementId: string, taskId: string) {
 
 /** 删除任务（需用户确认） */
 async function onDeleteTask(requirementId: string, t: TaskSummary) {
-  const ok = window.confirm(`确定删除任务「${t.title}」吗？该操作不可恢复。`);
+  const ok = await confirmDialog({
+    title: "删除任务",
+    message: `确定删除任务「${t.title}」吗？该操作不可恢复。`,
+    confirmText: "删除",
+    danger: true
+  });
   if (!ok) return;
   try {
     await deleteTask(props.projectId, t.taskId);

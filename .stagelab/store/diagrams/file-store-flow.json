@@ -3,7 +3,7 @@
   "type": "flow",
   "metadata": {
     "title": "本地存储层 - 核心流程图",
-    "version": 3,
+    "version": 6,
     "description": "基于 packages/server/src/storage 源码：读写安全（原子写+锁+mtime）与索引重建流程"
   },
   "nodes": [
@@ -17,6 +17,17 @@
         "y": 64,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/storage/io.ts",
+            "symbols": [
+              "readJsonFile",
+              "writeJsonFile"
+            ]
+          }
+        ]
       }
     },
     {
@@ -29,6 +40,17 @@
         "y": 320,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/storage/paths.ts",
+            "symbols": [
+              "stagelabRoot",
+              "entityPath"
+            ]
+          }
+        ]
       }
     },
     {
@@ -44,6 +66,16 @@
         "y": 64,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/storage/io.ts",
+            "symbols": [
+              "readJsonFile"
+            ]
+          }
+        ]
       }
     },
     {
@@ -59,6 +91,16 @@
         "y": 320,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/storage/cache.ts",
+            "symbols": [
+              "TtlCache"
+            ]
+          }
+        ]
       }
     },
     {
@@ -71,6 +113,17 @@
         "y": 576,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/storage/io.ts",
+            "symbols": [
+              "readJsonFile",
+              "CorruptJsonError"
+            ]
+          }
+        ]
       }
     },
     {
@@ -83,6 +136,16 @@
         "y": 64,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/storage/lock.ts",
+            "symbols": [
+              "acquireLock"
+            ]
+          }
+        ]
       }
     },
     {
@@ -98,6 +161,17 @@
         "y": 320,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/storage/io.ts",
+            "symbols": [
+              "ConflictError",
+              "writeJsonFile"
+            ]
+          }
+        ]
       }
     },
     {
@@ -110,6 +184,16 @@
         "y": 576,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/storage/io.ts",
+            "symbols": [
+              "writeJsonFile"
+            ]
+          }
+        ]
       }
     },
     {
@@ -122,6 +206,22 @@
         "y": 832,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/storage/lock.ts",
+            "symbols": [
+              "withLock"
+            ]
+          },
+          {
+            "path": "packages/server/src/storage/io.ts",
+            "symbols": [
+              "invalidateCache"
+            ]
+          }
+        ]
       }
     },
     {
@@ -133,6 +233,17 @@
         "y": 320,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/storage/io.ts",
+            "symbols": [
+              "readJsonFile",
+              "writeJsonFile"
+            ]
+          }
+        ]
       }
     },
     {
@@ -145,6 +256,167 @@
         "y": 64,
         "width": 152,
         "height": 56
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/storage/io.ts",
+            "symbols": [
+              "ConflictError"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "nodeId": "reg-entry",
+      "label": "注册表写请求",
+      "nodeKind": "process",
+      "description": "registerRepo / removeRepo / pruneRegistryRepos 入口",
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/storage/registry.ts",
+            "symbols": [
+              "registerRepo",
+              "removeRepo",
+              "pruneRegistryRepos"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "nodeId": "reg-lock",
+      "label": "取跨进程文件锁",
+      "nodeKind": "process",
+      "description": "withLock(registry.lock) 串行化写入，消除多进程并发丢记录",
+      "payload": {
+        "aiRiskNote": {
+          "concurrency": "无锁时多进程读-改-写会互相覆盖导致记录丢失",
+          "mitigation": "复用 storage/lock.ts 文件锁 + 锁内重读"
+        }
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/storage/registry.ts",
+            "symbols": [
+              "withLock"
+            ]
+          },
+          {
+            "path": "packages/server/src/storage/lock.ts",
+            "symbols": [
+              "withLock"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "nodeId": "reg-reload",
+      "label": "锁内重读",
+      "nodeKind": "process",
+      "description": "持锁后重读 registry.json，避免用陈旧副本覆盖他进程刚写入的记录",
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/storage/registry.ts",
+            "symbols": [
+              "loadRegistry"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "nodeId": "reg-prune",
+      "label": "失效项增量删除",
+      "nodeKind": "process",
+      "description": "仅移除 .stagelab 缺失的仓库项（pruneRegistryRepos），不再整体覆盖写",
+      "payload": {
+        "aiRiskNote": {
+          "bug": "旧实现整体覆盖 + 暂时性打开失败即剔除，导致项目记录丢失",
+          "fix": "增量删除 + 仅 .stagelab 不存在才剔除 + 打开失败保留待重试"
+        }
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/storage/registry.ts",
+            "symbols": [
+              "pruneRegistryRepos"
+            ]
+          },
+          {
+            "path": "packages/server/src/storage/workspace.ts",
+            "symbols": [
+              "loadRegisteredWorkspaces"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "nodeId": "reg-rename",
+      "label": "原子 rename + 有限重试",
+      "nodeKind": "process",
+      "description": "renameWithRetry：EPERM/EBUSY/EACCES 退避重试（Windows 占用场景）",
+      "payload": {
+        "aiRiskNote": {
+          "attempts": 5,
+          "backoffMs": 20,
+          "risk": "Windows 上 rename 可能因杀软/占用瞬时失败"
+        }
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/storage/registry.ts",
+            "symbols": [
+              "saveRegistry",
+              "renameWithRetry"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "nodeId": "reg-tmp-clean",
+      "label": "回收本次 tmp",
+      "nodeKind": "process",
+      "description": "写成功或异常路径 finally 回收本次 registry.json.tmp-*",
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/storage/registry.ts",
+            "symbols": [
+              "saveRegistry"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "nodeId": "reg-orphan",
+      "label": "残留 tmp 待手动清理",
+      "nodeKind": "process",
+      "description": "进程崩溃等极端场景残留的 tmp 文件，无自动清理，由系统运维入口手动清理",
+      "payload": {
+        "aiRiskNote": {
+          "cleanup": "仅手动清理（系统运维入口），刻意不做自动清理"
+        }
+      },
+      "codeAnchor": {
+        "files": [
+          {
+            "path": "packages/server/src/http/routes/system.ts",
+            "symbols": [
+              "registerSystemRoutes"
+            ]
+          }
+        ]
       }
     }
   ],
@@ -420,6 +692,77 @@
           "y": 348
         }
       ]
+    },
+    {
+      "edgeId": "e14",
+      "from": "start",
+      "to": "reg-entry",
+      "label": "注册表写"
+    },
+    {
+      "edgeId": "e15",
+      "from": "reg-entry",
+      "to": "reg-lock",
+      "label": "进入写路径",
+      "methods": [
+        "registerRepo → withLock",
+        "removeRepo → withLock",
+        "pruneRegistryRepos → withLock"
+      ]
+    },
+    {
+      "edgeId": "e16",
+      "from": "reg-lock",
+      "to": "reg-reload",
+      "label": "持锁",
+      "methods": [
+        "withLock 回调内 loadRegistry"
+      ]
+    },
+    {
+      "edgeId": "e17",
+      "from": "reg-reload",
+      "to": "reg-prune",
+      "label": "读到最新副本",
+      "methods": [
+        "loadRegisteredWorkspaces → pruneRegistryRepos"
+      ]
+    },
+    {
+      "edgeId": "e18",
+      "from": "reg-prune",
+      "to": "reg-rename",
+      "label": "变更集确定",
+      "methods": [
+        "saveRegistry → renameWithRetry"
+      ]
+    },
+    {
+      "edgeId": "e19",
+      "from": "reg-rename",
+      "to": "reg-tmp-clean",
+      "label": "落盘成功",
+      "methods": [
+        "saveRegistry (finally 回收本次 tmp)"
+      ]
+    },
+    {
+      "edgeId": "e20",
+      "from": "reg-tmp-clean",
+      "to": "end",
+      "label": "返回"
+    },
+    {
+      "edgeId": "e21",
+      "from": "reg-rename",
+      "to": "reg-orphan",
+      "label": "进程中断/finally 未执行"
+    },
+    {
+      "edgeId": "e22",
+      "from": "reg-orphan",
+      "to": "end",
+      "label": "遗留（手动清理）"
     }
   ],
   "groups": [
@@ -460,6 +803,19 @@
       "nodeIds": [
         "end",
         "conflict-err"
+      ]
+    },
+    {
+      "groupId": "lane-registry",
+      "title": "注册表写路径",
+      "nodeIds": [
+        "reg-entry",
+        "reg-lock",
+        "reg-reload",
+        "reg-prune",
+        "reg-rename",
+        "reg-tmp-clean",
+        "reg-orphan"
       ]
     }
   ]

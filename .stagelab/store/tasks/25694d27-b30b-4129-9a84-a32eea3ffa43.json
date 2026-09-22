@@ -1,0 +1,15 @@
+{
+  "taskId": "25694d27-b30b-4129-9a84-a32eea3ffa43",
+  "requirementId": "66b41e1b-1e42-4860-a9c6-e41eb4d13631",
+  "title": "list_projects 返回值增加 repoRoot 字段",
+  "description": "listProjects 返回值增加 repoRoot 字段（取自 workspace.repoRoot），使调用方拿到 projectId 后能直接推出路径，打通「发现 → 切换」链路。",
+  "status": "done",
+  "acceptanceCriteria": "list_projects 返回项包含 repoRoot 且为绝对路径；与 list_working_repos 中的 repoRoot 一致；其他字段不变",
+  "files": [
+    "packages/server/src/services/project.service.ts",
+    "packages/server/src/mcp/tools/project.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1790063035750,
+  "updatedAt": 1790070491332
+}

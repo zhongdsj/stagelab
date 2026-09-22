@@ -1,0 +1,15 @@
+{
+  "taskId": "e4eec145-902d-403a-a4bc-8570a10c8306",
+  "requirementId": "9a7afeba-d360-4ffc-9d82-b67b03727aa7",
+  "title": "前端新增 registry tmp 清理 API",
+  "description": "按既有 api 模块风格新增系统级 API：listRegistryTmp() / deleteRegistryTmp(name) / clearRegistryTmp()，并在 api/index.ts 中导出。",
+  "status": "done",
+  "acceptanceCriteria": "三个函数路径与后端路由一致；类型定义完整；可从 packages/web/src/api/index.ts 直接导入",
+  "files": [
+    "packages/web/src/api/system.ts",
+    "packages/web/src/api/index.ts"
+  ],
+  "changeType": "新增",
+  "createdAt": 1790063024295,
+  "updatedAt": 1790070491028
+}

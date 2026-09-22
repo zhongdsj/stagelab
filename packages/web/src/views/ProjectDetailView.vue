@@ -65,9 +65,9 @@
           </button>
         </div>
 
-        <DocumentLibrary v-if="activeTab === 'doc'" :project-id="props.id" />
-        <RequirementTasks v-else-if="activeTab === 'req'" :project-id="props.id" />
-        <DiagramLibrary v-else :project-id="props.id" />
+        <DocumentLibrary v-if="activeTab === 'doc'" :project-id="props.id" @refresh="reloadIndex" />
+        <RequirementTasks v-else-if="activeTab === 'req'" :project-id="props.id" @refresh="reloadIndex" />
+        <DiagramLibrary v-else :project-id="props.id" @refresh="reloadIndex" />
       </div>
     </template>
   </section>
@@ -195,6 +195,15 @@ async function load() {
     error.value = e instanceof ApiError ? e.message : "加载项目详情失败";
   } finally {
     loading.value = false;
+  }
+}
+
+/** 子组件刷新完成后重拉项目索引，使顶部统计与状态细分同步 */
+async function reloadIndex() {
+  try {
+    index.value = await getProjectIndex(props.id);
+  } catch {
+    /* 索引刷新失败不阻断子组件已完成的刷新 */
   }
 }
 

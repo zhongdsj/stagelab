@@ -1,0 +1,17 @@
+{
+  "taskId": "37d7061b-fb99-4fbe-a554-8c1b902a9bd4",
+  "requirementId": "efef9887-1553-43e4-ae58-3d59f2254a13",
+  "title": "刷新按钮同步父级顶部统计",
+  "description": "当前三个 Tab 的刷新按钮只刷新子组件自身，父级 ProjectDetailView 的 index 不更新，导致顶部「文档/图/需求/任务」数量与状态细分保持旧值。改为子组件刷新完成后通知父级重拉 getProjectIndex，不在子组件内改动已成立的内容重载逻辑。",
+  "status": "done",
+  "acceptanceCriteria": "点击任一 Tab 的刷新按钮后，顶部统计数量与状态细分同步更新；连续点击不产生重复请求风暴或循环刷新",
+  "files": [
+    "packages/web/src/views/ProjectDetailView.vue",
+    "packages/web/src/components/document/DocumentLibrary.vue",
+    "packages/web/src/components/requirement/RequirementTasks.vue",
+    "packages/web/src/components/diagram/DiagramLibrary.vue"
+  ],
+  "changeType": "修改",
+  "createdAt": 1790062175146,
+  "updatedAt": 1790063579440
+}

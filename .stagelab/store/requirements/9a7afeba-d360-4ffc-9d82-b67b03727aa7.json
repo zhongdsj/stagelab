@@ -1,0 +1,14 @@
+{
+  "requirementId": "9a7afeba-d360-4ffc-9d82-b67b03727aa7",
+  "title": "registry 临时文件手动清理入口",
+  "description": "## 背景\n`%APPDATA%/stagelab/` 下堆积多个 `registry.json.tmp-*`。来源三层：① `saveRegistry`（`packages/server/src/storage/registry.ts`）每次写生成唯一命名 tmp 后 `renameSync`，**无 try/finally 清理**，失败或进程中断即永久残留；② Windows 上目标文件被其他进程句柄占用时 rename 覆盖会抛 EPERM/EBUSY；③ `loadRegisteredWorkspaces`（`packages/server/src/storage/workspace.ts`）每次启动**无条件**调 `replaceRegistryRepos(valid)`，每个 MCP 客户端进程启动即写一次注册表。\n\n## 目标\n提供可视化手动清理入口（按决策：**不做任何自动清理**）：项目总览页「新建项目」左侧下拉，全部列出 tmp 文件，每行显示时间 + 删除按钮，顶部一键清空（带二次确认，复用 ConfirmDialog）。后端新增系统级 HTTP 路由。\n\n## 约束\n删除接口必须硬约束在 `%APPDATA%/stagelab/` 下且文件名白名单匹配 `registry.json.tmp-*`，拒绝任何路径穿越（`..`、绝对路径、子目录）。\n\n## 验收口径\n1. 列表内容与 `%APPDATA%/stagelab/` 下 `registry.json.tmp-*` 完全一致，时间可读\n2. 单行删除与一键清空均生效，一键清空有二次确认\n3. 传入 `../` 或绝对路径等非法文件名时被拒绝，不删除任何文件\n4. 不引入任何自动清理逻辑\n\n## 关联文档\ndev-doc-registry-tmp-and-repo-switch",
+  "branchName": "feature/registry-tmp-cleanup",
+  "status": "done",
+  "taskIds": [
+    "b0eb13cd-7b83-4e9e-a106-68441fc6a43c",
+    "e4eec145-902d-403a-a4bc-8570a10c8306",
+    "9afc89ce-45d0-4e9e-bbea-24d9ee840925"
+  ],
+  "createdAt": 1790062792264,
+  "updatedAt": 1790071898123
+}

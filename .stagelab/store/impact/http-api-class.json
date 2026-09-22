@@ -6,12 +6,13 @@
       "DocumentRoutes",
       "DiagramRoutes",
       "RequirementRoutes",
-      "ErrorStatus"
+      "ErrorStatus",
+      "SystemRoutes"
     ],
     "upstreamHops": 0,
     "downstreamHops": 2,
     "fanIn": 0,
-    "fanOut": 5,
+    "fanOut": 6,
     "inCycle": false,
     "cycleIds": [],
     "structuralRisk": "low"
@@ -86,12 +87,13 @@
       "DocumentRoutes",
       "DiagramRoutes",
       "RequirementRoutes",
-      "ErrorStatus"
+      "ErrorStatus",
+      "SystemRoutes"
     ],
     "downstream": [],
     "upstreamHops": 2,
     "downstreamHops": 0,
-    "fanIn": 5,
+    "fanIn": 6,
     "fanOut": 0,
     "inCycle": false,
     "cycleIds": [],
@@ -127,5 +129,20 @@
     "inCycle": false,
     "cycleIds": [],
     "structuralRisk": "high"
+  },
+  "SystemRoutes": {
+    "upstream": [
+      "HttpServer"
+    ],
+    "downstream": [
+      "HttpError"
+    ],
+    "upstreamHops": 1,
+    "downstreamHops": 1,
+    "fanIn": 1,
+    "fanOut": 1,
+    "inCycle": false,
+    "cycleIds": [],
+    "structuralRisk": "low"
   }
 }

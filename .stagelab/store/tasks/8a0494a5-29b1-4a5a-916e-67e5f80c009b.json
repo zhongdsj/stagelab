@@ -1,0 +1,15 @@
+{
+  "taskId": "8a0494a5-29b1-4a5a-916e-67e5f80c009b",
+  "requirementId": "6cbc1c44-ec4d-4e8d-95dd-c9fe8a948e56",
+  "title": "图详情页新增重命名与删除入口",
+  "description": "在图详情页提供标题重命名与删除入口（决策 D3：图库列表保持只读）。重命名后需同步图详情页标题与 DiagramPageView 侧边栏列表；删除复用 ConfirmDialog 二次确认，确认后调用 deleteDiagram 并路由回退到项目详情页。",
+  "status": "done",
+  "acceptanceCriteria": "图详情页可改标题，保存后标题立即更新且刷新后仍生效；删除需二次确认，取消不删除；删除成功后回退到 /projects/:id；左侧图列表同步移除该项",
+  "files": [
+    "packages/web/src/components/diagram/DiagramView.vue",
+    "packages/web/src/views/DiagramPageView.vue"
+  ],
+  "changeType": "修改",
+  "createdAt": 1790062175073,
+  "updatedAt": 1790064792713
+}

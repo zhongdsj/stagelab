@@ -1,0 +1,15 @@
+{
+  "taskId": "b0eb13cd-7b83-4e9e-a106-68441fc6a43c",
+  "requirementId": "9a7afeba-d360-4ffc-9d82-b67b03727aa7",
+  "title": "新增 registry 临时文件系统级 HTTP 路由",
+  "description": "新增系统级路由文件（列表 / 单删 / 清空）。目录定位复用 registryFilePath() 所在目录。必须做双重校验：文件名正则白名单 ^registry\\.json\\.tmp-\\d+-[a-z0-9]+$ + path.resolve 后的前缀校验，拒绝任何路径穿越。不做任何自动清理。",
+  "status": "done",
+  "acceptanceCriteria": "GET 返回目录下全部 registry.json.tmp-* 文件名与可读时间；DELETE 单删与清空均生效；传入 ../ 、绝对路径、子目录名均被拒绝且不删任何文件；目录不存在时返回空列表而非报错",
+  "files": [
+    "packages/server/src/http/routes/system.ts",
+    "packages/server/src/http/server.ts"
+  ],
+  "changeType": "新增",
+  "createdAt": 1790063024255,
+  "updatedAt": 1790070490972
+}
