@@ -1,6 +1,6 @@
 {
   "projectId": "34a29cd8-790c-43c4-8ce9-e2c25573cfa0",
-  "version": 1790072412,
+  "version": 1790570404,
   "documentIndex": [
     {
       "docId": "dev-doc",
@@ -359,6 +359,12 @@
       "taskCount": 3
     },
     {
+      "requirementId": "75b87d9f-b568-4031-a331-47e0645ca87d",
+      "title": "修复 CLI 入口守卫在符号链接环境下失效导致全命令静默退出",
+      "status": "test",
+      "taskCount": 1
+    },
+    {
       "requirementId": "78d8e8b4-bbcd-4562-99ed-b748ad9e494b",
       "title": "前端 impactIndex 风险着色",
       "status": "done",
@@ -486,6 +492,12 @@
       "title": "T8 图库右下角悬浮按钮（刷新 + 回到顶部）",
       "status": "done",
       "requirementId": "5a75f391-11d1-40a8-88c0-d79d1fb32a88"
+    },
+    {
+      "taskId": "09127fe6-31bf-48d6-8972-3636a16a88fb",
+      "title": "修复 CLI 入口守卫：argv[1] realpath 归一化后比较",
+      "status": "done",
+      "requirementId": "75b87d9f-b568-4031-a331-47e0645ca87d"
     },
     {
       "taskId": "0a96f292-b8cb-446c-a585-b6d727007fe1",
