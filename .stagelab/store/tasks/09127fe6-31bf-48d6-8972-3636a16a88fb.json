@@ -1,0 +1,14 @@
+{
+  "taskId": "09127fe6-31bf-48d6-8972-3636a16a88fb",
+  "requirementId": "75b87d9f-b568-4031-a331-47e0645ca87d",
+  "title": "修复 CLI 入口守卫：argv[1] realpath 归一化后比较",
+  "description": "背景：入口守卫用字符串直接比较 argv[1] 与 import.meta.url，在符号链接环境下恒不相等，导致 main() 不被调用、全命令静默退出。\n\n思路：将 argv[1] 经 fs.realpathSync 归一化后再转 file URL 与 import.meta.url 比较（import.meta.url 本身已是 realpath）；加 try/catch，argv[1] 不可解析时回退原比较。保留 cliMain 库导出语义，不使用无条件 main()。",
+  "status": "done",
+  "acceptanceCriteria": "1. 经 junction 调用 `node <link>/cli.mjs`（无参）正确打印 usage；\n2. 经 junction 调用 `start --port 6399` 输出「HTTP server 已启动」且 HTTP 探测返回 200；\n3. `node --input-type=module -e \"import('.../cli.mjs')\"` 不触发 main；\n4. `tsc` 与 `build:release` 均通过。",
+  "files": [
+    "packages/server/src/cli.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1790570401561,
+  "updatedAt": 1790570404561
+}

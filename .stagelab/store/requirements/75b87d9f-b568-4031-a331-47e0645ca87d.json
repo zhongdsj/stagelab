@@ -1,0 +1,11 @@
+{
+  "requirementId": "75b87d9f-b568-4031-a331-47e0645ca87d",
+  "title": "修复 CLI 入口守卫在符号链接环境下失效导致全命令静默退出",
+  "description": "## 问题背景\n\nstagelab 全局安装（`npm i -g stagelab`）后，在 nvm-windows 环境的机器上执行任意子命令（`stagelab start` / `http` / `mcp`）均**零输出并立即退出**（exit 0，无任何报错），服务无法启动。\n\n## 根因\n\ncli.ts 末尾用 `import.meta.url === pathToFileURL(process.argv[1]).href` 判断「是否被 node 直接执行」（ESM 版 `require.main === module`）。该比较假设命令行传入路径与 Node 解析后的模块路径一致，但：\n\n- `process.argv[1]` 是 shell 传入的**原始路径**，保留符号链接；\n- `import.meta.url` 已被 ESM loader 做 **realpath**（`--preserve-symlinks-main` 默认 false）。\n\nnvm-windows 的 `D:\\nvm\\nodejs` 是指向 `D:\\nvm\\v24.8.0` 的符号链接，导致两侧路径恒不相等 → 守卫恒为 false → `main()` never called → 模块仅被求值并导出，进程静默退出。\n\n同类触发环境：pnpm 全局安装（junction）、`npm link` / `yarn link`、UNC 网络路径、盘符大小写不一致。\n\n## 目标\n\n在符号链接/链接路径环境下也能正确识别「被 node 直接执行」，恢复所有 CLI 子命令可用；同时保留 `index.ts` 中 `main as cliMain` 的库导出语义（import 包入口不得自动拉起 CLI）。\n\n## 验收口径\n\n1. 经目录联接（junction）调用 `node <link>/cli.mjs`（无参）能正确打印 usage（修复前为静默退出）；\n2. 经 junction 调用 `start --port <n>` 能打印「HTTP server 已启动」且端口探测返回 200；\n3. `import` 该包入口不触发 `main`（`typeof main === 'function'` 且无服务启动副作用）；\n4. `tsc` 类型检查与 `build:release` 构建通过。",
+  "status": "test",
+  "taskIds": [
+    "09127fe6-31bf-48d6-8972-3636a16a88fb"
+  ],
+  "createdAt": 1790570395854,
+  "updatedAt": 1790570404621
+}

@@ -12,6 +12,7 @@
  * - --data <dir>  数据根目录（默认 %APPDATA%/stagelab；项目数据仍存各自 repo/.stagelab）
  * - --repo <path> 预加载指定仓库
  */
+import fs from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { startHttpServer } from "./http/server.js";
@@ -93,11 +94,25 @@ export function main(): void {
   process.exit(1);
 }
 
-/** 被直接执行时自动启动 */
-const isDirectRun =
-  process.argv[1] !== undefined &&
-  import.meta.url === pathToFileURL(process.argv[1]).href;
+/**
+ * 判断当前模块是否被 node 直接执行（ESM 版 require.main === module）
+ *
+ * import.meta.url 已被 ESM loader 做 realpath，而 process.argv[1] 是 shell 传入的原始
+ * 路径（可能含符号链接，如 nvm-windows 的 D:/nvm/nodejs → 版本目录），故需对 argv[1]
+ * 归一化后再比较，否则零输出静默退出。
+ */
+function isDirectRun(): boolean {
+  const entry = process.argv[1];
+  if (!entry) return false;
+  try {
+    return pathToFileURL(fs.realpathSync(entry)).href === import.meta.url;
+  } catch {
+    // argv[1] 不可解析（-e / stdin 等场景）时退回原比较
+    return pathToFileURL(entry).href === import.meta.url;
+  }
+}
 
-if (isDirectRun) {
+/** 被直接执行时自动启动 */
+if (isDirectRun()) {
   main();
 }
