@@ -1,0 +1,70 @@
+.gitignore
+  h_be1684eebfb5c9 18-20
+.stagelab/store/diagrams/file-store-class.json
+  h_be1684eebfb5c9 6,137-143,148,323,326-327,330-331,334-335,338-339,351,354-355,358-359,362-363,366-367,379,382-383,386-387,390-391,394-395,418,422,494-515
+.stagelab/store/diagrams/web-frontend-class.json
+  h_be1684eebfb5c9 6,28,60,116,157-158,201-202,241-242,275,312-313,385-386,388,439-440,503-504,506,575-576,619,670-671,726-727,798-799,801,860-861,895,1082,1154-1159,1189-1194,1207,1210-1211,1214-1215,1218-1219,1222-1223,1235,1238-1239,1242-1243,1246-1247,1250-1251,1262-1263,1266-1267,1270-1271,1274-1275,1278-1283,1294-1295,1298-1299,1302-1303,1306-1307,1310-1311,1322-1323,1326-1327,1338-1339,1342-1343,1346-1347,1350-1355,1366-1367,1370-1371,1374-1375,1378-1379,1390-1391,1394-1395,1406-1407,1410-1411,1414-1415,1418-1419,1422-1427,1438-1439,1442-1443,1454-1455,1458-1459,1470-1471,1474-1475,1486-1487,1490-1491,1494-1495,1498-1499,1502-1503,1514-1515,1518-1519,1522-1523,1526-1527,1530-1531,1542-1551,1554-1555,1566-1567,1570-1571,1582-1583,1586-1587,1590-1591,1594-1595,1606-1607,1610-1611,1614-1615,1618-1619,1630-1631,1634-1635,1638-1639,1642-1643,1646-1647,1659,1663,1674-1675,1678-1679,1682-1683,1686-1687,1701-1702,1705-1706,1709-1710,1714,1718,1729-1754,1764-1785,1798-1815,1825-1842,1852-1869,1875-1893,1898-1924
+.stagelab/store/documents/dev-doc-diagram-mgmt-refresh/meta.json
+  h_be1684eebfb5c9 5,8
+.stagelab/store/documents/dev-doc-mcp-desc-and-search/dev-doc-mcp-desc-and-search-f0.json
+  h_be1684eebfb5c9 1-8
+.stagelab/store/documents/dev-doc-mcp-desc-and-search/dev-doc-mcp-desc-and-search-f1.json
+  h_be1684eebfb5c9 1-8
+.stagelab/store/documents/dev-doc-mcp-desc-and-search/dev-doc-mcp-desc-and-search-f2.json
+  h_be1684eebfb5c9 1-8
+.stagelab/store/documents/dev-doc-mcp-desc-and-search/dev-doc-mcp-desc-and-search-f3.json
+  h_be1684eebfb5c9 1-8
+.stagelab/store/documents/dev-doc-mcp-desc-and-search/dev-doc-mcp-desc-and-search-f4.json
+  h_be1684eebfb5c9 1-8
+.stagelab/store/documents/dev-doc-mcp-desc-and-search/dev-doc-mcp-desc-and-search-f5.json
+  h_be1684eebfb5c9 1-8
+.stagelab/store/documents/dev-doc-mcp-desc-and-search/meta.json
+  h_be1684eebfb5c9 1-9
+.stagelab/store/documents/dev-doc-registry-tmp-and-repo-switch/meta.json
+  h_be1684eebfb5c9 5,8
+.stagelab/store/index.json
+  h_be1684eebfb5c9 3,57,91-105,125,243-249,386,410-416,424-430,452-458,521-526,533-538,557-562,707-712,1007-1012,1049-1054,1169-1174,1247-1252,1331-1342
+.stagelab/store/meta.json
+  h_be1684eebfb5c9 4,6,50-54
+.stagelab/store/requirements/10301efd-8e62-46d7-a890-728edd6bccd9.json
+  h_be1684eebfb5c9 1-14
+.stagelab/store/requirements/75b87d9f-b568-4031-a331-47e0645ca87d.json
+  h_be1684eebfb5c9 5,10
+.stagelab/store/requirements/b334a9a7-cd4a-4e63-b929-1f38a9a638dd.json
+  h_be1684eebfb5c9 1-12
+.stagelab/store/requirements/b51b3ed1-6f21-40ab-baf6-c363eb275a29.json
+  h_be1684eebfb5c9 1-13
+.stagelab/store/requirements/caf3192c-9572-4771-9952-f2a9236f82d9.json
+  h_be1684eebfb5c9 1-15
+.stagelab/store/tasks/033e6ec5-d312-4604-bc4b-ae58f3fdbb2b.json
+  h_be1684eebfb5c9 1-15
+.stagelab/store/tasks/042985fa-56f9-4c48-9eb2-bace1d9e71cd.json
+  h_be1684eebfb5c9 1-14
+.stagelab/store/tasks/0a23b0d0-b83c-4544-84f4-a285329ff2eb.json
+  h_be1684eebfb5c9 1-15
+.stagelab/store/tasks/29d2ebf8-8163-4b5b-a574-2c457817fb33.json
+  h_be1684eebfb5c9 1-17
+.stagelab/store/tasks/853de372-93bc-45d1-8727-e06808063ed2.json
+  h_be1684eebfb5c9 1-15
+.stagelab/store/tasks/95935df1-44e2-4f4e-a775-d63db1a29c28.json
+  h_be1684eebfb5c9 1-16
+.stagelab/store/tasks/b2dc0227-e14b-42e2-9c70-80566bb042ef.json
+  h_be1684eebfb5c9 1-15
+.stagelab/store/tasks/c80c4a95-1aee-4536-8b51-85bed1fe007c.json
+  h_be1684eebfb5c9 1-15
+.stagelab/store/tasks/d80f9ab6-7217-4821-b40c-dece9cabf3aa.json
+  h_be1684eebfb5c9 1-14
+.stagelab/store/tasks/d844d30f-edc9-402d-b00e-df92f23b5181.json
+  h_be1684eebfb5c9 1-16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "5.30.9",
+  "base_commit_sha": "b787351b979689218472ac5f282f9a3dd85a01e6",
+  "prompts": {},
+  "humans": {
+    "h_be1684eebfb5c9": {
+      "author": "zhongdsj <1093014451@qq.com>"
+    }
+  }
+}
