@@ -172,6 +172,30 @@ export function registerDiagramRoutes(app: FastifyInstance): void {
     return { version, risk };
   });
 
+  // T9：单节点影响面明细（节点详情弹层数据源）：复用预计算 impactIndex 局部读取，
+  // 不泄漏全图可达集；节点不存在（如弹层打开期间图被并发修改）→ 404，前端降级「暂无数据」
+  app.get(
+    "/api/projects/:id/diagrams/:did/nodes/:nodeId/impact",
+    async (request) => {
+      const { id, did, nodeId } = request.params as {
+        id: string;
+        did: string;
+        nodeId: string;
+      };
+      const ws = requireWorkspaceByProjectId(id);
+      const diagram = await readDiagram(ws, did);
+      if (!diagram.nodes.some((n) => n.nodeId === nodeId)) {
+        throw new HttpError(404, `节点不存在：${nodeId}`);
+      }
+      const { version, impact } = await getImpactIndex(ws, diagram, [nodeId]);
+      const entry = impact[nodeId];
+      if (!entry) {
+        throw new HttpError(404, `节点影响面数据缺失：${nodeId}`);
+      }
+      return { version, entry };
+    }
+  );
+
   // 图漂移校验与验证历史 HTTP 透传（阶段3扩展：前端人工确认可信度 + 查看可信度历史）
   // T91：显式确认图在某 commit 下可信（人工/AI 显式声明，绝不自动提升 HEAD），
   // 提升 metadata 最新可信快照 + 追加一条验证历史（changeType: no_change|incremental|rebuild）

@@ -1,7 +1,7 @@
 /**
  * 图 API（对接 /api/projects/:id/diagrams 路由）
  */
-import type { Diagram, DiagramType, LayoutDiagram, ImpactRiskLevel, VerificationRecord, VerificationActor, VerificationChangeType } from "@stagelab/shared";
+import type { Diagram, DiagramType, LayoutDiagram, ImpactRiskLevel, ImpactIndexEntry, VerificationRecord, VerificationActor, VerificationChangeType } from "@stagelab/shared";
 import { http } from "./client.js";
 
 /** 自由画布坐标保存载荷（T59/T60）：节点几何 + 连线折点 */
@@ -39,6 +39,17 @@ export function getDiagramImpact(
 ): Promise<{ version: number; risk: ImpactRiskMap }> {
   return http.get(
     `/api/projects/${encodeURIComponent(projectId)}/diagrams/${encodeURIComponent(diagramId)}/impact`
+  );
+}
+
+/** 单节点影响面明细（T9 节点详情弹层）：仅该节点的扇入/扇出/上下游清单/环成员 */
+export function getNodeImpact(
+  projectId: string,
+  diagramId: string,
+  nodeId: string
+): Promise<{ version: number; entry: ImpactIndexEntry }> {
+  return http.get(
+    `/api/projects/${encodeURIComponent(projectId)}/diagrams/${encodeURIComponent(diagramId)}/nodes/${encodeURIComponent(nodeId)}/impact`
   );
 }
 
