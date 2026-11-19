@@ -112,7 +112,8 @@ export function registerDiagramTools(server: McpServer): void {
         "- architecture：node 应带 layer（如'接入层'/'服务层'）+ nodeKind（service/database/mq/cache/external/gateway）\n" +
         "- class：node 应带 kind（class/interface/abstract/enum），可选 attributes/methods\n" +
         "- flow：node 应带 nodeKind（start/end/process/decision/inputOutput/subprocess）\n" +
-        "description 参数：可选，写清这张图表达什么、覆盖哪些组件/模块（例：认证鉴权模块的过滤器链流程图），避免图建出来无主题。",
+        "description 参数：可选，写清这张图表达什么、覆盖哪些组件/模块（例：认证鉴权模块的过滤器链流程图），避免图建出来无主题。\n" +
+        "不用传坐标：MCP 入口不接受 geometry/points（传入即报错），读侧也不返回；节点位置由布局引擎或前端 HTTP 维护。",
       inputSchema: {
         diagramId: z.string().min(1),
         type: DiagramTypeSchema,
@@ -219,7 +220,13 @@ export function registerDiagramTools(server: McpServer): void {
         "group 必填：groupId, title, nodeIds[]；可选：axis（vertical/horizontal）、parentGroupId、collapsible\n" +
         "\n" +
         "⚠️ 更新语义（updateNode/updateEdge/updateGroup）：字段按 merge 合并——省略的字段保持原值；数组（attributes/methods/linkedDiagrams 等）整体替换；字段显式传 null 表示删除该字段（如 payload: null 清除扩展信息）。\n" +
-        "⚠️ MCP 入口不承载坐标：geometry / points 仅由前端 HTTP 维护，node 传 geometry、edge 传 points 均会被拒绝。\n" +
+        "⚠️ 坐标语义（两层边界）：共享 schema / 存储 / HTTP 通道可写 geometry（节点 x/y/width/height）与 points（连线折点），省略则由布局引擎自动排布；MCP 写入口不承载坐标——node 传 geometry、edge 传 points 均被拒绝，MCP 读侧（get_diagram_partial）也不返回这两个字段。\n" +
+        "\n" +
+        "示例（最小可用，三种图各一条）：\n" +
+        '  architecture: [{"action":"addNode","node":{"nodeId":"api","label":"HTTP API","layer":"接入层","nodeKind":"gateway","description":"对外 REST 入口"}}]\n' +
+        '  class: [{"action":"addNode","node":{"nodeId":"svc","label":"DiagramService","kind":"class","attributes":[{"name":"ws","type":"Workspace"}],"methods":[{"name":"updateElements","params":[{"name":"patches","type":"DiagramElementPatch[]"}],"returnType":"Promise<Diagram>"}]}}]\n' +
+        '  flow: [{"action":"addNode","node":{"nodeId":"parse","label":"解析参数","nodeKind":"process"}},{"action":"addEdge","edge":{"edgeId":"e1","from":"start","to":"parse","label":"请求"}}]\n' +
+        "（node 必填 nodeId + label；连线 from/to 必须引用已存在节点。批量时同一 patches 数组内按顺序执行，先 addNode 再 addEdge。）\n" +
         "\n" +
         "--- 排查导向引导（强烈建议填写）---\n" +
         "• 每个 node 尽量带 codeAnchor：对应文件路径 + 类/方法符号，便于跳转定位排查（where）\n" +
