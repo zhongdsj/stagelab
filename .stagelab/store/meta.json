@@ -1,9 +1,9 @@
 {
   "projectId": "34a29cd8-790c-43c4-8ce9-e2c25573cfa0",
   "projectName": "stagelab",
-  "currentStage": "s2",
+  "currentStage": "s4",
   "createdAt": 1787984152121,
-  "updatedAt": 1795079367378,
+  "updatedAt": 1795084238780,
   "stage1": {
     "docId": "",
     "diagramIds": []

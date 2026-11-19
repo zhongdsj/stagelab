@@ -3,7 +3,7 @@
   "requirementId": "10301efd-8e62-46d7-a890-728edd6bccd9",
   "title": "T3 重构 DiagramSchema 按图类型逐节点校验并定位报错",
   "description": "背景：真正闸门是 diagram.service.ts:315 对合并后整图 safeParse，nodes 为整个数组三选一 union，任一节点类型不符即 Invalid input 无定位。思路：DiagramSchema 改 typeToNodeSchema 映射 + superRefine 逐节点 safeParse（issue 带 path 与 nodeId+可接受字段清单）；NodeInputSchema 放宽为 nodeId+label 必填基类，类型错误统一由 service 带定位报出；严格度不变。",
-  "status": "pending",
+  "status": "done",
   "acceptanceCriteria": "漏特征字段报错形如「节点 X 缺少 architecture 特征字段（layer / nodeKind 任一）」，含 nodeId\n类型不符报「节点 X 的字段 kind 不属于 architecture 图」\n多错合并最多 5 条\n跨类型字段仍被拒绝、引用完整性仍不校验（严格度不变）",
   "files": [
     "packages/shared/src/schemas.ts",
@@ -12,5 +12,5 @@
   ],
   "changeType": "修改",
   "createdAt": 1795079397134,
-  "updatedAt": 1795080939897
+  "updatedAt": 1795083011954
 }

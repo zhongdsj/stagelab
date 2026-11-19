@@ -3,12 +3,12 @@
   "requirementId": "10301efd-8e62-46d7-a890-728edd6bccd9",
   "title": "T2 补 update_diagram_elements 三类型 JSON 示例并澄清坐标语义",
   "description": "背景：节点经 patch 提交，但 update_diagram_elements 描述里没有任何 JSON 示例，AI 只能按字段名猜结构；diagram.ts:222 称「node 传 geometry / edge 传 points 均会被拒绝」，而共享层 schemas.ts 的节点/边 schema 含坐标字段（供存储与 HTTP 使用），MCP 入口 NodeInputSchema / EdgeInputSchema 已 omit + strict，两层语义从未讲清，导致描述与部分读者的预期互相矛盾（D6 裁决：只改描述，不放开 omit / strict）。思路：update_diagram_elements description 补三类型各一段最小 JSON 示例；坐标改为两层边界说明——共享层 schema 接受 geometry / points（供存储与 HTTP，merge 覆盖），MCP 入口不接受、传入即被拒绝，读侧 stripVisual 不返回；get_diagram / get_diagram_partial 描述补「返回不含坐标」。",
-  "status": "pending",
+  "status": "done",
   "acceptanceCriteria": "update_diagram_elements description 含三类型各一段最小 JSON 示例（4-6 行/类型）\n坐标说明如实：共享层 schema 接受 geometry / points（供存储与 HTTP），MCP 入口 omit + strict 传入即拒绝，读侧不返回\nget_diagram / get_diagram_partial 描述说明返回不含 geometry / points\n单工具描述 <4KB",
   "files": [
     "packages/server/src/mcp/tools/diagram.ts"
   ],
   "changeType": "修改",
   "createdAt": 1795079397078,
-  "updatedAt": 1795080946018
+  "updatedAt": 1795082755207
 }

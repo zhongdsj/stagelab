@@ -3,7 +3,7 @@
   "requirementId": "10301efd-8e62-46d7-a890-728edd6bccd9",
   "title": "T1 补齐图元 schema 字段描述并对齐 TS 接口",
   "description": "背景：图元字段零 .describe()，AI 只能靠试错摸清字段；早期仅类图有 linkedDiagrams 跳转，后加架构/流程图时漏补 TS 接口，形成 zod 与 types.ts 漂移（前端靠运行时兜底绕过）。思路：三支节点 + EdgeSchema + GroupSchema 逐字段 .describe()（措辞点明归属图类型；geometry / points 注明供存储与 HTTP 使用、MCP 入口不接受、读侧不返回），types.ts 的 ArchitectureNode/FlowNode 补 linkedDiagrams 字段。",
-  "status": "pending",
+  "status": "done",
   "acceptanceCriteria": "schemas.ts 三支节点、EdgeSchema、GroupSchema 每个字段均有 .describe()，文案含适用图类型\ntypes.ts 的 ArchitectureNode/FlowNode 含 linkedDiagrams?: LinkedDiagram[]，npm run typecheck 通过（需先 build shared）\n.describe() 文案不含误导性表述（如按 label 猜文件）",
   "files": [
     "packages/shared/src/schemas.ts",
@@ -11,5 +11,5 @@
   ],
   "changeType": "修改",
   "createdAt": 1795079396996,
-  "updatedAt": 1795081043935
+  "updatedAt": 1795082750667
 }

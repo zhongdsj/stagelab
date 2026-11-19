@@ -3,12 +3,12 @@
   "requirementId": "caf3192c-9572-4771-9952-f2a9236f82d9",
   "title": "T4 新增 searchProjectContentRich 富搜索服务",
   "description": "背景：现搜索仅 MCP 可用，索引跳过 meta.json 导致文档标题搜不到，SearchHit 无 snippet/定位字段。思路：新增 HttpSearchHit（kind/id/title/subtitle/snippet/ranges/docId/docTitle/fragmentId/fragmentOrder/diagramId/diagramType/requirementId/taskId/score）与 searchProjectContentRich(ws,q,{types,limit})；meta.json 入索引；分片 title 兜底「文档标题 › 分片标题或 #order」。",
-  "status": "pending",
+  "status": "done",
   "acceptanceCriteria": "只存在于 meta.json 的文档标题能命中（kind=document）\nfragment 命中带 snippet（前后各约 40 字）\nlimit 默认 30、score 降序、同实体去重合并\nsearchProjectContent 原样保留（MCP 出参不变）",
   "files": [
     "packages/server/src/services/index.service.ts"
   ],
   "changeType": "修改",
   "createdAt": 1795079397197,
-  "updatedAt": 1795080939956
+  "updatedAt": 1795083314656
 }

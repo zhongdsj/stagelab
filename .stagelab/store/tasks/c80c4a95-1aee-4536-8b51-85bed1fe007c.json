@@ -3,7 +3,7 @@
   "requirementId": "caf3192c-9572-4771-9952-f2a9236f82d9",
   "title": "T7 文档跳转分片锚点与关键词高亮",
   "description": "背景：DocumentFragments 整篇拼接渲染，无分片锚点，搜索跳转无法定位到分片。思路：改逐分片渲染（每分片包 <section id=\"frag-{order}\">），跳转 URL 带 f=fragmentOrder 先滚锚点，再在分片内做跨文本节点匹配套 <mark> 高亮 3 秒淡出；关键词跨格式边界无法建 DOM 区间时降级停留锚点。",
-  "status": "pending",
+  "status": "done",
   "acceptanceCriteria": "带 f 参数跳转后滚动到对应分片锚点\n关键词在单一文本节点内时精确滚动到关键词并高亮 3s 淡出\n大纲 scrollspy 行为不回归\n不带 q/f 时渲染结果与现状一致",
   "files": [
     "packages/web/src/components/document/DocumentLibrary.vue",
@@ -11,5 +11,5 @@
   ],
   "changeType": "修改",
   "createdAt": 1795079397362,
-  "updatedAt": 1795080940127
+  "updatedAt": 1795083823013
 }

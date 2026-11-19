@@ -3,7 +3,7 @@
   "title": "全项目搜索只有 MCP 通道，HTTP 与前端无入口且搜不到文档 meta",
   "description": "① 问题背景：search_project_content 仅 MCP 可用；索引跳过 meta.json（index.service.ts:99）导致文档标题/摘要/docType 搜不到；SearchHit 仅 {entityType,id,title} 无 snippet/定位；前端 25 个文件零搜索入口；文档整篇渲染无分片锚点，跳转无法定位。\n② 目标：新增 searchProjectContentRich + GET /api/projects/:id/search（只搜本项目）+ 前端 SearchBox（项目页头部/图页侧栏）；文档跳转带 f=fragmentOrder 分片锚点并做跨文本节点高亮；MCP 侧出参保持不变。\n③ 验收口径：见 T4-T7；总体=搜只在 meta.json 的标题能命中、点结果滚到命中分片并尽力精确高亮、MCP 出参与改造前一致。",
   "branchName": "dev-0.6",
-  "status": "dev",
+  "status": "test",
   "taskIds": [
     "042985fa-56f9-4c48-9eb2-bace1d9e71cd",
     "b2dc0227-e14b-42e2-9c70-80566bb042ef",
@@ -11,5 +11,5 @@
     "c80c4a95-1aee-4536-8b51-85bed1fe007c"
   ],
   "createdAt": 1795079367262,
-  "updatedAt": 1795081582497
+  "updatedAt": 1795083823051
 }

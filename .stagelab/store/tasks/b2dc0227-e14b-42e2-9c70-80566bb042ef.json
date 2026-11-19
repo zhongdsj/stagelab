@@ -3,7 +3,7 @@
   "requirementId": "caf3192c-9572-4771-9952-f2a9236f82d9",
   "title": "T5 新增 GET /search 路由并注册",
   "description": "背景：前端无搜索 HTTP 通道。思路：新增 routes/search.ts，GET /api/projects/:id/search?q=&types=document,fragment,diagram,requirement,task&limit=30；q 空返回 []、超 100 字截断、非法 types 忽略；注册进 http/server.ts。",
-  "status": "pending",
+  "status": "done",
   "acceptanceCriteria": "合法参数返回 HttpSearchHit 数组\nq 为空 / 超长 / types 非法均 200 不报错\n路由已注册（改造前 404 → 注册后可达）",
   "files": [
     "packages/server/src/http/routes/search.ts",
@@ -11,5 +11,5 @@
   ],
   "changeType": "新增",
   "createdAt": 1795079397253,
-  "updatedAt": 1795080940003
+  "updatedAt": 1795083822896
 }
