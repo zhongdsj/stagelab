@@ -1,0 +1,50 @@
+packages/web/src/components/diagram/NodeDetailModal.vue
+  s_f8f41fb6861629::t_c1c4dd1275fc4a 1-686
+packages/web/src/components/diagram/DiagramView.vue
+  s_f8f41fb6861629::t_6fcc05414c32b0 704,706
+  s_f8f41fb6861629::t_55e178e6187b36 110-121
+  s_f8f41fb6861629::t_453157f013744b 1032
+  s_f8f41fb6861629::t_111d8c1b6e210f 92
+  s_f8f41fb6861629::t_be5fd7b3effa43 676,679
+  s_f8f41fb6861629::t_8375aad23503ca 700-701
+  s_f8f41fb6861629::t_7e643db22f4037 650
+  s_f8f41fb6861629::t_52da7fd7b15789 652-654
+  s_f8f41fb6861629::t_33ee179a150df7 682
+  s_f8f41fb6861629::t_fd1ab486034d4a 104-106
+  s_f8f41fb6861629::t_ec5bed920b6b38 228
+  s_f8f41fb6861629::t_6f2162ed93ac05 874
+  s_f8f41fb6861629::t_6882f3dfd7b362 467,469
+packages/server/src/http/routes/diagrams.ts
+  s_f8f41fb6861629::t_91eb7b831a4f9d 175-198
+packages/web/src/api/diagrams.ts
+  s_f8f41fb6861629::t_9f093b2e6c2dbf 45-55
+  s_f8f41fb6861629::t_e1f2820ffaef4c 4
+packages/web/src/components/diagram/DiagramSvg.vue
+  s_f8f41fb6861629::t_f9759691b152ef 684-685,697-698,703
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "5.30.9",
+  "base_commit_sha": "f4755281d0a3bb25a606ab17cad57fa761f91cc3",
+  "prompts": {},
+  "humans": {
+    "h_be1684eebfb5c9": {
+      "author": "zhongdsj <1093014451@qq.com>"
+    }
+  },
+  "sessions": {
+    "s_f8f41fb6861629": {
+      "agent_id": {
+        "tool": "deepseek-harness",
+        "id": "session-59f7783c-e6e0-4539-82f7-0f420e918a5d",
+        "model": "deepseek-v4.1-flash"
+      },
+      "human_author": "zhongdsj <1093014451@qq.com>",
+      "custom_attributes": {
+        "stats_models": {"deepseek-v4.1-flash":{"additions":788,"deletions":189}},
+        "stats_total_additions": 788,
+        "stats_total_deletions": 189
+      }
+    }
+  }
+}
