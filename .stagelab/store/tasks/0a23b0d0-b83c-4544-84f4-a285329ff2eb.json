@@ -1,0 +1,15 @@
+{
+  "taskId": "0a23b0d0-b83c-4544-84f4-a285329ff2eb",
+  "requirementId": "b51b3ed1-6f21-40ab-baf6-c363eb275a29",
+  "title": "T10 实现 NodeDetailModal 并接入单击",
+  "description": "背景：节点点击只有 label 气泡，大量承载数据沉没。思路：新建 NodeDetailModal.vue（头部/描述/风险/分组/源码锚点/关联连线/类成员/payload 树/关联图九区块，空区块不渲染；遮罩/ESC/× 关闭；内层 @click.stop；打开时清空 tooltip），DiagramView 单击改开弹层、删除 node-bubble、tooltip 精简为 desc 前 120 字+文件数；风险色级用已有 riskMap 零请求渲染，明细打开时经单节点接口拉取，404 显示「暂无数据」。",
+  "status": "pending",
+  "acceptanceCriteria": "单击节点一次读全 description/payload/codeAnchor/类成员/分组/关联连线/风险明细\n遮罩/ESC/× 均可关闭且无残留高亮与残留 tooltip\n拖动节点松开不弹层（沿用 onNodeClickSuppressed）\nnodeId 失效显示「暂无数据」不弹错误框\nvue-tsc 通过",
+  "files": [
+    "packages/web/src/components/diagram/NodeDetailModal.vue",
+    "packages/web/src/components/diagram/DiagramView.vue"
+  ],
+  "changeType": "新增",
+  "createdAt": 1795079397527,
+  "updatedAt": 1795080940276
+}

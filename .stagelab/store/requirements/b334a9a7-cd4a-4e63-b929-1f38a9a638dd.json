@@ -1,0 +1,12 @@
+{
+  "requirementId": "b334a9a7-cd4a-4e63-b929-1f38a9a638dd",
+  "title": "图列表只显示中文名，AI 给出的 diagramId 无法对应",
+  "description": "① 问题背景：图库/图页侧栏/工具栏只显示中文标题，AI 会话中给出 diagramId（如 order-service-arch）时无法对应到目标图。\n② 目标：三处补等宽 diagramId 展示 + 点击复制（复用 DocumentFragments 的 docId 复制写法）。\n③ 验收口径：20 张图的列表里凭 AI 给的 diagramId 能直接对应到目标图（见 T8）。",
+  "branchName": "dev-0.6",
+  "status": "dev",
+  "taskIds": [
+    "95935df1-44e2-4f4e-a775-d63db1a29c28"
+  ],
+  "createdAt": 1795079367310,
+  "updatedAt": 1795081582555
+}

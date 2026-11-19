@@ -1,0 +1,14 @@
+{
+  "requirementId": "10301efd-8e62-46d7-a890-728edd6bccd9",
+  "title": "图元 MCP 描述层缺失导致 AI 反复试错 node schema",
+  "description": "① 问题背景：三支节点 schema 特征字段全部 optional 且零 .describe()；DiagramSchema 对合并后整图做「整个数组三选一」union 校验，任一节点类型不符即报 Invalid input、无 nodeId 无字段定位（schemas.ts:241-267、diagram.service.ts:314-322）；工具描述无 JSON 示例；diagram.ts:222 声称 geometry/points 会被拒绝——该结论在 MCP 入口层成立（NodeInputSchema / EdgeInputSchema 已 omit + strict），但共享层 schema 含坐标字段（供存储与 HTTP），两层边界描述未讲清。新接入 AI 需多次试错才能摸清字段。\n② 目标：描述层为主——字段逐个 .describe()、update_diagram_elements 补三类型最小 JSON 示例、坐标语义澄清（共享层接受 / MCP 入口拒绝 / 读侧不返回，可写行为不变）；校验按图类型逐节点报错（nodeId+字段清单），严格度不变。\n③ 验收口径：见关联任务 T1-T3；总体=三类型 patch 对照示例一次通过，漏字段/类型不符报错含 nodeId 与可接受字段清单、据此一次修正通过，单工具描述 <4KB，坐标可写行为与改造前一致。",
+  "branchName": "dev-0.6",
+  "status": "dev",
+  "taskIds": [
+    "033e6ec5-d312-4604-bc4b-ae58f3fdbb2b",
+    "d80f9ab6-7217-4821-b40c-dece9cabf3aa",
+    "d844d30f-edc9-402d-b00e-df92f23b5181"
+  ],
+  "createdAt": 1795079367212,
+  "updatedAt": 1795081582427
+}

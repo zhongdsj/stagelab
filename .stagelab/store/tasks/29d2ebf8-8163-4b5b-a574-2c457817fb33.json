@@ -1,0 +1,17 @@
+{
+  "taskId": "29d2ebf8-8163-4b5b-a574-2c457817fb33",
+  "requirementId": "caf3192c-9572-4771-9952-f2a9236f82d9",
+  "title": "T6 实现 SearchBox 组件并挂载项目页与图页",
+  "description": "背景：前端 25 个源文件零搜索入口。思路：新建 SearchBox.vue（250ms 防抖、↑↓ 选择、Enter 跳转、Esc/点击外部关闭、按 kind 分组、snippet 高亮、loading/空态）与 api/search.ts；挂 ProjectDetailView 头部与 DiagramPageView 侧栏顶部（侧栏折叠后不可见属已知可接受行为）。",
+  "status": "pending",
+  "acceptanceCriteria": "输入 250ms 防抖后请求，结果按 kind 分组展示\nEnter 按类型跳转（文档带 q/f、图路由、需求任务切 Tab）\nEsc / 点击外部关闭\nvue-tsc 通过",
+  "files": [
+    "packages/web/src/components/common/SearchBox.vue",
+    "packages/web/src/api/search.ts",
+    "packages/web/src/views/ProjectDetailView.vue",
+    "packages/web/src/views/DiagramPageView.vue"
+  ],
+  "changeType": "新增",
+  "createdAt": 1795079397306,
+  "updatedAt": 1795080940076
+}
