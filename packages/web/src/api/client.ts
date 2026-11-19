@@ -54,7 +54,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
 /** 请求方法集合 */
 export const http = {
-  get: <T>(path: string) => request<T>(path),
+  get: <T>(path: string, init?: RequestInit) => request<T>(path, init),
   post: <T>(path: string, data?: unknown) =>
     request<T>(path, { method: "POST", body: JSON.stringify(data ?? {}) }),
   put: <T>(path: string, data?: unknown) =>

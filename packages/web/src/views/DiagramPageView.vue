@@ -9,6 +9,10 @@
 
       <template v-if="!collapsed">
         <button class="back-btn" type="button" @click="goBack">← 返回项目</button>
+        <!-- 全项目搜索：图页内直接搜文档/分片/图/需求/任务 -->
+        <div class="sidebar-search">
+          <SearchBox :project-id="props.id" placeholder="全项目搜索" align="left" />
+        </div>
         <!-- 按类型分块展示图列表（类图 / 架构图 / 流程图） -->
         <template v-if="diagrams.length">
           <div v-for="group in groups" :key="group.key" class="diagram-block">
@@ -66,6 +70,7 @@
 import { computed, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import DiagramView from "../components/diagram/DiagramView.vue";
+import SearchBox from "../components/common/SearchBox.vue";
 import { getProjectIndex, ApiError } from "../api/index";
 import type { ProjectIndexResult } from "../api/projects";
 import { copyText } from "../utils/clipboard";
@@ -187,11 +192,17 @@ onMounted(load);
   border: 1px solid #e4e7ed;
   border-radius: 8px;
   transition: width 0.2s ease, min-width 0.2s ease;
-  overflow: hidden;
+  /* 展开态不裁剪：搜索框结果浮层需越出侧栏边界；折叠态仍裁掉内容 */
+  overflow: visible;
 }
 .diagram-sidebar.collapsed {
   width: 52px;
   min-width: 52px;
+  overflow: hidden;
+}
+/* 搜索框与图列表之间的分隔 */
+.sidebar-search {
+  flex: none;
 }
 .sidebar-toggle {
   display: flex;

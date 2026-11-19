@@ -78,6 +78,9 @@
       :doc-id="activeDocId"
       :title="activeDoc?.title"
       :refresh-tick="refreshTick"
+      :focus-order="focusOrder"
+      :highlight-keyword="highlightKeyword"
+      :focus-key="focusKey"
     />
 
     <!-- 悬浮操作：刷新 + 回到顶部（右下角常驻） -->
@@ -96,7 +99,17 @@ import type { DocumentItem } from "../../api/documents";
 import DocumentFragments from "./DocumentFragments.vue";
 import { confirmDialog } from "../common/ConfirmDialog.vue";
 
-const props = defineProps<{ projectId: string }>();
+const props = defineProps<{
+  projectId: string;
+  /** 搜索跳转：目标文档 ID（切换后选中该文档） */
+  initialDocId?: string;
+  /** 搜索跳转：命中分片 order（T7 定位锚点） */
+  focusOrder?: number;
+  /** 搜索跳转：关键词（T7 高亮） */
+  highlightKeyword?: string;
+  /** 定位信号：文档/分片/关键词组合（变化时重新定位） */
+  focusKey?: string;
+}>();
 
 /** 刷新完成后通知父级重拉项目索引（同步顶部统计） */
 const emit = defineEmits<{
@@ -138,8 +151,15 @@ async function load() {
   try {
     const index = await getProjectIndex(props.projectId);
     documents.value = index.documents as DocumentItem[];
-    // 保持当前选中文档；若不存在（如删除/刷新）则回退到第一个
-    if (!activeDocId.value || !documents.value.some((d) => d.docId === activeDocId.value)) {
+    // 搜索跳转优先：定位到目标文档并切到其状态筛选，避免文档不在当前 Tab 中
+    const wanted = props.initialDocId
+      ? documents.value.find((d) => d.docId === props.initialDocId)
+      : undefined;
+    if (wanted) {
+      activeDocId.value = wanted.docId;
+      statusFilter.value = wanted.status ?? "focused";
+    } else if (!activeDocId.value || !documents.value.some((d) => d.docId === activeDocId.value)) {
+      // 保持当前选中文档；若不存在（如删除/刷新）则回退到第一个
       activeDocId.value = documents.value[0]?.docId ?? "";
     }
   } catch (e) {
@@ -259,6 +279,19 @@ watch(() => props.projectId, () => {
 watch(activeDoc, (doc) => {
   statusDraft.value = doc?.status ?? "focused";
 });
+
+// 搜索跳转（T6）：同一页面内再次搜索时，切到目标文档并交给 DocumentFragments 重新定位
+watch(
+  () => props.focusKey,
+  () => {
+    const wanted = props.initialDocId
+      ? documents.value.find((d) => d.docId === props.initialDocId)
+      : undefined;
+    if (!wanted) return;
+    activeDocId.value = wanted.docId;
+    statusFilter.value = wanted.status ?? "focused";
+  }
+);
 </script>
 
 <style scoped>

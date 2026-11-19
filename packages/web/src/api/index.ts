@@ -4,6 +4,7 @@
 export * from "./client.js";
 export * from "./projects.js";
 export * from "./documents.js";
+export * from "./search.js";
 export * from "./diagrams.js";
 export * from "./requirements.js";
 export * from "./system.js";
