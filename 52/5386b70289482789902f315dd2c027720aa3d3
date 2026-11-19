@@ -1,0 +1,49 @@
+packages/web/src/views/DiagramPageView.vue
+  s_f8f41fb6861629::t_81d7f32792ba9b 288-293,298-318
+  s_f8f41fb6861629::t_a83f1ec9848231 27-39
+  s_f8f41fb6861629::t_7f3ed96eb793fe 267-269
+  s_f8f41fb6861629::t_3aea3689830232 145-159
+  s_f8f41fb6861629::t_f20d7a2cd7db98 71
+packages/web/src/components/diagram/DiagramView.vue
+  s_f8f41fb6861629::t_56c82408d8f01a 271
+  s_f8f41fb6861629::t_b26347b5762420 6-14
+  s_f8f41fb6861629::t_8cc5bdfd2229a4 295-311
+  s_f8f41fb6861629::t_484997d1920ef5 959
+  s_f8f41fb6861629::t_7a9aab36d9940b 966-987
+packages/web/src/components/document/DocumentFragments.vue
+  s_f8f41fb6861629::t_db4cfd01c96928 89
+  s_f8f41fb6861629::t_905090ed865d23 201
+packages/web/src/utils/clipboard.ts
+  s_f8f41fb6861629::t_d4885df73f1b09 1-28
+packages/web/src/components/diagram/DiagramLibrary.vue
+  s_f8f41fb6861629::t_b57fbb448b41b2 61
+  s_f8f41fb6861629::t_3cd97c6e9958dd 127-141
+  s_f8f41fb6861629::t_f215ac7776b696 22-34
+  s_f8f41fb6861629::t_6999e5d353e734 215-219,228-259
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "5.30.9",
+  "base_commit_sha": "525386b70289482789902f315dd2c027720aa3d3",
+  "prompts": {},
+  "humans": {
+    "h_be1684eebfb5c9": {
+      "author": "zhongdsj <1093014451@qq.com>"
+    }
+  },
+  "sessions": {
+    "s_f8f41fb6861629": {
+      "agent_id": {
+        "tool": "deepseek-harness",
+        "id": "session-59f7783c-e6e0-4539-82f7-0f420e918a5d",
+        "model": "deepseek-v4.1-flash"
+      },
+      "human_author": "zhongdsj <1093014451@qq.com>",
+      "custom_attributes": {
+        "stats_models": {"deepseek-v4.1-flash":{"additions":205,"deletions":22}},
+        "stats_total_additions": 205,
+        "stats_total_deletions": 22
+      }
+    }
+  }
+}
