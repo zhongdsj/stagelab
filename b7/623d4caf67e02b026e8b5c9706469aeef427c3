@@ -1,0 +1,58 @@
+packages/web/src/components/common/SearchBox.vue
+  s_f8f41fb6861629::t_b79848e31382ca 1-432
+packages/web/src/api/index.ts
+  s_f8f41fb6861629::t_5183a6b9cbaedb 7
+packages/web/src/api/search.ts
+  s_f8f41fb6861629::t_8fbebaab0bf30f 1-65
+packages/web/src/api/client.ts
+  s_f8f41fb6861629::t_3c40f201c12078 57
+packages/web/src/views/ProjectDetailView.vue
+  s_f8f41fb6861629::t_1ebaec85f9d9f2 95
+  s_f8f41fb6861629::t_a57a94fc1f48ba 72-80
+  s_f8f41fb6861629::t_835bc6beedf662 195-231,238,240,312
+  s_f8f41fb6861629::t_b8162d73ada42d 14-20
+  s_f8f41fb6861629::t_edb9a7266455b0 299,301,304-311
+  s_f8f41fb6861629::t_b03e6176b03f7d 103
+  s_f8f41fb6861629::t_90a0e29772bd88 90
+packages/web/src/components/document/DocumentLibrary.vue
+  s_f8f41fb6861629::t_fc3da65508b92b 102-112
+  s_f8f41fb6861629::t_35e54e86a1b419 154-162
+  s_f8f41fb6861629::t_b99ac82b85d08a 81-83
+  s_f8f41fb6861629::t_febf4c52141a3f 282-294
+packages/web/src/components/document/DocumentFragments.vue
+  s_f8f41fb6861629::t_741a9b72731081 47,53-64
+  s_f8f41fb6861629::t_98d477488a60c3 328,333,335-351,355-357
+  s_f8f41fb6861629::t_c4946ef95c444c 202-319,321,323-325
+  s_f8f41fb6861629::t_30de946f786a50 127-134,136-137,139
+  s_f8f41fb6861629::t_a07f9d5ac73b59 352-354
+  s_f8f41fb6861629::t_0c49d14a1be49f 110-115
+  s_f8f41fb6861629::t_db02051aa53cf0 94-95
+  s_f8f41fb6861629::t_eda61f526b87d4 430
+  s_f8f41fb6861629::t_b45a926ffbdc4a 659-705
+  s_f8f41fb6861629::t_8195b48f3a1220 706
+packages/web/src/views/DiagramPageView.vue
+  s_f8f41fb6861629::t_ada514ca2a7cf3 73
+  s_f8f41fb6861629::t_69491444795540 12-15
+  s_f8f41fb6861629::t_11361f321cb4d5 195-196,201-205
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "5.30.9",
+  "base_commit_sha": "b7623d4caf67e02b026e8b5c9706469aeef427c3",
+  "prompts": {},
+  "humans": {
+    "h_be1684eebfb5c9": {
+      "author": "zhongdsj <1093014451@qq.com>"
+    }
+  },
+  "sessions": {
+    "s_f8f41fb6861629": {
+      "agent_id": {
+        "tool": "deepseek-harness",
+        "id": "session-59f7783c-e6e0-4539-82f7-0f420e918a5d",
+        "model": "deepseek-v4.1-flash"
+      },
+      "human_author": "zhongdsj <1093014451@qq.com>"
+    }
+  }
+}
