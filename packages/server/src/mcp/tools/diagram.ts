@@ -37,9 +37,10 @@ import {
 import { safeCall } from "./_util.js";
 
 /**
- * MCP 入口层 node/edge 输入 schema（T3 入口收紧）：
- * - node 按图类型拆三支 union（架构/类/流程），各自从共享节点 schema 派生（omit geometry）
- * - 保留 .strict()：跨类型字段直接报错（如把 kind 塞进架构图节点）；geometry 传 null/值均被拒绝
+ * MCP 入口层 node/edge 输入 schema（T3）：
+ * - node 为「基类」：枚举三种图类型的全部合法字段（tools/list 可发现每个字段含义），
+ *   一图一类型的严格校验交给 DiagramSchema 逐节点执行，报错带 nodes[i].字段 + nodeId + 可接受字段清单
+ * - 仍 .strict()：geometry 传入即报错（MCP 入口不承载坐标），未知/拼错字段也不放行
  * - edge 派生自 EdgeSchema 并 omit points：折点坐标仅前端 HTTP 职责，MCP 写侧入口不承载
  * - null 统一转 undefined：字段显式传 null 表示删除（RFC 7396 merge 语义），服务层据此合并
  */
@@ -55,12 +56,24 @@ function nullToUndefined(value: unknown): unknown {
   return value;
 }
 
-const ArchitectureNodeInput = ArchitectureNodeSchema.omit({ geometry: true });
-const ClassNodeInput = ClassNodeSchema.omit({ geometry: true });
-const FlowNodeInput = FlowNodeSchema.omit({ geometry: true });
 const NodeInputSchema = z.preprocess(
   nullToUndefined,
-  z.union([ArchitectureNodeInput, ClassNodeInput, FlowNodeInput])
+  ArchitectureNodeSchema.omit({ geometry: true, nodeKind: true })
+    .extend({
+      nodeKind: z
+        .union([
+          ArchitectureNodeSchema.shape.nodeKind.unwrap(),
+          FlowNodeSchema.shape.nodeKind.unwrap()
+        ])
+        .optional()
+        .describe(
+          "节点类型：架构图取 service / database / mq / cache / external / gateway；流程图取 start / end / process / decision / inputOutput / subprocess；类图不用本字段（用 kind）"
+        ),
+      kind: ClassNodeSchema.shape.kind,
+      attributes: ClassNodeSchema.shape.attributes,
+      methods: ClassNodeSchema.shape.methods
+    })
+    .strict()
 );
 /** edge 入口：移除 points 折点坐标，并收紧为 strict（未知字段报错） */
 const EdgeInputSchema = z.preprocess(
@@ -221,6 +234,7 @@ export function registerDiagramTools(server: McpServer): void {
         "\n" +
         "⚠️ 更新语义（updateNode/updateEdge/updateGroup）：字段按 merge 合并——省略的字段保持原值；数组（attributes/methods/linkedDiagrams 等）整体替换；字段显式传 null 表示删除该字段（如 payload: null 清除扩展信息）。\n" +
         "⚠️ 坐标语义（两层边界）：共享 schema / 存储 / HTTP 通道可写 geometry（节点 x/y/width/height）与 points（连线折点），省略则由布局引擎自动排布；MCP 写入口不承载坐标——node 传 geometry、edge 传 points 均被拒绝，MCP 读侧（get_diagram_partial）也不返回这两个字段。\n" +
+        "⚠️ 校验失败定位：错误信息带 nodes[i].字段 + nodeId + 该图类型可接受字段清单（如「节点 svc 不符合架构图节点结构（字段 kind）：存在不属于该图类型的字段 kind；架构图可接受字段：nodeId / label / layer / nodeKind / ...」），按提示一次改对，无需试错。\n" +
         "\n" +
         "示例（最小可用，三种图各一条）：\n" +
         '  architecture: [{"action":"addNode","node":{"nodeId":"api","label":"HTTP API","layer":"接入层","nodeKind":"gateway","description":"对外 REST 入口"}}]\n' +

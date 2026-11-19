@@ -8,6 +8,7 @@
  * - 布局结果 LayoutDiagram 为独立内部模型，不走 MCP
  */
 import { z } from "zod";
+import type { Diagram } from "./types.js";
 
 /* ========== 通用基础 ========== */
 
@@ -327,53 +328,113 @@ export const VerificationRecordSchema = z
   })
   .strict();
 
-/**
- * Diagram 图容器：nodes 按 type 用 discriminated union 区分校验
- * 防止跨类型字段混用（如把 class 节点塞进 architecture 图）
- */
-export const DiagramSchema = z
-  .object({
-    diagramId: z.string().min(1),
-    type: DiagramTypeSchema,
-    metadata: z.object({
-      title: z.string().min(1),
-      version: z.number().int().nonnegative(),
-      description: z.string().optional(),
-      // 图漂移校验锚点（P1）：均 optional，存量图零迁移兼容
-      baseBranch: z.string().optional(),
-      baseCommit: z.string().optional(),
-      verifiedCommit: z.string().optional(),
-      lastVerifiedAt: z.number().int().nonnegative().optional(),
-      verifiedBy: VerificationActorSchema.optional(),
-      verifyNote: z.string().optional()
-    }),
-    nodes: z.union([
-      z.array(ArchitectureNodeSchema),
-      z.array(ClassNodeSchema),
-      z.array(FlowNodeSchema)
-    ]),
-    edges: z.array(EdgeSchema),
-    groups: z.array(GroupSchema)
-  })
-  .superRefine((diagram, ctx) => {
-    // 按图类型校验节点：确保 nodes 元素与 type 一致，防止跨类型字段混用
-    const typeToNodeKeys: Record<string, string[]> = {
-      architecture: ["layer", "nodeKind"],
-      class: ["kind", "attributes", "methods"],
-      flow: ["nodeKind"]
-    };
-    const nodeKeys = typeToNodeKeys[diagram.type];
+/** 图类型 → 该类型节点 schema（T3：DiagramSchema 按图类型逐节点校验） */
+const NODE_SCHEMA_BY_TYPE = {
+  architecture: ArchitectureNodeSchema,
+  class: ClassNodeSchema,
+  flow: FlowNodeSchema
+} as const;
 
-    const mismatch = diagram.nodes.find(
-      (node) => !nodeKeys.some((key) => key in node)
-    );
-    if (mismatch) {
+/** 图类型中文名（用于报错文案） */
+const NODE_TYPE_LABEL: Record<keyof typeof NODE_SCHEMA_BY_TYPE, string> = {
+  architecture: "架构图",
+  class: "类图",
+  flow: "流程图"
+};
+
+/** 各图类型特征字段：缺一不可归属该类节点，用于提示跨类型混入 */
+const NODE_FEATURE_FIELDS: Record<keyof typeof NODE_SCHEMA_BY_TYPE, string[]> = {
+  architecture: ["layer", "nodeKind"],
+  class: ["kind", "attributes", "methods"],
+  flow: ["nodeKind"]
+};
+
+/** 把 zod 底层 issue 翻成中文（保留字段名/可选值，避免 AI 二次试错） */
+function describeNodeIssue(issue: z.ZodIssue): string {
+  switch (issue.code) {
+    case z.ZodIssueCode.unrecognized_keys:
+      return `存在不属于该图类型的字段 ${issue.keys.join("、")}`;
+    case z.ZodIssueCode.invalid_type:
+      return `字段类型不符（应为 ${issue.expected}，实际收到 ${issue.received}）`;
+    case z.ZodIssueCode.invalid_enum_value:
+      return `取值不合法，可选值：${issue.options.join(" / ")}`;
+    case z.ZodIssueCode.too_small:
+      return issue.minimum === 1 ? "不能为空" : `取值过小（最小值 ${issue.minimum}）`;
+    default:
+      return issue.message;
+  }
+}
+
+const DiagramShapeSchema = z.object({
+  diagramId: z.string().min(1),
+  type: DiagramTypeSchema,
+  metadata: z.object({
+    title: z.string().min(1),
+    version: z.number().int().nonnegative(),
+    description: z.string().optional(),
+    // 图漂移校验锚点（P1）：均 optional，存量图零迁移兼容
+    baseBranch: z.string().optional(),
+    baseCommit: z.string().optional(),
+    verifiedCommit: z.string().optional(),
+    lastVerifiedAt: z.number().int().nonnegative().optional(),
+    verifiedBy: VerificationActorSchema.optional(),
+    verifyNote: z.string().optional()
+  }),
+  // 节点先按 unknown 收下，再由 superRefine 按 diagram.type 逐节点校验：
+  // 这样报错能带 path（nodes[i].字段）、nodeId 与该图类型可接受字段清单，供调用方一次改对
+  nodes: z.array(z.unknown()),
+  edges: z.array(EdgeSchema),
+  groups: z.array(GroupSchema)
+});
+
+/**
+ * Diagram 图容器：节点按 diagram.type 逐节点校验（typeToNodeSchema）
+ * - strict 拒绝跨类型字段（如把 kind 塞进架构图节点）
+ * - 报错带 nodes[i].字段 定位 + nodeId + 可接受字段清单
+ */
+export const DiagramSchema = DiagramShapeSchema.superRefine((diagram, ctx) => {
+  const nodeSchema = NODE_SCHEMA_BY_TYPE[diagram.type];
+  const label = NODE_TYPE_LABEL[diagram.type];
+  const allowedFields = Object.keys(nodeSchema.shape).join(" / ");
+  const featureFields = NODE_FEATURE_FIELDS[diagram.type];
+
+  diagram.nodes.forEach((raw, index) => {
+    const record = (raw ?? {}) as Record<string, unknown>;
+    const nodeId =
+      typeof record.nodeId === "string" && record.nodeId
+        ? record.nodeId
+        : `nodes[${index}]`;
+    const parsed = nodeSchema.safeParse(raw);
+
+    if (!parsed.success) {
+      for (const issue of parsed.error.issues) {
+        const field = issue.path.join(".");
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["nodes", index, ...issue.path],
+          message:
+            `节点 ${nodeId} 不符合${label}节点结构` +
+            (field ? `（字段 ${field}）` : "") +
+            `：${describeNodeIssue(issue)}；${label}可接受字段：${allowedFields}`
+        });
+      }
+      return;
+    }
+
+    // 特征字段全缺：即使结构合法也视为跨类型节点（如只有 nodeId+label 的裸节点）
+    if (!featureFields.some((key) => key in record)) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: `节点 ${mismatch.nodeId} 缺少 ${diagram.type} 图类型特征字段，存在跨类型节点`
+        path: ["nodes", index],
+        message:
+          `节点 ${nodeId} 缺少${label}类型特征字段（${featureFields.join(" / ")} 至少填一个），疑似跨类型节点；` +
+          `${label}可接受字段：${allowedFields}`
       });
     }
   });
+})
+  // 逐节点校验通过后，nodes 已确定为该图类型的节点数组，对外按 Diagram 类型暴露
+  .transform((diagram) => diagram as unknown as Diagram);
 
 /* ========== 6.4 LayoutDiagram 布局结果模型（内部渲染用） ========== */
 

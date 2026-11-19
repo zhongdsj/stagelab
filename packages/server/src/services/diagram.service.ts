@@ -33,6 +33,21 @@ import {
 
 type NodeOfDiagram = ArchitectureNode | ClassNode | FlowNode;
 
+/**
+ * 汇总 zod 校验错误：每条带 path（如 nodes.2.kind）+ 中文说明（T3 报错定位）
+ * DiagramSchema 的逐节点校验已在 message 内带 nodeId 与可接受字段清单，这里补上字段路径
+ */
+function formatDiagramIssues(
+  issues: Array<{ path: (string | number)[]; message: string }>
+): string {
+  return issues
+    .map((issue) => {
+      const path = issue.path.join(".");
+      return path ? `${path}：${issue.message}` : issue.message;
+    })
+    .join("；");
+}
+
 /** 创建新结构化图 */
 export async function createDiagram(
   workspace: RepoWorkspace,
@@ -315,9 +330,7 @@ export async function updateDiagramElements(
   const parsed = DiagramSchema.safeParse(updated);
   if (!parsed.success) {
     throw new Error(
-      `图元更新校验失败: ${parsed.error.issues
-        .map((i) => i.message)
-        .join("; ")}`
+      `图元更新校验失败: ${formatDiagramIssues(parsed.error.issues)}`
     );
   }
 
@@ -354,9 +367,7 @@ export async function updateDiagramMeta(
   const parsed = DiagramSchema.safeParse(updated);
   if (!parsed.success) {
     throw new Error(
-      `图元数据更新校验失败: ${parsed.error.issues
-        .map((i) => i.message)
-        .join("; ")}`
+      `图元数据更新校验失败: ${formatDiagramIssues(parsed.error.issues)}`
     );
   }
 
@@ -453,7 +464,7 @@ export async function verifyDiagram(
   const parsed = DiagramSchema.safeParse(updated);
   if (!parsed.success) {
     throw new Error(
-      `图校验更新失败: ${parsed.error.issues.map((i) => i.message).join("; ")}`
+      `图校验更新失败: ${formatDiagramIssues(parsed.error.issues)}`
     );
   }
 
@@ -567,7 +578,7 @@ export async function saveDiagramGeometry(
   const parsed = DiagramSchema.safeParse(updated);
   if (!parsed.success) {
     throw new Error(
-      `坐标保存校验失败: ${parsed.error.issues.map((i) => i.message).join("; ")}`
+      `坐标保存校验失败: ${formatDiagramIssues(parsed.error.issues)}`
     );
   }
 

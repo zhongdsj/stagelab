@@ -38,8 +38,8 @@ export async function notifyChanged(repoRoot: string): Promise<void> {
 export interface EntityRepositoryOptions<T> {
   /** 实体文件路径（相对仓库）解析 */
   filePath: (repoRoot: string, id: string) => string;
-  /** Zod schema 校验 */
-  schema: z.ZodType<T>;
+  /** Zod schema 校验（输入按未知 JSON 收下：仓储读取的是磁盘原文） */
+  schema: z.ZodType<T, z.ZodTypeDef, unknown>;
   /** 实体 ID 字段名 */
   idField: keyof T & string;
 }
@@ -50,7 +50,7 @@ export interface EntityRepositoryOptions<T> {
 export abstract class EntityRepository<T extends object> {
   protected repoRoot: string;
   private filePath: (repoRoot: string, id: string) => string;
-  protected schema: z.ZodType<T>;
+  protected schema: z.ZodType<T, z.ZodTypeDef, unknown>;
   private idField: keyof T & string;
 
   constructor(workspace: RepoWorkspace, options: EntityRepositoryOptions<T>) {
