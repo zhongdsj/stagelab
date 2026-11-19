@@ -20,6 +20,7 @@ import { registerDocumentRoutes } from "./routes/documents.js";
 import { registerDiagramRoutes } from "./routes/diagrams.js";
 import { registerRequirementRoutes } from "./routes/requirements.js";
 import { registerSystemRoutes } from "./routes/system.js";
+import { registerSearchRoutes } from "./routes/search.js";
 import { HttpError, errorStatus, messageOf } from "./routes/_util.js";
 import { initFromArgs } from "../services/workspace.service.js";
 import { log } from "../logger.js";
@@ -70,6 +71,7 @@ export function createHttpServer(): FastifyInstance {
   registerDiagramRoutes(app);
   registerRequirementRoutes(app);
   registerSystemRoutes(app);
+  registerSearchRoutes(app);
 
   return app;
 }
