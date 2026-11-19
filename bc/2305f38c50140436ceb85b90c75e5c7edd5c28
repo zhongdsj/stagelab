@@ -1,0 +1,41 @@
+packages/server/src/http/routes/search.ts
+  s_f8f41fb6861629::t_4475b6b079275e 1-64
+packages/server/src/http/server.ts
+  s_f8f41fb6861629::t_04bf9da39adc4c 74
+  s_f8f41fb6861629::t_1cfa6b1e5a777d 23
+packages/server/src/services/index.service.ts
+  s_f8f41fb6861629::t_d8b612012559a4 491
+  s_f8f41fb6861629::t_94a38a97dfc49f 536
+  s_f8f41fb6861629::t_dfe8bffc47ab16 438
+  s_f8f41fb6861629::t_0f107790c3142e 233-351,365-437,439-464,466-490,492-514,516-535,537-559
+  s_f8f41fb6861629::t_7996d0b924f59a 515
+  s_f8f41fb6861629::t_7ac646f3f566aa 465
+  s_f8f41fb6861629::t_a9d71914b2ba1c 27
+  s_f8f41fb6861629::t_6eeba2d9bb3695 352-364
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "5.30.9",
+  "base_commit_sha": "bc2305f38c50140436ceb85b90c75e5c7edd5c28",
+  "prompts": {},
+  "humans": {
+    "h_be1684eebfb5c9": {
+      "author": "zhongdsj <1093014451@qq.com>"
+    }
+  },
+  "sessions": {
+    "s_f8f41fb6861629": {
+      "agent_id": {
+        "tool": "deepseek-harness",
+        "id": "session-59f7783c-e6e0-4539-82f7-0f420e918a5d",
+        "model": "deepseek-v4.1-flash"
+      },
+      "human_author": "zhongdsj <1093014451@qq.com>",
+      "custom_attributes": {
+        "stats_models": {"deepseek-v4.1-flash":{"additions":1244,"deletions":31}},
+        "stats_total_additions": 1244,
+        "stats_total_deletions": 31
+      }
+    }
+  }
+}
