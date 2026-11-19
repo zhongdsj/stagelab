@@ -1,0 +1,65 @@
+.stagelab/store/index.json
+  s_f8f41fb6861629::t_968766f607b763 524,1334
+  h_be1684eebfb5c9 3,246,413,427,536,560,1010,1052,1340
+  s_f8f41fb6861629::t_f0987584ce3f67 455,710,1172,1250
+.stagelab/store/diagrams/biz-service-flow.json
+  h_be1684eebfb5c9 6,17,39,61,83,105,130,152,174,195,217,239,261,286,308,330,352,377,399,421,450-455,472-477,494-499,516-521,534,538,550,554,566,570,582,586,598,602,614,618,630,634,646,650,662,666,678,682,694,698,710,714,726,730,742,746,750,754,758,762,774,778,790,794,806,810,822,826,830,834,838,842,853-862,872-881,888-898
+.stagelab/store/diagrams/http-api-class.json
+  h_be1684eebfb5c9 6,33,59-60,86-87,113-114,140-141,168-169,200-201,230-231,272-277,289-290,293-294,306,309-310,313-314,317-318,329-334,337-338,342,346,357-358,361-362,365-366,369-370,381-382,385-386,389-390,393-394,405-410,413-414,417-418,421-422,433-442,445-446,457-462,465-466,469-470,473-474,485-486,489-490,493-494,497-502,513-514,517-518,521-522,525-530,541-550,553-554,557-558,561-562,573-574,577-578,581-582,585-590,602,605-606,609-610,613-614,625-626,629-630,637-659,664-682
+.stagelab/store/documents/dev-doc-mcp-desc-and-search/dev-doc-mcp-desc-and-search-f3.json
+  h_be1684eebfb5c9 6-7
+.stagelab/store/meta.json
+  h_be1684eebfb5c9 4,6
+.stagelab/store/requirements/10301efd-8e62-46d7-a890-728edd6bccd9.json
+  h_be1684eebfb5c9 6,13
+.stagelab/store/requirements/b334a9a7-cd4a-4e63-b929-1f38a9a638dd.json
+  h_be1684eebfb5c9 6,11
+.stagelab/store/requirements/b51b3ed1-6f21-40ab-baf6-c363eb275a29.json
+  h_be1684eebfb5c9 6,12
+.stagelab/store/requirements/caf3192c-9572-4771-9952-f2a9236f82d9.json
+  h_be1684eebfb5c9 6,14
+.stagelab/store/tasks/033e6ec5-d312-4604-bc4b-ae58f3fdbb2b.json
+  h_be1684eebfb5c9 6,14
+.stagelab/store/tasks/042985fa-56f9-4c48-9eb2-bace1d9e71cd.json
+  h_be1684eebfb5c9 6,13
+.stagelab/store/tasks/0a23b0d0-b83c-4544-84f4-a285329ff2eb.json
+  h_be1684eebfb5c9 6,14
+.stagelab/store/tasks/29d2ebf8-8163-4b5b-a574-2c457817fb33.json
+  h_be1684eebfb5c9 5-7,16
+.stagelab/store/tasks/853de372-93bc-45d1-8727-e06808063ed2.json
+  h_be1684eebfb5c9 6,14
+.stagelab/store/tasks/95935df1-44e2-4f4e-a775-d63db1a29c28.json
+  h_be1684eebfb5c9 6,15
+.stagelab/store/tasks/b2dc0227-e14b-42e2-9c70-80566bb042ef.json
+  h_be1684eebfb5c9 6,14
+.stagelab/store/tasks/c80c4a95-1aee-4536-8b51-85bed1fe007c.json
+  h_be1684eebfb5c9 6,14
+.stagelab/store/tasks/d80f9ab6-7217-4821-b40c-dece9cabf3aa.json
+  h_be1684eebfb5c9 6,13
+.stagelab/store/tasks/d844d30f-edc9-402d-b00e-df92f23b5181.json
+  h_be1684eebfb5c9 6,15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "5.30.9",
+  "base_commit_sha": "83c657eacb639178be53a0ec953f37bc5d50c031",
+  "prompts": {},
+  "humans": {
+    "h_be1684eebfb5c9": {
+      "author": "zhongdsj <1093014451@qq.com>",
+      "overridden": {
+        "s_f8f41fb6861629": 9
+      }
+    }
+  },
+  "sessions": {
+    "s_f8f41fb6861629": {
+      "agent_id": {
+        "tool": "deepseek-harness",
+        "id": "session-59f7783c-e6e0-4539-82f7-0f420e918a5d",
+        "model": "deepseek-v4.1-flash"
+      },
+      "human_author": "zhongdsj <1093014451@qq.com>"
+    }
+  }
+}
