@@ -30,7 +30,7 @@
               :title="`图 ID：${d.diagramId}（点击复制）`"
               @click.stop="copyId(d.diagramId)"
             >
-              {{ copiedId === d.diagramId ? "已复制" : d.diagramId }}
+              {{ d.diagramId }}
             </button>
           </span>
         </div>
@@ -59,6 +59,7 @@ import { useRouter } from "vue-router";
 import { getProjectIndex, ApiError } from "../../api/index";
 import type { ProjectIndexResult } from "../../api/projects";
 import { copyText } from "../../utils/clipboard";
+import { message } from "../../utils/message";
 
 const props = defineProps<{ projectId: string }>();
 
@@ -124,19 +125,11 @@ async function load() {
   }
 }
 
-/** T8：最近一次复制成功的图 ID（用于按钮短暂显示「已复制」） */
-const copiedId = ref("");
-let copiedTimer: ReturnType<typeof setTimeout> | undefined;
-
-/** T8：复制图 ID 到剪贴板 */
+/** T8：复制图 ID 到剪贴板（反馈统一走顶部居中轻提示） */
 async function copyId(id: string) {
   const ok = await copyText(id);
-  if (!ok) return;
-  copiedId.value = id;
-  if (copiedTimer) clearTimeout(copiedTimer);
-  copiedTimer = setTimeout(() => {
-    copiedId.value = "";
-  }, 1500);
+  if (ok) message.success("图 ID 已复制");
+  else message.error("复制失败，请手动选择");
 }
 
 /** T24：点击图跳转独立图查看页面（/projects/:id/diagrams/:diagramId） */

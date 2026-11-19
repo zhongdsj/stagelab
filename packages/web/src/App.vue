@@ -14,12 +14,15 @@
     </main>
     <!-- 全站唯一的确认弹窗实例（供 confirmDialog() 调用，内容 Teleport 到 body） -->
     <ConfirmDialog />
+    <!-- 全站唯一的轻提示实例（供 message.success/error/info 调用，顶部居中） -->
+    <MessageToast />
   </div>
 </template>
 
 <script setup lang="ts">
 import { useRouter } from "vue-router";
 import ConfirmDialog from "./components/common/ConfirmDialog.vue";
+import MessageToast from "./components/common/MessageToast.vue";
 
 const router = useRouter();
 
@@ -28,6 +31,15 @@ function goHome() {
   router.push("/");
 }
 </script>
+
+<style>
+/* 浏览器默认 body 有 8px 外边距，会让整页始终多出一截滚动条；图页需要按视口精确等高 */
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+</style>
 
 <style scoped>
 .app-shell {
@@ -42,6 +54,7 @@ function goHome() {
   justify-content: space-between;
   padding: 0 24px;
   height: 56px;
+  box-sizing: border-box;
   background: #ffffff;
   border-bottom: 1px solid #e4e7ed;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);

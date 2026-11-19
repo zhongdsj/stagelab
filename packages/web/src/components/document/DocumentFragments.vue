@@ -100,6 +100,7 @@ import {
 import type { FullDocument } from "../../api/documents";
 import { confirmDialog } from "../common/ConfirmDialog.vue";
 import { copyText } from "../../utils/clipboard";
+import { message } from "../../utils/message";
 
 const props = defineProps<{
   projectId: string;
@@ -364,7 +365,9 @@ async function load() {
 
 /** 复制文档 ID 到剪贴板（供 AI 交互时直接引用，免去先读文档列表） */
 async function copyDocId() {
-  await copyText(props.docId);
+  const ok = await copyText(props.docId);
+  if (ok) message.success("文档 ID 已复制");
+  else message.error("复制失败，请手动选择");
 }
 
 function startEdit() {

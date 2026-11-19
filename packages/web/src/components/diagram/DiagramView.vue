@@ -10,7 +10,7 @@
         :title="`图 ID：${diagramId}（点击复制）`"
         @click="copyDiagramId"
       >
-        {{ copiedId ? "已复制" : `id: ${diagramId}` }}
+        id: {{ diagramId }}
       </button>
       <!-- T93：图可信度快照（漂移校验锚点，读取 metadata 最新快照） -->
       <div
@@ -245,6 +245,7 @@ import type { Diagram, NodeGeometry, CodeAnchorFile } from "@stagelab/shared";
 import { snapToNodeBorder, perpendicularEntryPath, type NodeBox } from "./useEdgeGeometry";
 import { confirmDialog } from "../common/ConfirmDialog.vue";
 import { copyText } from "../../utils/clipboard";
+import { message } from "../../utils/message";
 
 const props = defineProps<{
   projectId: string;
@@ -270,19 +271,11 @@ const riskMap = ref<ImpactRiskMap>({});
 
 /* ========== T8 图 ID 复制 ========== */
 
-/** 最近一次复制成功（按钮短暂显示「已复制」） */
-const copiedId = ref(false);
-let copiedTimer: ReturnType<typeof setTimeout> | undefined;
-
-/** 复制当前图的 diagramId 到剪贴板 */
+/** 复制当前图的 diagramId 到剪贴板（反馈统一走顶部居中轻提示） */
 async function copyDiagramId() {
   const ok = await copyText(props.diagramId);
-  if (!ok) return;
-  copiedId.value = true;
-  if (copiedTimer) clearTimeout(copiedTimer);
-  copiedTimer = setTimeout(() => {
-    copiedId.value = false;
-  }, 1500);
+  if (ok) message.success("图 ID 已复制");
+  else message.error("复制失败，请手动选择");
 }
 
 /* ========== T93 图可信度快照展示辅助 ========== */
@@ -890,6 +883,11 @@ function onWindowResize() {
 
 <style scoped>
 .diagram-view {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  box-sizing: border-box;
   background: #fff;
   border: 1px solid #e4e7ed;
   border-radius: 8px;
@@ -1011,11 +1009,11 @@ function onWindowResize() {
   border-color: #f56c6c;
   color: #f56c6c;
 }
-/* 画布：固定高度 + 溢出隐藏 + 可拖拽 */
+/* 画布：占满图卡剩余高度（图卡与左侧列表同高）+ 溢出隐藏 + 可拖拽 */
 .canvas-pane {
   position: relative;
-  height: calc(100vh - 200px);
-  min-height: 400px;
+  flex: 1 1 auto;
+  min-height: 0;
   overflow: hidden;
   background: #fafafa;
   border: 1px dashed #e4e7ed;

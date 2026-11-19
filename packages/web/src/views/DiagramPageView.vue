@@ -14,7 +14,7 @@
           <SearchBox :project-id="props.id" placeholder="全项目搜索" align="left" />
         </div>
         <!-- 按类型分块展示图列表（类图 / 架构图 / 流程图） -->
-        <template v-if="diagrams.length">
+        <div v-if="diagrams.length" class="diagram-list">
           <div v-for="group in groups" :key="group.key" class="diagram-block">
             <div class="block-head">
               <span class="block-title">{{ group.label }}</span>
@@ -39,12 +39,12 @@
                   :title="`图 ID：${d.diagramId}（点击复制）`"
                   @click.stop="copyId(d.diagramId)"
                 >
-                  {{ copiedId === d.diagramId ? "已复制" : d.diagramId }}
+                  {{ d.diagramId }}
                 </button>
               </span>
             </div>
           </div>
-        </template>
+        </div>
         <p v-else class="hint">暂无图</p>
       </template>
     </aside>
@@ -74,6 +74,7 @@ import SearchBox from "../components/common/SearchBox.vue";
 import { getProjectIndex, ApiError } from "../api/index";
 import type { ProjectIndexResult } from "../api/projects";
 import { copyText } from "../utils/clipboard";
+import { message } from "../utils/message";
 
 const props = defineProps<{ id: string; diagramId: string }>();
 
@@ -147,19 +148,11 @@ function openDiagram(diagramId: string) {
   router.push(`/projects/${props.id}/diagrams/${diagramId}`);
 }
 
-/** T8：最近一次复制成功的图 ID（按钮短暂显示「已复制」） */
-const copiedId = ref("");
-let copiedTimer: ReturnType<typeof setTimeout> | undefined;
-
-/** T8：复制图 ID 到剪贴板 */
+/** T8：复制图 ID 到剪贴板（反馈统一走顶部居中轻提示） */
 async function copyId(id: string) {
   const ok = await copyText(id);
-  if (!ok) return;
-  copiedId.value = id;
-  if (copiedTimer) clearTimeout(copiedTimer);
-  copiedTimer = setTimeout(() => {
-    copiedId.value = "";
-  }, 1500);
+  if (ok) message.success("图 ID 已复制");
+  else message.error("复制失败，请手动选择");
 }
 
 /** 返回项目详情页 */
@@ -176,6 +169,9 @@ onMounted(load);
   gap: 16px;
   align-items: stretch;
   width: 100%;
+  /* 视口 − 顶栏 56px − .app-main 上下 padding 48px；左右两栏共用这一高度 */
+  height: calc(100vh - 104px);
+  min-height: 480px;
   padding: 16px;
   box-sizing: border-box;
 }
@@ -187,7 +183,10 @@ onMounted(load);
   gap: 10px;
   width: 240px;
   min-width: 240px;
+  height: 100%;
+  min-height: 0;
   padding: 12px;
+  box-sizing: border-box;
   background: #fff;
   border: 1px solid #e4e7ed;
   border-radius: 8px;
@@ -242,8 +241,20 @@ onMounted(load);
 .back-btn:hover {
   color: #409eff;
 }
+/* 图列表独立滚动：侧栏高度固定，只有这一段随内容滚动 */
+.diagram-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-right: 4px;
+}
 /* 按类型分块的层级展示 */
 .diagram-block {
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -336,10 +347,15 @@ onMounted(load);
   opacity: 0.85;
   flex-shrink: 0;
 }
-/* 图内容占满剩余宽度 */
+/* 图内容占满剩余宽高；内部 DiagramView 自己滚动/缩放画布 */
 .diagram-content {
   flex: 1;
   min-width: 0;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 .hint {
   color: #909399;

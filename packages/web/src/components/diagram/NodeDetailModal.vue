@@ -12,8 +12,8 @@
       </div>
       <div class="nd-id-row">
         <code class="nd-id">{{ nodeId }}</code>
-        <button class="nd-copy" type="button" @click="copy(nodeId)">
-          {{ copiedKey === nodeId ? "已复制" : "复制 ID" }}
+        <button class="nd-copy" type="button" @click="copy(nodeId, '节点 ID 已复制')">
+          复制 ID
         </button>
       </div>
 
@@ -69,8 +69,8 @@
       <section v-if="codeFiles.length" class="nd-section">
         <h4>源码锚点</h4>
         <div v-for="(f, i) in codeFiles" :key="f.path + '-' + i" class="nd-file">
-          <button class="nd-code-path" type="button" :title="f.path + '（点击复制）'" @click="copy(f.path)">
-            {{ copiedKey === f.path ? "已复制" : f.path }}
+          <button class="nd-code-path" type="button" :title="f.path + '（点击复制）'" @click="copy(f.path, '源码路径已复制')">
+            {{ f.path }}
           </button>
           <span v-if="f.symbols?.length" class="nd-symbols">{{ f.symbols.join(", ") }}</span>
         </div>
@@ -183,6 +183,7 @@ import type {
 } from "@stagelab/shared";
 import { getNodeImpact, type ImpactRiskMap } from "../../api/index";
 import { copyText } from "../../utils/clipboard";
+import { message } from "../../utils/message";
 
 const props = defineProps<{
   projectId: string;
@@ -342,18 +343,12 @@ function goto(diagramId: string) {
 
 /* ========== 复制 ========== */
 
-const copiedKey = ref("");
-let copiedTimer: ReturnType<typeof setTimeout> | undefined;
-
-async function copy(text: string) {
+/** 复制文本并把结果反馈到顶部居中轻提示 */
+async function copy(text: string, successText: string) {
   if (!text) return;
   const ok = await copyText(text);
-  if (!ok) return;
-  copiedKey.value = text;
-  if (copiedTimer) clearTimeout(copiedTimer);
-  copiedTimer = setTimeout(() => {
-    copiedKey.value = "";
-  }, 1500);
+  if (ok) message.success(successText);
+  else message.error("复制失败，请手动选择");
 }
 
 /* ========== 关闭：ESC ========== */
@@ -372,7 +367,6 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   window.removeEventListener("keydown", onKeydown);
-  if (copiedTimer) clearTimeout(copiedTimer);
 });
 </script>
 
