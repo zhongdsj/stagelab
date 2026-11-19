@@ -24,8 +24,19 @@
                 :class="{ active: d.diagramId === props.diagramId }"
                 @click="openDiagram(d.diagramId)"
               >
-                <span class="tab-title">{{ d.title }}</span>
-                <span class="diagram-type">{{ typeLabel(d.type) }}</span>
+                <span class="tab-row">
+                  <span class="tab-title">{{ d.title }}</span>
+                  <span class="diagram-type">{{ typeLabel(d.type) }}</span>
+                </span>
+                <!-- T8：展示 diagramId（等宽），点击复制，便于与 AI 给的 id 对应 -->
+                <button
+                  class="tab-id"
+                  type="button"
+                  :title="`图 ID：${d.diagramId}（点击复制）`"
+                  @click.stop="copyId(d.diagramId)"
+                >
+                  {{ copiedId === d.diagramId ? "已复制" : d.diagramId }}
+                </button>
               </span>
             </div>
           </div>
@@ -57,6 +68,7 @@ import { useRouter } from "vue-router";
 import DiagramView from "../components/diagram/DiagramView.vue";
 import { getProjectIndex, ApiError } from "../api/index";
 import type { ProjectIndexResult } from "../api/projects";
+import { copyText } from "../utils/clipboard";
 
 const props = defineProps<{ id: string; diagramId: string }>();
 
@@ -128,6 +140,21 @@ async function load() {
 function openDiagram(diagramId: string) {
   if (diagramId === props.diagramId) return;
   router.push(`/projects/${props.id}/diagrams/${diagramId}`);
+}
+
+/** T8：最近一次复制成功的图 ID（按钮短暂显示「已复制」） */
+const copiedId = ref("");
+let copiedTimer: ReturnType<typeof setTimeout> | undefined;
+
+/** T8：复制图 ID 到剪贴板 */
+async function copyId(id: string) {
+  const ok = await copyText(id);
+  if (!ok) return;
+  copiedId.value = id;
+  if (copiedTimer) clearTimeout(copiedTimer);
+  copiedTimer = setTimeout(() => {
+    copiedId.value = "";
+  }, 1500);
 }
 
 /** 返回项目详情页 */
@@ -237,9 +264,9 @@ onMounted(load);
 }
 .diagram-tab {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 6px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 3px;
   padding: 6px 10px;
   font-size: 13px;
   border: 1px solid #dcdfe6;
@@ -258,9 +285,36 @@ onMounted(load);
   border-color: #409eff;
   color: #fff;
 }
+.tab-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
 .tab-title {
   overflow: hidden;
   text-overflow: ellipsis;
+}
+/* T8：图 ID 行（等宽、弱化，点击复制） */
+.tab-id {
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: monospace;
+  font-size: 11px;
+  color: #909399;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tab-id:hover {
+  color: #409eff;
+  text-decoration: underline;
+}
+.diagram-tab.active .tab-id {
+  color: rgba(255, 255, 255, 0.85);
 }
 .diagram-type {
   font-size: 11px;

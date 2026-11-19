@@ -3,6 +3,15 @@
     <!-- 折叠状态提示 + 视图控制 -->
     <div class="diagram-toolbar">
       <span class="diagram-title">{{ title }}</span>
+      <!-- T8：图 ID（等宽），点击复制，便于与 AI 给的 diagramId 对应 -->
+      <button
+        class="diagram-id-chip"
+        type="button"
+        :title="`图 ID：${diagramId}（点击复制）`"
+        @click="copyDiagramId"
+      >
+        {{ copiedId ? "已复制" : `id: ${diagramId}` }}
+      </button>
       <!-- T93：图可信度快照（漂移校验锚点，读取 metadata 最新快照） -->
       <div
         v-if="diagram?.metadata?.verifiedCommit"
@@ -259,6 +268,7 @@ import {
 import type { Diagram, NodeGeometry, CodeAnchorFile } from "@stagelab/shared";
 import { snapToNodeBorder, perpendicularEntryPath, type NodeBox } from "./useEdgeGeometry";
 import { confirmDialog } from "../common/ConfirmDialog.vue";
+import { copyText } from "../../utils/clipboard";
 
 const props = defineProps<{
   projectId: string;
@@ -281,6 +291,23 @@ const error = ref("");
 const diagram = ref<Diagram | null>(null);
 /** 节点风险分映射（feature/diagram-risk-color）：nodeId → structuralRisk，用于节点描边着色 */
 const riskMap = ref<ImpactRiskMap>({});
+
+/* ========== T8 图 ID 复制 ========== */
+
+/** 最近一次复制成功（按钮短暂显示「已复制」） */
+const copiedId = ref(false);
+let copiedTimer: ReturnType<typeof setTimeout> | undefined;
+
+/** 复制当前图的 diagramId 到剪贴板 */
+async function copyDiagramId() {
+  const ok = await copyText(props.diagramId);
+  if (!ok) return;
+  copiedId.value = true;
+  if (copiedTimer) clearTimeout(copiedTimer);
+  copiedTimer = setTimeout(() => {
+    copiedId.value = false;
+  }, 1500);
+}
 
 /* ========== T93 图可信度快照展示辅助 ========== */
 
@@ -929,12 +956,35 @@ function onWindowResize() {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 8px;
   margin-bottom: 12px;
 }
 .diagram-title {
   font-size: 15px;
   font-weight: 600;
   color: #303133;
+  white-space: nowrap;
+}
+/* T8：工具栏图 ID chip（等宽、弱化，点击复制） */
+.diagram-id-chip {
+  flex-shrink: 1;
+  min-width: 0;
+  max-width: 300px;
+  padding: 2px 8px;
+  border: 1px solid #e4e7ed;
+  border-radius: 10px;
+  background: #f5f7fa;
+  font-family: monospace;
+  font-size: 11px;
+  color: #909399;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.diagram-id-chip:hover {
+  border-color: #409eff;
+  color: #409eff;
 }
 /* T93：图可信度快照徽标 */
 .verify-badge {

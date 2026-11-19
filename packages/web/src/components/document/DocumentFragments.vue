@@ -86,6 +86,7 @@ import {
 } from "../../api/index";
 import type { FullDocument } from "../../api/documents";
 import { confirmDialog } from "../common/ConfirmDialog.vue";
+import { copyText } from "../../utils/clipboard";
 
 const props = defineProps<{
   projectId: string;
@@ -197,19 +198,7 @@ async function load() {
 
 /** 复制文档 ID 到剪贴板（供 AI 交互时直接引用，免去先读文档列表） */
 async function copyDocId() {
-  const id = props.docId;
-  try {
-    await navigator.clipboard.writeText(id);
-  } catch {
-    const ta = document.createElement("textarea");
-    ta.value = id;
-    ta.style.position = "fixed";
-    ta.style.opacity = "0";
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand("copy");
-    document.body.removeChild(ta);
-  }
+  await copyText(props.docId);
 }
 
 function startEdit() {
