@@ -1,0 +1,43 @@
+packages/server/src/mcp/tools/diagram.ts
+  s_f8f41fb6861629::t_90038973c96415 40-43
+  s_f8f41fb6861629::t_227fa3c9b5df3c 61-76
+  s_f8f41fb6861629::t_735f24f4b7a332 237
+packages/server/src/services/diagram.service.ts
+  s_f8f41fb6861629::t_a77dc5fe2628b1 370
+  s_f8f41fb6861629::t_695e238f771a5c 333
+  s_f8f41fb6861629::t_dd294e8b988f59 581
+  s_f8f41fb6861629::t_d947f65a3b6662 467
+  s_f8f41fb6861629::t_876c306ae113bb 36-50
+packages/shared/src/schemas.ts
+  s_f8f41fb6861629::t_8b86b0e6ca88c7 331-389,391-393,395-425,428-431,435-437
+  s_f8f41fb6861629::t_27ca0b2ccbe9a7 11
+packages/server/src/storage/repositories/base.ts
+  s_f8f41fb6861629::t_a2021a35b204d3 41-42
+  s_f8f41fb6861629::t_3ad5726e978cf8 53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "5.30.9",
+  "base_commit_sha": "cb1ee371758088db37936bacee70f68df069f7dd",
+  "prompts": {},
+  "humans": {
+    "h_be1684eebfb5c9": {
+      "author": "zhongdsj <1093014451@qq.com>"
+    }
+  },
+  "sessions": {
+    "s_f8f41fb6861629": {
+      "agent_id": {
+        "tool": "deepseek-harness",
+        "id": "session-59f7783c-e6e0-4539-82f7-0f420e918a5d",
+        "model": "deepseek-v4.1-flash"
+      },
+      "human_author": "zhongdsj <1093014451@qq.com>",
+      "custom_attributes": {
+        "stats_models": {"deepseek-v4.1-flash":{"additions":149,"deletions":63}},
+        "stats_total_additions": 149,
+        "stats_total_deletions": 63
+      }
+    }
+  }
+}
