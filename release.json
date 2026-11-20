@@ -1,0 +1,16 @@
+{
+  "version": "0.6.0",
+  "publishedAt": "2026-11-20T00:00:00.000Z",
+  "title": "MCP 图元描述、全项目搜索、节点详情与版本更新提醒",
+  "level": "minor",
+  "highlights": [
+    "图 MCP 工具补齐节点、连线、分组字段描述与三类图示例，减少 AI 试错",
+    "新增全项目搜索，覆盖文档、图、需求与任务，并支持分片锚点定位",
+    "节点详情弹层：单击节点查看属性、影响面与源码锚点",
+    "图库、侧栏与工具栏展示 diagramId，复制反馈统一为顶部轻提示",
+    "启动或 MCP 连接时检查 npm 最新版本，Web 端以弹层展示更新说明",
+    "图页左右等高，左侧图列表独立滚动，不再撑高整页"
+  ],
+  "notes": "升级方式：\n\n  npm i -g stagelab@latest\n  stagelab start\n\n已在运行的服务需要重启后生效。\n\n本版本同时包含图元 MCP 描述层、全项目搜索、节点详情弹层、diagramId 展示与版本更新提醒等改动。",
+  "url": "https://github.com/zhongdsj/stagelab/releases/tag/v0.6.0"
+}

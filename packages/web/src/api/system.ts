@@ -33,3 +33,33 @@ export function deleteRegistryTmp(
 export function clearRegistryTmp(): Promise<{ deleted: number; total: number }> {
   return http.del("/api/system/registry-tmp/all");
 }
+
+/** 更新状态：current=已是最新，update=有新版，unknown=检查失败，disabled=已关闭 */
+export type UpdateStatus = "current" | "update" | "unknown" | "disabled";
+
+/** GitHub Release 资产 release.json 的结构化内容 */
+export interface ReleaseInfo {
+  version: string;
+  publishedAt?: string;
+  title?: string;
+  level?: "patch" | "minor" | "major" | "security";
+  highlights?: string[];
+  notes?: string;
+  url?: string;
+}
+
+/** GET /api/system/version 返回结构 */
+export interface VersionInfo {
+  current: string;
+  latest: string | null;
+  updateAvailable: boolean;
+  status: UpdateStatus;
+  checkedAt: number;
+  release: ReleaseInfo | null;
+  error?: string;
+}
+
+/** 获取当前版本与最新版本（force=true 跳过服务端缓存） */
+export function getVersionInfo(force = false): Promise<VersionInfo> {
+  return http.get<VersionInfo>(`/api/system/version${force ? "?force=1" : ""}`);
+}

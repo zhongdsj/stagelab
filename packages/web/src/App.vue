@@ -14,17 +14,27 @@
     </main>
     <!-- 全站唯一的确认弹窗实例（供 confirmDialog() 调用，内容 Teleport 到 body） -->
     <ConfirmDialog />
+    <!-- 全站唯一的版本更新弹层（由任意 API 调用触发检查） -->
+    <UpdateModal />
     <!-- 全站唯一的轻提示实例（供 message.success/error/info 调用，顶部居中） -->
     <MessageToast />
   </div>
 </template>
 
 <script setup lang="ts">
+import { onMounted } from "vue";
 import { useRouter } from "vue-router";
 import ConfirmDialog from "./components/common/ConfirmDialog.vue";
 import MessageToast from "./components/common/MessageToast.vue";
+import UpdateModal from "./components/common/UpdateModal.vue";
+import { ensureVersionChecked } from "./utils/update";
 
 const router = useRouter();
+
+// 首屏即使没有业务请求，也主动检查一次版本（有 24h 缓存，不会重复打外网）
+onMounted(() => {
+  void ensureVersionChecked();
+});
 
 /** 点击品牌回到项目总览 */
 function goHome() {

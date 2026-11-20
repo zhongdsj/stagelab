@@ -17,6 +17,8 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { startHttpServer } from "./http/server.js";
 import { startMcpServer } from "./mcp/server.js";
+import { getPackageVersion } from "./version.js";
+import { formatUpdateStatus, getUpdateInfo } from "./update-check.js";
 
 /** HTTP 默认端口 */
 export const DEFAULT_PORT = 6327;
@@ -41,6 +43,7 @@ function printUsage(): void {
   stagelab start [--port <n>] [--data <dir>] [--repo <path>]  启动 HTTP 服务并托管 Web 界面
   stagelab http  [--port <n>] [--data <dir>] [--repo <path>]  仅启动 HTTP API 服务
   stagelab mcp   [--data <dir>] [--repo <path>]               启动 MCP stdio 服务（供 AI 客户端接入）
+  stagelab --version                                          打印当前版本
 
 选项:
   --port <n>    HTTP 端口（默认 ${DEFAULT_PORT}，也可用环境变量 PORT）
@@ -50,6 +53,7 @@ function printUsage(): void {
 示例:
   stagelab start
   stagelab mcp --repo /path/to/repo
+  stagelab --version
 `);
 }
 
@@ -57,6 +61,11 @@ function printUsage(): void {
 export function main(): void {
   const args = process.argv.slice(2);
   const cmd = args[0];
+
+  if (cmd === "--version" || cmd === "-v" || cmd === "version") {
+    process.stdout.write(`stagelab ${getPackageVersion()}\n`);
+    return;
+  }
 
   if (!cmd) {
     printUsage();
@@ -74,10 +83,17 @@ export function main(): void {
   if (cmd === "start" || cmd === "http") {
     const port = toNumber(option(args, "--port"), DEFAULT_PORT);
     // start 托管 Web 界面（server+web）；http 仅暴露 API
-    startHttpServer({ port, serveWeb: cmd === "start" }).catch((err) => {
-      console.error(`stagelab ${cmd} 启动失败:`, err);
-      process.exit(1);
-    });
+    void (async () => {
+      try {
+        await startHttpServer({ port, serveWeb: cmd === "start" });
+        // 服务先监听成功，再异步检查更新；网络失败不影响启动
+        const info = await getUpdateInfo();
+        console.log(`stagelab ${formatUpdateStatus(info)}`);
+      } catch (err) {
+        console.error(`stagelab ${cmd} 启动失败:`, err);
+        process.exit(1);
+      }
+    })();
     return;
   }
 

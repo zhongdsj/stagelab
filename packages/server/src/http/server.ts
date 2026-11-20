@@ -24,6 +24,7 @@ import { registerSearchRoutes } from "./routes/search.js";
 import { HttpError, errorStatus, messageOf } from "./routes/_util.js";
 import { initFromArgs } from "../services/workspace.service.js";
 import { log } from "../logger.js";
+import { getUpdateInfo } from "../update-check.js";
 
 /** 请求开始时间记录（用于计算耗时） */
 const requestTimers = new WeakMap<FastifyRequest, number>();
@@ -35,6 +36,16 @@ export function createHttpServer(): FastifyInstance {
   // 请求日志：记录每个请求的方法/路径/状态码/耗时
   app.addHook("onRequest", async (request) => {
     requestTimers.set(request, Date.now());
+  });
+
+  // 任意 API 调用都触发一次版本检查（内部 24h 缓存，失败 10min 后重试）
+  app.addHook("onRequest", async (request) => {
+    if (request.method === "OPTIONS") return;
+    if (!request.url.startsWith("/api/")) return;
+    if (request.url.startsWith("/api/system/version")) return;
+    void getUpdateInfo().catch(() => {
+      // 更新检查失败不影响业务请求
+    });
   });
   app.addHook("onResponse", async (request, reply) => {
     const start = requestTimers.get(request) ?? Date.now();
