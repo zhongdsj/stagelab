@@ -1,0 +1,53 @@
+packages/server/src/update-check.ts
+  s_f8f41fb6861629::t_8992cbc2f8badd 320-321
+CHANGELOG.md
+  s_f8f41fb6861629::t_c0e773d5704648 11
+packages/web/src/components/common/AboutModal.vue
+  s_f8f41fb6861629::t_f69bb15f92acd4 1-252,254-636
+  s_f8f41fb6861629::t_b4b79aaf213924 253
+README.md
+  s_f8f41fb6861629::t_09477f03ab5622 53
+packages/web/src/utils/update.ts
+  s_f8f41fb6861629::t_41846206aaeed3 121-127
+  s_f8f41fb6861629::t_c85a788539853a 10
+release.json
+  s_f8f41fb6861629::t_35055c5056a8df 12
+  s_f8f41fb6861629::t_631255e8445014 15
+packages/web/src/App.vue
+  s_f8f41fb6861629::t_7dc7cba95233d0 20-21
+  s_f8f41fb6861629::t_1335a131923e70 30,34
+  s_f8f41fb6861629::t_335125c78b68ee 127-138
+  s_f8f41fb6861629::t_947605e624d3f6 110
+  s_f8f41fb6861629::t_6071cdc259927d 116-122
+  s_f8f41fb6861629::t_9a66131e09726b 10
+  s_f8f41fb6861629::t_668493880ed484 91,97
+  s_f8f41fb6861629::t_b1bb781fb5c740 102
+packages/web/src/utils/about.ts
+  s_f8f41fb6861629::t_429f2050337033 1-42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "5.30.9",
+  "base_commit_sha": "deaa5a3ed9b05b34a84707847096090b6a4d93c2",
+  "prompts": {},
+  "humans": {
+    "h_be1684eebfb5c9": {
+      "author": "zhongdsj <1093014451@qq.com>"
+    }
+  },
+  "sessions": {
+    "s_f8f41fb6861629": {
+      "agent_id": {
+        "tool": "deepseek-harness",
+        "id": "session-59f7783c-e6e0-4539-82f7-0f420e918a5d",
+        "model": "deepseek-v4.1-flash"
+      },
+      "human_author": "zhongdsj <1093014451@qq.com>",
+      "custom_attributes": {
+        "stats_models": {"deepseek-v4.1-flash":{"additions":230298,"deletions":15}},
+        "stats_total_additions": 230298,
+        "stats_total_deletions": 15
+      }
+    }
+  }
+}
