@@ -1,0 +1,68 @@
+packages/server/src/version.ts
+  s_f8f41fb6861629::t_416c6cfdb3f33d 1-61
+docs/releasing.md
+  s_f8f41fb6861629::t_0fda9d44cc8fec 1-77
+packages/server/src/update-check.ts
+  s_f8f41fb6861629::t_b2900dee4b02d6 304-307
+  s_f8f41fb6861629::t_11688fb894a095 1-303,308-386
+README.md
+  s_f8f41fb6861629::t_2d431edfcf8faa 51-63
+packages/web/src/api/client.ts
+  s_f8f41fb6861629::t_07d62362081cad 7,9
+  s_f8f41fb6861629::t_142489744adb99 37-41
+packages/server/src/http/routes/system.ts
+  s_f8f41fb6861629::t_516941f3bd0d9f 17
+  s_f8f41fb6861629::t_3626a4ea9a15c8 66-72
+packages/web/src/utils/update.ts
+  s_f8f41fb6861629::t_81f1b1a19f7612 1-232
+packages/web/src/api/system.ts
+  s_f8f41fb6861629::t_d794943a90e74d 36-65
+packages/server/src/cli.ts
+  s_f8f41fb6861629::t_5a84746bba0794 20-21
+  s_f8f41fb6861629::t_1e947c846a10b8 65-69
+  s_f8f41fb6861629::t_63a7d8f1589012 46,56
+  s_f8f41fb6861629::t_2822f22c63b1c6 86-96
+CHANGELOG.md
+  s_f8f41fb6861629::t_ddc8cbcec29261 5-20
+packages/server/src/http/server.ts
+  s_f8f41fb6861629::t_28e03a1236d257 40-49
+  s_f8f41fb6861629::t_2b934057cb67e5 27
+packages/web/src/components/common/UpdateModal.vue
+  s_f8f41fb6861629::t_92f924fdc0f823 1-519
+packages/server/src/mcp/server.ts
+  s_f8f41fb6861629::t_e4ac5c1f8ae893 18
+  s_f8f41fb6861629::t_afeed3321dff3d 32-38
+  s_f8f41fb6861629::t_4e9acd658c1480 13-14
+release.json
+  s_f8f41fb6861629::t_37ce80c5f1b98a 1-16
+packages/web/src/App.vue
+  s_f8f41fb6861629::t_db08f3d9dc28da 25,29-30,34-37
+  s_f8f41fb6861629::t_8225c00833d395 17-18
+  s_f8f41fb6861629::t_6ed30118f363d5 38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "5.30.9",
+  "base_commit_sha": "acc93139ad25caff13e543ad5aabe47fb21f6f21",
+  "prompts": {},
+  "humans": {
+    "h_be1684eebfb5c9": {
+      "author": "zhongdsj <1093014451@qq.com>"
+    }
+  },
+  "sessions": {
+    "s_f8f41fb6861629": {
+      "agent_id": {
+        "tool": "deepseek-harness",
+        "id": "session-59f7783c-e6e0-4539-82f7-0f420e918a5d",
+        "model": "deepseek-v4.1-flash"
+      },
+      "human_author": "zhongdsj <1093014451@qq.com>",
+      "custom_attributes": {
+        "stats_models": {"deepseek-v4.1-flash":{"additions":175188,"deletions":6}},
+        "stats_total_additions": 175188,
+        "stats_total_deletions": 6
+      }
+    }
+  }
+}
