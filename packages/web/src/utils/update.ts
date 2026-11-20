@@ -7,6 +7,7 @@
  */
 import { reactive } from "vue";
 import type { ReleaseInfo, VersionInfo } from "../api/system";
+import { aboutState } from "./about";
 import { copyText } from "./clipboard";
 import { message } from "./message";
 
@@ -117,6 +118,13 @@ function persistInfo(info: VersionInfo): void {
 /** 根据更新内容与本地偏好决定是否弹出 */
 function applyInfo(info: VersionInfo): void {
   updateState.info = info;
+
+  // 「关于」弹层打开时不叠加更新提示；关闭后会再触发一次版本判断
+  if (aboutState.visible) {
+    updateState.visible = false;
+    return;
+  }
+
   if (info.status !== "update" || !info.latest) {
     updateState.visible = false;
     return;

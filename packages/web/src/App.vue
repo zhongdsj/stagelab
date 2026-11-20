@@ -7,6 +7,7 @@
       </div>
       <nav class="app-nav">
         <router-link to="/" class="nav-link">项目总览</router-link>
+        <button class="nav-link nav-button" type="button" @click="openAbout">关于</button>
       </nav>
     </header>
     <main class="app-main">
@@ -16,6 +17,8 @@
     <ConfirmDialog />
     <!-- 全站唯一的版本更新弹层（由任意 API 调用触发检查） -->
     <UpdateModal />
+    <!-- 全站唯一的「关于」弹层（顶部导航入口） -->
+    <AboutModal />
     <!-- 全站唯一的轻提示实例（供 message.success/error/info 调用，顶部居中） -->
     <MessageToast />
   </div>
@@ -24,9 +27,11 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
 import { useRouter } from "vue-router";
+import AboutModal from "./components/common/AboutModal.vue";
 import ConfirmDialog from "./components/common/ConfirmDialog.vue";
 import MessageToast from "./components/common/MessageToast.vue";
 import UpdateModal from "./components/common/UpdateModal.vue";
+import { openAbout } from "./utils/about";
 import { ensureVersionChecked } from "./utils/update";
 
 const router = useRouter();
@@ -83,15 +88,18 @@ body {
   font-weight: 600;
   padding: 4px 10px;
   border-radius: 4px;
+  white-space: nowrap;
 }
 .brand-title {
   font-size: 16px;
   font-weight: 600;
   color: #303133;
+  white-space: nowrap;
 }
 .app-nav {
   display: flex;
   align-items: center;
+  gap: 2px;
 }
 .nav-link {
   color: #606266;
@@ -99,13 +107,33 @@ body {
   font-size: 14px;
   padding: 6px 12px;
   border-radius: 4px;
+  white-space: nowrap;
 }
 .nav-link:hover {
   color: #409eff;
   background: #ecf5ff;
 }
+.nav-button {
+  font-family: inherit;
+  line-height: normal;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
 .app-main {
   flex: 1;
   padding: 24px;
+}
+/* 窄屏优先保证导航完整：隐藏较长的品牌副标题，避免文字换行把顶栏撑高 */
+@media (max-width: 400px) {
+  .app-header {
+    padding: 0 12px;
+  }
+  .brand-title {
+    display: none;
+  }
+  .nav-link {
+    padding: 6px 10px;
+  }
 }
 </style>

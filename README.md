@@ -50,7 +50,7 @@ stagelab start --repo    D:\some\repo  # 预加载指定仓库
 
 ### 版本更新提示
 
-`stagelab start` / `stagelab http` 会在服务监听后检查 npm 最新版本，并在控制台输出「已是最新」或「发现新版本」；`stagelab mcp` 连接后把同样的判断写入 stderr，不污染 MCP 协议流。Web 端在任意 API 请求后检查版本，发现新版本会弹出更新说明，可复制升级命令，或选择 1/3/7 天后再提醒、跳过当前版本。
+`stagelab start` / `stagelab http` 会在服务监听后检查 npm 最新版本，并在控制台输出「已是最新」或「发现新版本」；`stagelab mcp` 连接后把同样的判断写入 stderr，不污染 MCP 协议流。Web 端在任意 API 请求后检查版本，发现新版本会弹出更新说明，可复制升级命令，或选择 1/3/7 天后再提醒、跳过当前版本。顶栏「关于」可随时查看项目简介、当前版本更新摘要与 GitHub 链接。
 
 升级命令：
 

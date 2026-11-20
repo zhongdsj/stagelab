@@ -8,6 +8,7 @@
 
 - **版本更新检测**：`stagelab start` / `http` 启动后输出当前版本与最新版本判断；`stagelab mcp` 连接后写入 stderr；新增 `GET /api/system/version` 与 `stagelab --version`。
 - **Web 更新弹层**：发现新版本时展示更新摘要、完整说明与升级命令，支持 1/3/7 天后再提醒、跳过当前版本、关闭本次会话提示。更新说明来自 GitHub Release 资产 `release.json`。
+- **「关于」弹层**：顶栏新增入口，集中展示项目简介、核心能力、当前版本更新摘要与 GitHub / Release / 更新日志链接。
 - **图元 MCP 描述层**：节点、连线、分组字段补充语义描述，三类图提供 JSON 示例，减少 AI 按 schema 试错。
 - **全项目搜索**：跨文档、图、需求、任务搜索，支持文档分片锚点定位；新增 `GET /api/projects/:id/search`。
 - **节点详情弹层**：单击节点查看属性、影响面与源码锚点；新增单节点影响面接口。

@@ -316,8 +316,9 @@ async function performCheck(current: string): Promise<UpdateInfo> {
   }
 
   const updateAvailable = isNewerVersion(latest, current);
-  if (!updateAvailable) release = null;
 
+  // 即使当前已是最新，也保留 release：Web 端「关于」弹层需要展示当前版本说明。
+  // 更新弹层是否出现只由 status === "update" 决定，不受 release 是否存在影响。
   return {
     current,
     latest,
