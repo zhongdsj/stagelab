@@ -1,0 +1,31 @@
+release.json
+  s_f8f41fb6861629::t_0c315e70a0d929 3-4
+CHANGELOG.md
+  s_f8f41fb6861629::t_3b924674144f7c 5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "5.30.10",
+  "base_commit_sha": "0381d8b7db74f31d2c1de0a64fce3e0c41cef044",
+  "prompts": {},
+  "humans": {
+    "h_be1684eebfb5c9": {
+      "author": "zhongdsj <1093014451@qq.com>"
+    }
+  },
+  "sessions": {
+    "s_f8f41fb6861629": {
+      "agent_id": {
+        "tool": "deepseek-harness",
+        "id": "session-59f7783c-e6e0-4539-82f7-0f420e918a5d",
+        "model": "deepseek-v4.1-flash"
+      },
+      "human_author": "zhongdsj <1093014451@qq.com>",
+      "custom_attributes": {
+        "stats_models": {"deepseek-v4.1-flash":{"additions":3,"deletions":3}},
+        "stats_total_additions": 3,
+        "stats_total_deletions": 3
+      }
+    }
+  }
+}
