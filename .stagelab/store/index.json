@@ -1,6 +1,6 @@
 {
   "projectId": "34a29cd8-790c-43c4-8ce9-e2c25573cfa0",
-  "version": 1790570404,
+  "version": 1795084598,
   "documentIndex": [
     {
       "docId": "dev-doc",
@@ -54,7 +54,7 @@
       "docId": "dev-doc-diagram-mgmt-refresh",
       "title": "图管理能力补齐与前端刷新穿透 开发文档",
       "docType": "开发文档",
-      "status": "focused",
+      "status": "archived",
       "summary": "阶段1开发文档（4 分片：背景与目标 / 现状证据 / 方案设计 / 决策与验收）。问题：① 图 metadata.title/description 四层均无修改入口，改错只能删图重建；② 图删除在 HTTP 与 Web 缺失（仅 MCP 有 delete_diagram）；③ 刷新已实测确认生效且当前内容同步更新（原假设推翻），真实缺口为父级顶部统计不同步 + 文档库无刷新视觉反馈。方案 G1~G4：新增 updateDiagramMeta + update_diagram_meta + PATCH meta 路由 + renameDiagram；补 DELETE 路由与图详情页删除入口；刷新补父级统计同步与 loading 反馈；新增统一自定义确认弹窗替换 7 处 window.confirm。已定：D1 不自增 version、D3 入口放图详情页、D4 自定义弹窗跨模块复用、D5 仅补统计与反馈。",
       "fragmentIds": [
         "dev-doc-diagram-mgmt-refresh-f0",
@@ -89,6 +89,21 @@
       ]
     },
     {
+      "docId": "dev-doc-mcp-desc-and-search",
+      "title": "图元 MCP 描述层、全项目搜索与节点详情弹层 开发文档",
+      "docType": "开发文档",
+      "status": "focused",
+      "summary": "四个议题：A 图 MCP 字段零描述导致 AI 试错、B 全项目搜索只有 MCP 没有 HTTP/前端且搜不到文档 meta、C 图列表缺 diagramId、D 节点详情展示不足。决策：描述层为主（.describe + 分类型示例 + 按 type 挑分支校验）；搜索只搜本项目、MCP 出参不变、HTTP 另建 richer 接口；坐标语义只改描述、不放开 MCP 入口 omit/strict（可写行为不变）；单击节点开带遮罩弹层取代 bubble；新增单节点 impact 接口。任务带 T1-T10 编号，含验收口径。",
+      "fragmentIds": [
+        "dev-doc-mcp-desc-and-search-f0",
+        "dev-doc-mcp-desc-and-search-f1",
+        "dev-doc-mcp-desc-and-search-f2",
+        "dev-doc-mcp-desc-and-search-f3",
+        "dev-doc-mcp-desc-and-search-f4",
+        "dev-doc-mcp-desc-and-search-f5"
+      ]
+    },
+    {
       "docId": "dev-doc-node-schema-align",
       "title": "图元 Schema 对齐、MCP Meta 修复与前端体验优化（变更设计）",
       "docType": "开发文档",
@@ -107,7 +122,7 @@
       "docId": "dev-doc-registry-tmp-and-repo-switch",
       "title": "registry 临时文件治理、项目记录丢失修复与按 id 切换仓库 开发文档",
       "docType": "开发文档",
-      "status": "focused",
+      "status": "archived",
       "summary": "阶段1开发文档。三个议题：A registry.json.tmp-* 堆积（saveRegistry 唯一命名 tmp + 无兜底清理 + 每进程启动无条件重写 + Windows rename 被句柄占用会 EPERM/EBUSY）；B 项目记录偶发丢失（replaceRegistryRepos 用内存快照整体覆盖 + 暂时性失败被当永久失效 + 多进程读改写竞态）；C 无法按 projectId 切换（list_projects 不含 repoRoot，set_working_repo 只接受 repoRoot）。决策：仅手动清理不做自动清理；清理 UI 放项目总览页新建项目左侧；一并修复项目缺失根因；切换能力 A+B 叠加。",
       "fragmentIds": [
         "dev-doc-registry-tmp-and-repo-switch-f0",
@@ -224,6 +239,13 @@
       "status": "done",
       "branchName": "feature/frontend-ux",
       "taskCount": 2
+    },
+    {
+      "requirementId": "10301efd-8e62-46d7-a890-728edd6bccd9",
+      "title": "图元 MCP 描述层缺失导致 AI 反复试错 node schema",
+      "status": "test",
+      "branchName": "dev-0.6",
+      "taskCount": 3
     },
     {
       "requirementId": "196b2e24-dc60-4f98-80c4-fddaf158ace5",
@@ -361,7 +383,7 @@
     {
       "requirementId": "75b87d9f-b568-4031-a331-47e0645ca87d",
       "title": "修复 CLI 入口守卫在符号链接环境下失效导致全命令静默退出",
-      "status": "test",
+      "status": "done",
       "taskCount": 1
     },
     {
@@ -386,11 +408,25 @@
       "taskCount": 3
     },
     {
+      "requirementId": "b334a9a7-cd4a-4e63-b929-1f38a9a638dd",
+      "title": "图列表只显示中文名，AI 给出的 diagramId 无法对应",
+      "status": "test",
+      "branchName": "dev-0.6",
+      "taskCount": 1
+    },
+    {
       "requirementId": "b378cfec-8607-4705-95b8-b5ea0ae29db0",
       "title": "手动调整：节点/连线位置可拖动",
       "status": "done",
       "branchName": "feature/manual-edit",
       "taskCount": 7
+    },
+    {
+      "requirementId": "b51b3ed1-6f21-40ab-baf6-c363eb275a29",
+      "title": "节点承载大量数据但前端只露 label，明细无 HTTP 通道",
+      "status": "test",
+      "branchName": "dev-0.6",
+      "taskCount": 2
     },
     {
       "requirementId": "bbe72970-1124-4675-ab51-1500a8d4aeb5",
@@ -412,6 +448,13 @@
       "status": "done",
       "branchName": "feature/diagram-drift-verify",
       "taskCount": 6
+    },
+    {
+      "requirementId": "caf3192c-9572-4771-9952-f2a9236f82d9",
+      "title": "全项目搜索只有 MCP 通道，HTTP 与前端无入口且搜不到文档 meta",
+      "status": "test",
+      "branchName": "dev-0.6",
+      "taskCount": 4
     },
     {
       "requirementId": "cb3ef2aa-f011-41bb-97db-86c0bf53126f",
@@ -476,10 +519,22 @@
       "requirementId": "b378cfec-8607-4705-95b8-b5ea0ae29db0"
     },
     {
+      "taskId": "033e6ec5-d312-4604-bc4b-ae58f3fdbb2b",
+      "title": "T1 补齐图元 schema 字段描述并对齐 TS 接口",
+      "status": "done",
+      "requirementId": "10301efd-8e62-46d7-a890-728edd6bccd9"
+    },
+    {
       "taskId": "03ea269c-eaed-43ee-9417-54b3cd5ac339",
       "title": "T16 文档全量 md 渲染与编辑",
       "status": "done",
       "requirementId": "6c3990f0-4296-4f32-aad9-c23f3d53c2e8"
+    },
+    {
+      "taskId": "042985fa-56f9-4c48-9eb2-bace1d9e71cd",
+      "title": "T4 新增 searchProjectContentRich 富搜索服务",
+      "status": "done",
+      "requirementId": "caf3192c-9572-4771-9952-f2a9236f82d9"
     },
     {
       "taskId": "04300169-99a0-4ee9-a43e-de6a9c11d11a",
@@ -498,6 +553,12 @@
       "title": "修复 CLI 入口守卫：argv[1] realpath 归一化后比较",
       "status": "done",
       "requirementId": "75b87d9f-b568-4031-a331-47e0645ca87d"
+    },
+    {
+      "taskId": "0a23b0d0-b83c-4544-84f4-a285329ff2eb",
+      "title": "T10 实现 NodeDetailModal 并接入单击",
+      "status": "done",
+      "requirementId": "b51b3ed1-6f21-40ab-baf6-c363eb275a29"
     },
     {
       "taskId": "0a96f292-b8cb-446c-a585-b6d727007fe1",
@@ -642,6 +703,12 @@
       "title": "list_projects 返回值增加 repoRoot 字段",
       "status": "done",
       "requirementId": "66b41e1b-1e42-4860-a9c6-e41eb4d13631"
+    },
+    {
+      "taskId": "29d2ebf8-8163-4b5b-a574-2c457817fb33",
+      "title": "T6 实现 SearchBox 组件并挂载项目页与图页",
+      "status": "done",
+      "requirementId": "caf3192c-9572-4771-9952-f2a9236f82d9"
     },
     {
       "taskId": "31c7d735-e8c7-4195-bbe5-5672a1c7a924",
@@ -938,6 +1005,12 @@
       "requirementId": "6c3990f0-4296-4f32-aad9-c23f3d53c2e8"
     },
     {
+      "taskId": "853de372-93bc-45d1-8727-e06808063ed2",
+      "title": "T9 新增单节点影响面接口",
+      "status": "done",
+      "requirementId": "b51b3ed1-6f21-40ab-baf6-c363eb275a29"
+    },
+    {
       "taskId": "8a0494a5-29b1-4a5a-916e-67e5f80c009b",
       "title": "图详情页新增重命名与删除入口",
       "status": "done",
@@ -972,6 +1045,12 @@
       "title": "新增图 meta 修改 HTTP 路由 PATCH",
       "status": "done",
       "requirementId": "6cbc1c44-ec4d-4e8d-95dd-c9fe8a948e56"
+    },
+    {
+      "taskId": "95935df1-44e2-4f4e-a775-d63db1a29c28",
+      "title": "T8 图库/侧栏/工具栏展示 diagramId 并可复制",
+      "status": "done",
+      "requirementId": "b334a9a7-cd4a-4e63-b929-1f38a9a638dd"
     },
     {
       "taskId": "96c021b1-1df6-4864-afb2-818a1323f20e",
@@ -1088,6 +1167,12 @@
       "requirementId": "9a7afeba-d360-4ffc-9d82-b67b03727aa7"
     },
     {
+      "taskId": "b2dc0227-e14b-42e2-9c70-80566bb042ef",
+      "title": "T5 新增 GET /search 路由并注册",
+      "status": "done",
+      "requirementId": "caf3192c-9572-4771-9952-f2a9236f82d9"
+    },
+    {
       "taskId": "b33402b1-f02d-46b8-9131-1030c1e025d6",
       "title": "T33 服务层：需求自动流转",
       "status": "done",
@@ -1158,6 +1243,12 @@
       "title": "T66 共享层：Edge 扩展 methods 方法映射字段",
       "status": "done",
       "requirementId": "196b2e24-dc60-4f98-80c4-fddaf158ace5"
+    },
+    {
+      "taskId": "c80c4a95-1aee-4536-8b51-85bed1fe007c",
+      "title": "T7 文档跳转分片锚点与关键词高亮",
+      "status": "done",
+      "requirementId": "caf3192c-9572-4771-9952-f2a9236f82d9"
     },
     {
       "taskId": "c8d875c3-d075-4720-a0b0-4ba1ed8ec95c",
@@ -1236,6 +1327,18 @@
       "title": "T4 README：发布包安装/启动(server+web)/MCP 配置说明",
       "status": "done",
       "requirementId": "ed976849-7163-4396-bacb-bb527b0132b2"
+    },
+    {
+      "taskId": "d80f9ab6-7217-4821-b40c-dece9cabf3aa",
+      "title": "T2 补 update_diagram_elements 三类型 JSON 示例并澄清坐标语义",
+      "status": "done",
+      "requirementId": "10301efd-8e62-46d7-a890-728edd6bccd9"
+    },
+    {
+      "taskId": "d844d30f-edc9-402d-b00e-df92f23b5181",
+      "title": "T3 重构 DiagramSchema 按图类型逐节点校验并定位报错",
+      "status": "done",
+      "requirementId": "10301efd-8e62-46d7-a890-728edd6bccd9"
     },
     {
       "taskId": "d8a995fc-ef4d-414c-8830-f1a7fccc1cca",

@@ -681,36 +681,26 @@ function onEdgeClick(edgeId: string) {
 /**
  * 节点点击分发：
  * - 聚合节点 → 展开折叠模块
- * - 有关联图节点（类图/流程图/架构图占位或跨模块引用）→ 触发父级关联图跳转气泡（类图/流程图扩展，T2）
- * - 架构图节点 → 触发父级关联图气泡（T39）
- * - 类图节点 → 本节点高亮 + 相连连线高亮，再点同节点取消（T41）
- * - 流程图节点 → 无操作
+ * - 普通节点（架构/类/流程）→ 上抛 node-click，由父级打开节点详情弹层（T10）
+ * - 类图无关联图节点：保留本节点/相连连线高亮切换（T41），弹层关闭后仍可用
  */
 function onNodeClick(nodeId: string) {
   if (isAggregate(nodeId)) {
     onAggregateClick(nodeId);
     return;
   }
-  // 跨图跳转优先：节点存在关联图（直接字段 linkedDiagrams 或 payload.linkedDiagrams）即上抛弹选择框，类图/流程图亦支持
   const node = nodeById.value.get(nodeId);
   const payload = (node?.payload ?? {}) as Record<string, unknown>;
   const hasLinks =
     (Array.isArray(node?.linkedDiagrams) && (node!.linkedDiagrams as unknown[]).length > 0) ||
     (Array.isArray(payload.linkedDiagrams) && (payload.linkedDiagrams as unknown[]).length > 0);
-  if (hasLinks) {
-    emit("node-click", nodeId);
-    return;
-  }
-  if (props.diagram.type === "architecture") {
-    // 架构图：无关联仍弹气泡提示「无关联图」（T39 原行为）
-    emit("node-click", nodeId);
-  } else if (props.diagram.type === "class") {
-    // 再点同一节点取消高亮；点其他节点切换高亮（T41）；无关联时与连线点击高亮（T49）/方法高亮（T70）互斥
+  if (props.diagram.type === "class" && !hasLinks) {
+    // 再点同一节点取消高亮；点其他节点切换高亮（T41）；与连线点击高亮（T49）/方法高亮（T70）互斥
     highlightNodeId.value = highlightNodeId.value === nodeId ? "" : nodeId;
     highlightEdgeId.value = "";
     highlightMethod.value = null;
   }
-  // flow：无关联时无操作
+  emit("node-click", nodeId);
 }
 
 /**

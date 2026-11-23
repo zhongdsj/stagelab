@@ -44,13 +44,24 @@
           <span class="char-count">{{ draft.length }} 字</span>
         </div>
       </div>
-      <!-- 只读视图：摘要 + markdown 渲染 -->
+      <!-- 只读视图：摘要 + 逐分片 markdown 渲染（每分片带 anchor，供搜索跳转定位） -->
       <div v-else ref="viewRef" class="frag-view">
         <div v-if="doc?.summary" class="frag-summary">
           <span class="summary-label">摘要</span>
           <span class="summary-text">{{ doc.summary }}</span>
         </div>
-        <div class="md-body" v-html="html"></div>
+        <section
+          v-for="f in fragments"
+          :id="`frag-${f.order}`"
+          :key="f.order"
+          class="frag-section"
+        >
+          <div v-if="fragments.length > 1" class="frag-section-head">
+            <span class="frag-order">分片 {{ f.order + 1 }}</span>
+            <span v-if="f.title" class="frag-title">{{ f.title }}</span>
+          </div>
+          <div class="md-body" v-html="f.html"></div>
+        </section>
         <div class="view-actions">
           <button class="btn" type="button" @click="startEdit">编辑文档</button>
         </div>
@@ -80,12 +91,16 @@ import { marked } from "marked";
 import DOMPurify from "dompurify";
 import {
   getFullDocument,
+  listFragments,
+  getFragment,
   updateFullDocument,
   renameDocument,
   ApiError
 } from "../../api/index";
 import type { FullDocument } from "../../api/documents";
 import { confirmDialog } from "../common/ConfirmDialog.vue";
+import { copyText } from "../../utils/clipboard";
+import { message } from "../../utils/message";
 
 const props = defineProps<{
   projectId: string;
@@ -93,6 +108,12 @@ const props = defineProps<{
   title?: string;
   /** 刷新信号：值变化时重新加载当前文档全文（父级刷新按钮触发） */
   refreshTick?: number;
+  /** 搜索跳转：命中分片 order（T7 先滚该分片锚点） */
+  focusOrder?: number;
+  /** 搜索跳转：关键词（T7 定位并高亮） */
+  highlightKeyword?: string;
+  /** 定位信号：文档/分片/关键词组合变化时重新定位 */
+  focusKey?: string;
 }>();
 
 const loading = ref(false);
@@ -104,12 +125,19 @@ const draft = ref("");
 const draftTitle = ref("");
 const draftSummary = ref("");
 
+/** 逐分片渲染结果（order/title/html）：分片是完整章节单元，保留锚点供定位 */
+interface RenderedFragment {
+  order: number;
+  title: string;
+  html: string;
+}
+const fragments = ref<RenderedFragment[]>([]);
+
 /** markdown 渲染（marked 解析 + DOMPurify 消毒防 XSS） */
-const html = computed(() => {
-  if (!doc.value) return "";
-  const raw = marked.parse(doc.value.content) as string;
+function renderMarkdown(md: string): string {
+  const raw = marked.parse(md) as string;
   return DOMPurify.sanitize(raw);
-});
+}
 
 /* ========== 文档大纲（跟随视窗浮动侧边栏 + scrollspy 高亮当前章节） ========== */
 
@@ -172,22 +200,162 @@ function onWindowScroll() {
   updateActive();
 }
 
-// 内容渲染完成后扫描标题生成大纲（flush post 保证 v-html 已更新）
+/* ========== T7：搜索定位与关键词高亮 ========== */
+
+/** 已应用过的定位信号（避免文档切换/手动浏览时重复跳转） */
+let appliedFocusKey = "";
+/** 定位待执行（文档切换中内容未就绪时由 load 完成后补做） */
+let pendingFocus = false;
+let markTimer: ReturnType<typeof setTimeout> | undefined;
+
+/** 清理已插入的 mark（还原文本节点，避免重复高亮叠加） */
+function clearMarks() {
+  if (markTimer) {
+    clearTimeout(markTimer);
+    markTimer = undefined;
+  }
+  const root = viewRef.value;
+  if (!root) return;
+  root.querySelectorAll("mark.search-hit").forEach((m) => {
+    const parent = m.parentNode;
+    if (!parent) return;
+    parent.replaceChild(document.createTextNode(m.textContent ?? ""), m);
+    parent.normalize();
+  });
+}
+
+/**
+ * 在容器内给关键词包 <mark>：仅处理单文本节点内命中，
+ * 关键词被加粗/链接等格式拆开时无法安全建区间，保留分片锚点即可。
+ */
+function markKeyword(root: HTMLElement, keyword: string): HTMLElement | null {
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+    acceptNode(node) {
+      return node.textContent && node.textContent.trim()
+        ? NodeFilter.FILTER_ACCEPT
+        : NodeFilter.FILTER_REJECT;
+    }
+  });
+  const nodes: Text[] = [];
+  let n = walker.nextNode();
+  while (n) {
+    nodes.push(n as Text);
+    n = walker.nextNode();
+  }
+
+  const lower = keyword.toLowerCase();
+  let first: HTMLElement | null = null;
+  for (const node of nodes) {
+    const text = node.textContent ?? "";
+    const hay = text.toLowerCase();
+    const starts: number[] = [];
+    let from = 0;
+    while (from <= hay.length - lower.length) {
+      const idx = hay.indexOf(lower, from);
+      if (idx === -1) break;
+      starts.push(idx);
+      from = idx + lower.length;
+    }
+    // 同一文本节点内从后往前包，避免前一次 DOM 变更影响后续偏移
+    for (let i = starts.length - 1; i >= 0; i--) {
+      const idx = starts[i];
+      const range = document.createRange();
+      range.setStart(node, idx);
+      range.setEnd(node, idx + keyword.length);
+      const mark = document.createElement("mark");
+      mark.className = "search-hit";
+      range.surroundContents(mark);
+      if (!first) first = mark;
+    }
+  }
+  return first;
+}
+
+/** 先滚命中分片锚点，再尝试在分片内精确滚到关键词；3 秒后淡出清理 */
+function locate(keyword: string) {
+  clearMarks();
+  const root = viewRef.value;
+  if (!root) return;
+
+  const target =
+    props.focusOrder !== undefined
+      ? root.querySelector<HTMLElement>(`#frag-${props.focusOrder}`)
+      : null;
+
+  const firstMark = markKeyword(target ?? root, keyword);
+  if (firstMark) {
+    firstMark.scrollIntoView({ block: "center", behavior: "smooth" });
+    markTimer = setTimeout(clearMarks, 3000);
+    return;
+  }
+  // 关键词跨格式边界无法建 DOM 区间：停留在分片锚点
+  if (target) {
+    target.scrollIntoView({ block: "start", behavior: "smooth" });
+  }
+}
+
+/** 有定位信号时执行一次跳转（内容未就绪则置 pending，由 load 完成后补做） */
+async function applyFocusIfNeeded() {
+  const keyword = props.highlightKeyword?.trim();
+  if (!keyword) {
+    appliedFocusKey = props.focusKey ?? "";
+    pendingFocus = false;
+    return;
+  }
+  const sameKey =
+    props.focusKey !== undefined && props.focusKey === appliedFocusKey;
+  if (sameKey && !pendingFocus) return;
+
+  await nextTick();
+  // 文档切换中（全文/分片尚未对齐）先挂起，load 完成后重试
+  if (!fragments.value.length || (doc.value && doc.value.docId !== props.docId)) {
+    pendingFocus = true;
+    return;
+  }
+  appliedFocusKey = props.focusKey ?? "";
+  pendingFocus = false;
+  locate(keyword);
+}
+
+// 同一文档连续搜索不同关键词（或跳不同分片）时重新定位
 watch(
-  html,
+  () => props.focusKey,
   () => {
-    void nextTick(scanHeadings);
-  },
-  { flush: "post" }
+    pendingFocus = true;
+    void applyFocusIfNeeded();
+  }
 );
 
-/** 加载文档全文 */
+/** 加载文档：全文（编辑/摘要用）+ 逐分片内容（渲染/锚点用） */
 async function load() {
   loading.value = true;
   error.value = "";
   editing.value = false;
+  fragments.value = [];
   try {
-    doc.value = await getFullDocument(props.projectId, props.docId);
+    const [full, metas] = await Promise.all([
+      getFullDocument(props.projectId, props.docId),
+      listFragments(props.projectId, props.docId)
+    ]);
+    doc.value = full;
+    // 按 order 排序后逐分片取正文（分片是完整章节单元，渲染效果与拼接一致）
+    const sorted = [...metas].sort((a, b) => a.order - b.order);
+    const contents = await Promise.all(
+      sorted.map((m) => getFragment(props.projectId, props.docId, m.fragmentId))
+    );
+    fragments.value = contents
+      .sort((a, b) => a.order - b.order)
+      .map((f) => ({
+        order: f.order,
+        title: f.title,
+        html: renderMarkdown(f.content)
+      }));
+    // 先退出 loading 让只读视图渲染出 ref，再扫描大纲与执行定位
+    // （applyFocusIfNeeded 依赖 viewRef，loading 未清时 DOM 仍是「加载中」占位）
+    loading.value = false;
+    await nextTick();
+    scanHeadings();
+    await applyFocusIfNeeded();
   } catch (e) {
     error.value = e instanceof ApiError ? e.message : "加载文档失败";
   } finally {
@@ -197,19 +365,9 @@ async function load() {
 
 /** 复制文档 ID 到剪贴板（供 AI 交互时直接引用，免去先读文档列表） */
 async function copyDocId() {
-  const id = props.docId;
-  try {
-    await navigator.clipboard.writeText(id);
-  } catch {
-    const ta = document.createElement("textarea");
-    ta.value = id;
-    ta.style.position = "fixed";
-    ta.style.opacity = "0";
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand("copy");
-    document.body.removeChild(ta);
-  }
+  const ok = await copyText(props.docId);
+  if (ok) message.success("文档 ID 已复制");
+  else message.error("复制失败，请手动选择");
 }
 
 function startEdit() {
@@ -272,6 +430,7 @@ onBeforeUnmount(() => {
 });
 watch(() => props.docId, () => {
   doc.value = null;
+  appliedFocusKey = "";
   load();
 });
 watch(() => props.refreshTick, () => {
@@ -498,6 +657,54 @@ watch(() => props.refreshTick, () => {
 }
 .hint.error {
   color: #f56c6c;
+}
+
+/* 逐分片渲染：分片之间用虚线分隔，标题标注分片序号便于对照搜索命中 */
+.frag-section {
+  scroll-margin-top: 16px;
+}
+.frag-section + .frag-section {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px dashed #e4e7ed;
+}
+.frag-section-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: #909399;
+}
+.frag-order {
+  flex: none;
+  padding: 1px 6px;
+  background: #f0f2f5;
+  border-radius: 3px;
+  color: #606266;
+}
+.frag-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 搜索命中高亮：脚本插入 mark 后 3 秒淡出，定时器负责移除节点 */
+.md-body :deep(mark.search-hit) {
+  background: #ffe58f;
+  color: inherit;
+  padding: 0 1px;
+  border-radius: 2px;
+  animation: search-hit-fade 3s ease forwards;
+}
+@keyframes search-hit-fade {
+  0%,
+  60% {
+    background: #ffe58f;
+  }
+  100% {
+    background: transparent;
+  }
 }
 
 /* markdown 渲染样式（v-html 内容需 :deep 命中） */

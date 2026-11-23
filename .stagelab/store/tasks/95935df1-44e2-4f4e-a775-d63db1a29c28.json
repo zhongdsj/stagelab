@@ -1,0 +1,16 @@
+{
+  "taskId": "95935df1-44e2-4f4e-a775-d63db1a29c28",
+  "requirementId": "b334a9a7-cd4a-4e63-b929-1f38a9a638dd",
+  "title": "T8 图库/侧栏/工具栏展示 diagramId 并可复制",
+  "description": "背景：三处只显示中文标题，AI 给的 diagramId 无法对应到目标图。思路：DiagramLibrary 与 DiagramPageView 侧栏项补等宽 id 行，DiagramView 工具栏标题旁加 id chip，均点击复制（复用 DocumentFragments 的 docId 复制写法）。",
+  "status": "done",
+  "acceptanceCriteria": "三处均显示完整 diagramId\n点击复制到剪贴板并有成功反馈\n列表两行布局不破",
+  "files": [
+    "packages/web/src/components/diagram/DiagramLibrary.vue",
+    "packages/web/src/views/DiagramPageView.vue",
+    "packages/web/src/components/diagram/DiagramView.vue"
+  ],
+  "changeType": "修改",
+  "createdAt": 1795079397415,
+  "updatedAt": 1795083191648
+}

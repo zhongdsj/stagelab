@@ -11,9 +11,13 @@
           <button class="back-link" type="button" @click="goBack">← 返回总览</button>
           <h2 class="page-title">{{ project.projectName }}</h2>
         </div>
-        <span class="meta-line">
-          ID: {{ project.projectId.slice(0, 8) }} · 创建于 {{ formatTime(project.createdAt) }}
-        </span>
+        <div class="head-right">
+          <!-- 全项目搜索（T6）：显式触发，结果点击跳转对应实体 -->
+          <SearchBox :project-id="props.id" align="right" />
+          <span class="meta-line">
+            ID: {{ project.projectId.slice(0, 8) }} · 创建于 {{ formatTime(project.createdAt) }}
+          </span>
+        </div>
       </div>
 
       <!-- 四阶段流程导航 -->
@@ -65,7 +69,15 @@
           </button>
         </div>
 
-        <DocumentLibrary v-if="activeTab === 'doc'" :project-id="props.id" @refresh="reloadIndex" />
+        <DocumentLibrary
+          v-if="activeTab === 'doc'"
+          :project-id="props.id"
+          :initial-doc-id="queryDocId"
+          :focus-order="queryFocusOrder"
+          :highlight-keyword="queryKeyword"
+          :focus-key="queryFocusKey"
+          @refresh="reloadIndex"
+        />
         <RequirementTasks v-else-if="activeTab === 'req'" :project-id="props.id" @refresh="reloadIndex" />
         <DiagramLibrary v-else :project-id="props.id" @refresh="reloadIndex" />
       </div>
@@ -75,11 +87,12 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import StageNav from "../components/StageNav.vue";
 import DocumentLibrary from "../components/document/DocumentLibrary.vue";
 import DiagramLibrary from "../components/diagram/DiagramLibrary.vue";
 import RequirementTasks from "../components/requirement/RequirementTasks.vue";
+import SearchBox from "../components/common/SearchBox.vue";
 import { getProject, getProjectIndex, switchStage, ApiError } from "../api/index";
 import type { Project, Stage } from "@stagelab/shared";
 import type { ProjectIndexResult } from "../api/projects";
@@ -87,6 +100,7 @@ import type { ProjectIndexResult } from "../api/projects";
 const props = defineProps<{ id: string }>();
 
 const router = useRouter();
+const route = useRoute();
 
 const loading = ref(false);
 const error = ref("");
@@ -178,14 +192,52 @@ const taskStatusSummary = computed(() => {
     .join(" · ");
 });
 
+/* ========== T6：搜索跳转查询参数（tab/docId/f/q） ========== */
+
+/** 读取 query 字符串值（vue-router 可能是 string 或 string[]） */
+function queryStr(v: unknown): string {
+  if (typeof v === "string") return v;
+  if (Array.isArray(v)) return v.length ? String(v[0]) : "";
+  return "";
+}
+
+const queryDocId = computed(() => queryStr(route.query.docId));
+const queryKeyword = computed(() => queryStr(route.query.q));
+const queryFocusOrder = computed(() => {
+  const raw = queryStr(route.query.f);
+  if (!raw) return undefined;
+  const n = Number(raw);
+  return Number.isInteger(n) && n >= 0 ? n : undefined;
+});
+/** 定位信号：同一文档连续搜索不同关键词时也能触发重新定位 */
+const queryFocusKey = computed(
+  () => `${queryDocId.value}|${queryFocusOrder.value ?? ""}|${queryKeyword.value}`
+);
+
+/** 按 query.tab 切 Tab（搜索跳转优先于阶段默认 Tab） */
+function applyTabFromQuery() {
+  const tab = queryStr(route.query.tab) as ContentTabKey | "";
+  if (tab === "doc" || tab === "req" || tab === "diagram") {
+    activeTab.value = tab;
+    tabTouched = true;
+  }
+}
+
+watch(
+  () => route.query,
+  () => applyTabFromQuery(),
+  { deep: true }
+);
+
 /** 加载项目详情与索引 */
 async function load() {
   loading.value = true;
   error.value = "";
   try {
     project.value = await getProject(props.id);
-    // 初始对齐默认 Tab（s1 文档库 / s2、s3 需求）
+    // 初始对齐默认 Tab（s1 文档库 / s2、s3 需求）；带 query.tab 时以搜索跳转为准
     pickDefaultTabFor(project.value.currentStage);
+    applyTabFromQuery();
     try {
       index.value = await getProjectIndex(props.id);
     } catch {
@@ -244,9 +296,19 @@ watch(() => props.id, load);
 }
 .detail-head {
   display: flex;
-  align-items: flex-end;
+  align-items: flex-start;
   justify-content: space-between;
+  gap: 16px;
   margin-bottom: 16px;
+}
+/* 头部右侧：搜索框 + 元信息 */
+.head-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  width: 340px;
+  max-width: 46%;
 }
 .back-link {
   border: none;

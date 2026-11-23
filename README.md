@@ -48,6 +48,19 @@ stagelab start --repo    D:\some\repo  # 预加载指定仓库
 
 > 仅想暴露 API、不要 Web 界面时用 `stagelab http`。数据目录默认为 `%APPDATA%/stagelab`（Windows），可用 `--data` 或环境变量 `STAGELAB_DATA_DIR` 覆盖；项目级文档/图/需求等仍存于各仓库根下的 `.stagelab/`。
 
+### 版本更新提示
+
+`stagelab start` / `stagelab http` 会在服务监听后检查 npm 最新版本，并在控制台输出「已是最新」或「发现新版本」；`stagelab mcp` 连接后把同样的判断写入 stderr，不污染 MCP 协议流。Web 端在任意 API 请求后检查版本，发现新版本会弹出更新说明，可复制升级命令，或选择 1/3/7 天后再提醒、跳过当前版本。顶栏「关于」可随时查看项目简介、当前版本更新摘要与 GitHub 链接。
+
+升级命令：
+
+```powershell
+npm i -g stagelab@latest
+stagelab start
+```
+
+发布新版本时需要同步 GitHub Release 资产 `release.json`，否则弹层会降级为只显示版本号与升级命令。资产格式、触发点与发布步骤见 [docs/releasing.md](docs/releasing.md)。
+
 ### 配置 MCP（AI 客户端接入）
 
 MCP 是独立子命令（stdio 模式），在 AI 客户端的 MCP 服务器配置里把命令指向它即可。以下适用于 Trae 等任意支持 stdio MCP 的客户端，**直接复制到 mcp.json 即可用**（发布包形态，全局已装 `stagelab`）：

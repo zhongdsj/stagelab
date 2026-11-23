@@ -4,7 +4,9 @@
  * - fetch 统一封装：JSON 序列化/反序列化、204 处理
  * - 错误透传：后端 { error: string } 消息转为 ApiError（携带状态码）
  * - baseURL 走 vite 代理：/api → http://localhost:3000
+ * - 任意业务请求完成后触发版本检查（前端有 24h 缓存，失败 10min 重试）
  */
+import { ensureVersionChecked } from "../utils/update";
 
 /** 后端错误响应体结构 */
 export interface ApiErrorBody {
@@ -32,6 +34,11 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   }
   const res = await fetch(path, { ...init, headers });
 
+  // 任意业务 API 调用后检查版本；版本接口自身不触发，避免递归
+  if (!path.startsWith("/api/system/version")) {
+    void ensureVersionChecked();
+  }
+
   // 204 无内容
   if (res.status === 204) {
     return undefined as T;
@@ -54,7 +61,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
 /** 请求方法集合 */
 export const http = {
-  get: <T>(path: string) => request<T>(path),
+  get: <T>(path: string, init?: RequestInit) => request<T>(path, init),
   post: <T>(path: string, data?: unknown) =>
     request<T>(path, { method: "POST", body: JSON.stringify(data ?? {}) }),
   put: <T>(path: string, data?: unknown) =>

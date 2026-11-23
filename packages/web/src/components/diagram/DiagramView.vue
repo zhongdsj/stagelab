@@ -3,6 +3,15 @@
     <!-- 折叠状态提示 + 视图控制 -->
     <div class="diagram-toolbar">
       <span class="diagram-title">{{ title }}</span>
+      <!-- T8：图 ID（等宽），点击复制，便于与 AI 给的 diagramId 对应 -->
+      <button
+        class="diagram-id-chip"
+        type="button"
+        :title="`图 ID：${diagramId}（点击复制）`"
+        @click="copyDiagramId"
+      >
+        id: {{ diagramId }}
+      </button>
       <!-- T93：图可信度快照（漂移校验锚点，读取 metadata 最新快照） -->
       <div
         v-if="diagram?.metadata?.verifiedCommit"
@@ -80,29 +89,7 @@
         @edge-move="onEdgeMove"
       />
 
-      <!-- 架构层节点点击：关联图气泡按钮（T39，屏幕坐标跟随相机） -->
-      <div
-        v-if="bubble"
-        class="node-bubble"
-        :style="{ left: bubble.pos.x + 'px', top: bubble.pos.y + 'px' }"
-        @click.stop
-      >
-        <div class="bubble-title">{{ bubble.title }}</div>
-        <template v-if="bubble.links.length">
-          <button
-            v-for="l in bubble.links"
-            :key="l.diagramId"
-            type="button"
-            class="bubble-btn"
-            @click.stop="gotoDiagram(l.diagramId)"
-          >
-            {{ jumpLabel(l.type) }}<span v-if="l.label" class="bubble-btn-sub"> · {{ l.label }}</span>
-          </button>
-        </template>
-        <p v-else class="bubble-empty">无关联图</p>
-      </div>
-
-      <!-- 节点悬停气泡（T40 描述 + T87 源码锚点文件清单，屏幕坐标跟随相机） -->
+      <!-- 节点悬停摘要（T40 描述前 120 字 + 文件数；完整内容点击节点进弹层） -->
       <div
         v-if="tooltip"
         class="node-tooltip"
@@ -114,26 +101,23 @@
         >
           {{ tooltip.text }}
         </div>
-        <template v-if="tooltip.files.length">
-          <div class="tooltip-anchor-title">源码锚点</div>
-          <ul class="tooltip-anchor-list">
-            <li
-              v-for="(f, i) in tooltip.files"
-              :key="f.path + '-' + i"
-              class="tooltip-anchor-file"
-            >
-              <span class="tooltip-anchor-path">{{ f.path }}</span>
-              <span
-                v-if="f.symbols?.length"
-                class="tooltip-anchor-symbols"
-              >
-                {{ f.symbols.join(", ") }}
-              </span>
-            </li>
-          </ul>
-        </template>
+        <div v-if="tooltip.files.length" class="tooltip-anchor-title">
+          源码锚点 · {{ tooltip.files.length }} 个文件
+        </div>
       </div>
     </div>
+
+    <!-- 节点详情弹层（T10）：单击节点打开，九区块按需渲染 -->
+    <NodeDetailModal
+      v-if="selectedNode && diagram"
+      :project-id="props.projectId"
+      :diagram-id="props.diagramId"
+      :node="selectedNode"
+      :diagram="diagram"
+      :risk-map="riskMap"
+      @close="selectedNode = null"
+      @navigate="gotoDiagram"
+    />
 
     <!-- 图重命名弹窗（G1：仅改 title / description，不影响节点/连线/分组） -->
     <div v-if="showRenameDialog" class="modal-mask" @click.self="showRenameDialog = false">
@@ -241,6 +225,7 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import DiagramSvg from "./DiagramSvg.vue";
+import NodeDetailModal from "./NodeDetailModal.vue";
 import { createManualEdit, DEFAULT_NODE_SIZE } from "./useManualEdit";
 import {
   getDiagram,
@@ -259,6 +244,8 @@ import {
 import type { Diagram, NodeGeometry, CodeAnchorFile } from "@stagelab/shared";
 import { snapToNodeBorder, perpendicularEntryPath, type NodeBox } from "./useEdgeGeometry";
 import { confirmDialog } from "../common/ConfirmDialog.vue";
+import { copyText } from "../../utils/clipboard";
+import { message } from "../../utils/message";
 
 const props = defineProps<{
   projectId: string;
@@ -281,6 +268,15 @@ const error = ref("");
 const diagram = ref<Diagram | null>(null);
 /** 节点风险分映射（feature/diagram-risk-color）：nodeId → structuralRisk，用于节点描边着色 */
 const riskMap = ref<ImpactRiskMap>({});
+
+/* ========== T8 图 ID 复制 ========== */
+
+/** 复制当前图的 diagramId 到剪贴板（反馈统一走顶部居中轻提示） */
+async function copyDiagramId() {
+  const ok = await copyText(props.diagramId);
+  if (ok) message.success("图 ID 已复制");
+  else message.error("复制失败，请手动选择");
+}
 
 /* ========== T93 图可信度快照展示辅助 ========== */
 
@@ -461,9 +457,9 @@ const manual = createManualEdit();
 /** 编辑态/展示态切换 */
 function toggleEditMode() {
   manual.editMode.value = !manual.editMode.value;
-  // 切换编辑态时收起交互气泡，避免遮挡手柄
-  bubble.value = null;
+  // 切换编辑态时收起悬停摘要与节点弹层，避免遮挡手柄
   tooltip.value = null;
+  selectedNode.value = null;
 }
 
 /** 保存当前画布坐标到服务端（拖拽结束/撤销重做后调用；失败静默，会话内坐标仍生效） */
@@ -583,12 +579,10 @@ function onPointerDown(e: PointerEvent) {
     (target.closest?.(".node") ||
       target.closest?.(".edge") ||
       target.closest?.(".collapse-btn") ||
-      target.closest?.(".node-bubble") ||
       target.closest?.(".node-tooltip"))
   ) {
     return;
   }
-  bubble.value = null;
   tooltip.value = null;
   e.preventDefault();
   dragging = true;
@@ -646,16 +640,11 @@ function toggleCollapse(groupId: string) {
   }
 }
 
-/* ========== 架构层节点交互：点击关联图气泡（T39）+ 悬停描述气泡（T40） ========== */
+/* ========== 节点交互：单击详情弹层（T10）+ 悬停摘要（T40/T87） ========== */
 
-interface LinkedDiagram {
-  diagramId: string;
-  label?: string;
-  type?: string;
-}
-
-const bubble = ref<{ title: string; links: LinkedDiagram[]; pos: { x: number; y: number } } | null>(null);
-/** 悬停气泡：描述文本 + 源码锚点文件清单（T87 codeAnchor），屏幕坐标跟随相机 */
+/** 弹层当前节点（语义数据）；null 表示关闭 */
+const selectedNode = ref<Record<string, unknown> | null>(null);
+/** 悬停摘要：描述前 120 字 + 源码锚点文件清单（完整内容进弹层），屏幕坐标跟随相机 */
 const tooltip = ref<{ text: string; files: CodeAnchorFile[]; pos: { x: number; y: number } } | null>(null);
 
 /** 语义节点表：nodeId → 节点（供读取 payload/description/label） */
@@ -677,40 +666,13 @@ function nodeScreenCenter(nodeId: string): { x: number; y: number } {
   };
 }
 
-/** T39（扩展 T2）：节点点击 → 弹关联图选择气泡（类图/流程图占位或跨模块节点、架构图节点） */
+/** T10：节点单击 → 打开节点详情弹层（原关联图气泡已移除，关联图并入弹层） */
 function onNodeClick(nodeId: string) {
   tooltip.value = null;
-  const node = semanticNode(nodeId);
-  bubble.value = {
-    title: String((node?.label as string) ?? nodeId),
-    links: linkedDiagramsOf(node),
-    pos: nodeScreenCenter(nodeId)
-  };
+  selectedNode.value = semanticNode(nodeId) ?? { nodeId };
 }
 
-/**
- * 提取节点关联图列表（归一为 LinkedDiagram[]）：
- * 优先 ClassNode.linkedDiagrams 直接字段；其次架构图/流程图 payload.linkedDiagrams 复数数组；
- * 兼容遗留 sys-flow 的 payload.linkedDiagram 单值。
- */
-function linkedDiagramsOf(node: Record<string, unknown> | undefined): LinkedDiagram[] {
-  if (!node) return [];
-  const payload = (node.payload ?? {}) as Record<string, unknown>;
-  if (Array.isArray(node.linkedDiagrams)) return node.linkedDiagrams as LinkedDiagram[];
-  if (Array.isArray(payload.linkedDiagrams)) return payload.linkedDiagrams as LinkedDiagram[];
-  if (payload.linkedDiagram) return [payload.linkedDiagram as LinkedDiagram];
-  return [];
-}
-
-/** 关联图按钮文案，按目标图类型区分（架构图/类图/流程图） */
-function jumpLabel(type?: string): string {
-  if (type === "class") return "转到类图";
-  if (type === "flow") return "转到流程图";
-  if (type === "architecture") return "转到架构图";
-  return "跳转";
-}
-
-/** T40/T87：节点悬停 → 展示描述与源码锚点文件清单（有任一内容才显示） */
+/** T10：节点悬停 → 仅显示描述前 120 字与文件数摘要（完整字段进弹层） */
 function onNodeHover(nodeId: string | null) {
   if (!nodeId) {
     tooltip.value = null;
@@ -728,12 +690,13 @@ function onNodeHover(nodeId: string | null) {
     tooltip.value = null;
     return;
   }
-  tooltip.value = { text: desc, files, pos: nodeScreenCenter(nodeId) };
+  const text = desc.length > 120 ? `${desc.slice(0, 120)}…` : desc;
+  tooltip.value = { text, files, pos: nodeScreenCenter(nodeId) };
 }
 
-/** 气泡按钮点击 → 路由跳转到对应图页面 */
+/** 关联图按钮点击 → 关闭弹层并路由跳转到对应图页面 */
 function gotoDiagram(diagramId: string) {
-  bubble.value = null;
+  selectedNode.value = null;
   router.push(`/projects/${props.projectId}/diagrams/${diagramId}`);
 }
 
@@ -901,7 +864,7 @@ onMounted(() => {
 });
 watch(() => props.diagramId, () => {
   collapsedModules.value = [];
-  bubble.value = null;
+  selectedNode.value = null;
   tooltip.value = null;
   manual.resetEdit();
   resetView();
@@ -920,6 +883,11 @@ function onWindowResize() {
 
 <style scoped>
 .diagram-view {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  box-sizing: border-box;
   background: #fff;
   border: 1px solid #e4e7ed;
   border-radius: 8px;
@@ -929,12 +897,35 @@ function onWindowResize() {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 8px;
   margin-bottom: 12px;
 }
 .diagram-title {
   font-size: 15px;
   font-weight: 600;
   color: #303133;
+  white-space: nowrap;
+}
+/* T8：工具栏图 ID chip（等宽、弱化，点击复制） */
+.diagram-id-chip {
+  flex-shrink: 1;
+  min-width: 0;
+  max-width: 300px;
+  padding: 2px 8px;
+  border: 1px solid #e4e7ed;
+  border-radius: 10px;
+  background: #f5f7fa;
+  font-family: monospace;
+  font-size: 11px;
+  color: #909399;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.diagram-id-chip:hover {
+  border-color: #409eff;
+  color: #409eff;
 }
 /* T93：图可信度快照徽标 */
 .verify-badge {
@@ -1018,11 +1009,11 @@ function onWindowResize() {
   border-color: #f56c6c;
   color: #f56c6c;
 }
-/* 画布：固定高度 + 溢出隐藏 + 可拖拽 */
+/* 画布：占满图卡剩余高度（图卡与左侧列表同高）+ 溢出隐藏 + 可拖拽 */
 .canvas-pane {
   position: relative;
-  height: calc(100vh - 200px);
-  min-height: 400px;
+  flex: 1 1 auto;
+  min-height: 0;
   overflow: hidden;
   background: #fafafa;
   border: 1px dashed #e4e7ed;
@@ -1036,54 +1027,7 @@ function onWindowResize() {
 .canvas-pane.grabbing {
   cursor: grabbing;
 }
-/* 架构层节点交互气泡（T39）：屏幕坐标跟随相机，绝对定位于画布容器 */
-.node-bubble {
-  position: absolute;
-  z-index: 20;
-  transform: translate(-50%, calc(-100% - 10px));
-  min-width: 150px;
-  max-width: 260px;
-  padding: 8px 10px;
-  background: #fff;
-  border: 1px solid #dcdfe6;
-  border-radius: 6px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.14);
-  pointer-events: auto;
-}
-.bubble-title {
-  font-size: 12px;
-  font-weight: 600;
-  color: #303133;
-  margin-bottom: 6px;
-}
-.bubble-btn {
-  display: block;
-  width: 100%;
-  text-align: left;
-  padding: 4px 8px;
-  margin: 3px 0;
-  border: none;
-  background: #ecf5ff;
-  color: #409eff;
-  border-radius: 4px;
-  font-size: 12px;
-  cursor: pointer;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.bubble-btn:hover {
-  background: #d9ecff;
-}
-.bubble-btn-sub {
-  color: #a0a0a0;
-}
-.bubble-empty {
-  margin: 0;
-  font-size: 12px;
-  color: #909399;
-}
-/* 架构层节点悬停描述气泡（T40）：纯展示，不拦截指针（避免影响节点悬停） */
+/* 节点悬停摘要（T40/T87）：纯展示，不拦截指针（避免影响节点悬停） */
 .node-tooltip {
   position: absolute;
   z-index: 19;
@@ -1106,14 +1050,6 @@ function onWindowResize() {
   margin-top: 2px;
   font-size: 11px;
   color: #ffd04b;
-}
-.node-tooltip .tooltip-anchor-list {
-  margin: 2px 0 0;
-  padding: 0 0 0 14px;
-}
-.node-tooltip .tooltip-anchor-file {
-  font-family: monospace;
-  word-break: break-all;
 }
 .node-tooltip .tooltip-anchor-symbols {
   color: #a0cfff;

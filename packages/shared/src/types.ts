@@ -109,7 +109,8 @@ export interface CodeAnchor {
 
 /**
  * 节点关联图（跨图跳转）：占位节点/跨模块引用节点点击后跳转到目标图。
- * 架构图/流程图存于 payload.linkedDiagrams（复数数组），类图直接存节点字段 linkedDiagrams。
+ * 三种图均可直接使用节点字段 linkedDiagrams；架构图/流程图历史上也写在 payload.linkedDiagrams，
+ * 读侧（DiagramView/DiagramSvg）两者都认，新数据优先顶层字段。
  */
 export interface LinkedDiagram {
   diagramId: string; // 目标图 id，如 http-api-class / mcp-server-flow
@@ -131,8 +132,9 @@ export interface ArchitectureNode {
     | "gateway"; // 组件类型
   description?: string;
   payload?: Record<string, unknown>;
-  geometry?: NodeGeometry; // 自由画布坐标（无则引擎兜底）
+  geometry?: NodeGeometry; // 自由画布坐标（存储/HTTP 可写；MCP 入口不收、读侧不返回）
   codeAnchor?: CodeAnchor; // 源码锚点（file/symbol 清单）
+  linkedDiagrams?: LinkedDiagram[]; // 关联图（跨图跳转）；亦可写 payload.linkedDiagrams
 }
 
 /** 6.3.2 类图节点（属性/方法结构化展开） */
@@ -143,7 +145,7 @@ export interface ClassNode {
   attributes?: ClassAttribute[];
   methods?: ClassMethod[];
   description?: string;
-  geometry?: NodeGeometry; // 自由画布坐标（无则引擎兜底）
+  geometry?: NodeGeometry; // 自由画布坐标（存储/HTTP 可写；MCP 入口不收、读侧不返回）
   codeAnchor?: CodeAnchor; // 源码锚点（file/symbol 清单）
   /** 关联图（跨模块引用）：占位/外部类节点点击可跳转到目标图（类图无 payload，直接用语义字段） */
   linkedDiagrams?: LinkedDiagram[];
@@ -180,8 +182,9 @@ export interface FlowNode {
     | "subprocess"; // 节点类型
   description?: string;
   payload?: Record<string, unknown>; // 扩展信息：判断条件、超时等
-  geometry?: NodeGeometry; // 自由画布坐标（无则引擎兜底）
+  geometry?: NodeGeometry; // 自由画布坐标（存储/HTTP 可写；MCP 入口不收、读侧不返回）
   codeAnchor?: CodeAnchor; // 源码锚点（file/symbol 清单）
+  linkedDiagrams?: LinkedDiagram[]; // 关联图（跨图跳转）；亦可写 payload.linkedDiagrams
 }
 
 /** 6.3.4 连线与分组（三种图通用） */
@@ -191,7 +194,7 @@ export interface Edge {
   to: string;
   label?: string;
   payload?: Record<string, unknown>;
-  /** 自由画布折点坐标（draw.io 改造）：points[0]=from 锚点、points[last]=to 锚点；无则引擎兜底 */
+  /** 自由画布折点坐标（draw.io 改造）：points[0]=from 锚点、points[last]=to 锚点；仅存储/HTTP 读写，MCP 入口不收 */
   points?: Array<{ x: number; y: number }>;
   /** 类图方法映射（T66）：该连线调用的目标类方法名列表，供方法级点击高亮；无则退化为类级高亮 */
   methods?: string[];

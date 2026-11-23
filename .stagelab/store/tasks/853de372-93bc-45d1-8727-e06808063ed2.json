@@ -1,0 +1,15 @@
+{
+  "taskId": "853de372-93bc-45d1-8727-e06808063ed2",
+  "requirementId": "b51b3ed1-6f21-40ab-baf6-c363eb275a29",
+  "title": "T9 新增单节点影响面接口",
+  "description": "背景：旧 /impact 只回 structuralRisk（注释明确防泄漏可达集），弹层所需明细无 HTTP 通道。思路：新增 GET /api/projects/:id/diagrams/:did/nodes/:nodeId/impact 返回 {version, entry}，复用 getImpactIndex（已支持 nodeIds 局部读取）；nodeId 不在图内返回 404；前端 api/diagrams.ts 加 getNodeImpact。",
+  "status": "done",
+  "acceptanceCriteria": "有效 nodeId 返回完整 ImpactIndexEntry（upstream/downstream/hops/fanIn/fanOut/inCycle/cycleIds/structuralRisk）\n无效 nodeId 返回 404\n旧 /impact 出参与改造前一致",
+  "files": [
+    "packages/server/src/http/routes/diagrams.ts",
+    "packages/web/src/api/diagrams.ts"
+  ],
+  "changeType": "修改",
+  "createdAt": 1795079397468,
+  "updatedAt": 1795084229726
+}

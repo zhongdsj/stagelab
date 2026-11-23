@@ -14,6 +14,7 @@ import fs from "node:fs";
 import path from "node:path";
 import type { FastifyInstance } from "fastify";
 import { registryFilePath } from "../../storage/registry.js";
+import { getUpdateInfo } from "../../update-check.js";
 import { HttpError } from "./_util.js";
 
 /** 临时文件白名单：与 saveRegistry 的 tmp 命名保持一致 */
@@ -62,6 +63,13 @@ function listRegistryTmp() {
 
 /** 注册系统级路由 */
 export function registerSystemRoutes(app: FastifyInstance): void {
+  // 当前版本 / 最新版本 / Release 更新说明（前端更新弹层使用）
+  app.get("/api/system/version", async (request, reply) => {
+    reply.header("Cache-Control", "no-store");
+    const force = (request.query as { force?: string } | undefined)?.force === "1";
+    return getUpdateInfo({ force });
+  });
+
   // 列表
   app.get("/api/system/registry-tmp", async () => listRegistryTmp());
 

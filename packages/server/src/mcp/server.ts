@@ -10,10 +10,12 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { registerAllTools } from "./tools/index.js";
 import { initFromArgs } from "../services/workspace.service.js";
 import { errLog } from "../logger.js";
+import { getPackageVersion } from "../version.js";
+import { formatUpdateStatus, getUpdateInfo } from "../update-check.js";
 
 /** 创建 MCP Server（注册全部工具） */
 export function createMcpServer(): McpServer {
-  const server = new McpServer({ name: "stagelab-mcp", version: "0.1.0" });
+  const server = new McpServer({ name: "stagelab-mcp", version: getPackageVersion() });
   registerAllTools(server);
   return server;
 }
@@ -27,4 +29,11 @@ export async function startMcpServer(): Promise<void> {
   const transport = new StdioServerTransport();
   await server.connect(transport);
   errLog("mcp", "MCP server 已连接（stdio 模式），等待客户端调用…");
+
+  // 连接成功后异步检查更新；只写 stderr，避免污染 stdio 协议
+  void getUpdateInfo()
+    .then((info) => errLog("update", formatUpdateStatus(info)))
+    .catch(() => {
+      // 版本检查失败不阻塞 MCP 服务
+    });
 }

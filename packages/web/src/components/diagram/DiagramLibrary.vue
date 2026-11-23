@@ -19,8 +19,19 @@
             class="diagram-tab"
             @click="openDiagram(d.diagramId)"
           >
-            {{ d.title }}
-            <span class="diagram-type">{{ typeLabel(d.type) }}</span>
+            <span class="tab-main">
+              <span class="tab-title">{{ d.title }}</span>
+              <span class="diagram-type">{{ typeLabel(d.type) }}</span>
+            </span>
+            <!-- T8：展示 diagramId（等宽），点击复制，便于与 AI 给的 id 对应 -->
+            <button
+              class="diagram-id"
+              type="button"
+              :title="`图 ID：${d.diagramId}（点击复制）`"
+              @click.stop="copyId(d.diagramId)"
+            >
+              {{ d.diagramId }}
+            </button>
           </span>
         </div>
       </div>
@@ -47,6 +58,8 @@ import { computed, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { getProjectIndex, ApiError } from "../../api/index";
 import type { ProjectIndexResult } from "../../api/projects";
+import { copyText } from "../../utils/clipboard";
+import { message } from "../../utils/message";
 
 const props = defineProps<{ projectId: string }>();
 
@@ -110,6 +123,13 @@ async function load() {
   } finally {
     loading.value = false;
   }
+}
+
+/** T8：复制图 ID 到剪贴板（反馈统一走顶部居中轻提示） */
+async function copyId(id: string) {
+  const ok = await copyText(id);
+  if (ok) message.success("图 ID 已复制");
+  else message.error("复制失败，请手动选择");
 }
 
 /** T24：点击图跳转独立图查看页面（/projects/:id/diagrams/:diagramId） */
@@ -185,8 +205,11 @@ watch(() => props.projectId, load);
 }
 .diagram-tab {
   display: inline-flex;
-  align-items: center;
-  gap: 6px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  min-width: 150px;
+  max-width: 260px;
   padding: 5px 12px;
   font-size: 13px;
   border: 1px solid #dcdfe6;
@@ -194,6 +217,38 @@ watch(() => props.projectId, load);
   background: #fff;
   color: #606266;
   cursor: pointer;
+}
+.tab-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+.tab-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* T8：图 ID 行（等宽、弱化，点击复制） */
+.diagram-id {
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: monospace;
+  font-size: 11px;
+  color: #909399;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.diagram-id:hover {
+  color: #409eff;
+  text-decoration: underline;
+}
+.diagram-tab.active .diagram-id {
+  color: rgba(255, 255, 255, 0.85);
 }
 .diagram-tab:hover {
   border-color: #409eff;

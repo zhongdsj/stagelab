@@ -1,0 +1,9 @@
+{
+  "docId": "dev-doc-mcp-desc-and-search",
+  "title": "图元 MCP 描述层、全项目搜索与节点详情弹层 开发文档",
+  "docType": "开发文档",
+  "status": "focused",
+  "summary": "四个议题：A 图 MCP 字段零描述导致 AI 试错、B 全项目搜索只有 MCP 没有 HTTP/前端且搜不到文档 meta、C 图列表缺 diagramId、D 节点详情展示不足。决策：描述层为主（.describe + 分类型示例 + 按 type 挑分支校验）；搜索只搜本项目、MCP 出参不变、HTTP 另建 richer 接口；坐标语义只改描述、不放开 MCP 入口 omit/strict（可写行为不变）；单击节点开带遮罩弹层取代 bubble；新增单节点 impact 接口。任务带 T1-T10 编号，含验收口径。",
+  "createdAt": 1795077079989,
+  "updatedAt": 1795080958402
+}

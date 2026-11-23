@@ -1,0 +1,13 @@
+{
+  "requirementId": "b51b3ed1-6f21-40ab-baf6-c363eb275a29",
+  "title": "节点承载大量数据但前端只露 label，明细无 HTTP 通道",
+  "description": "① 问题背景：节点承载 description/payload/codeAnchor/类成员/分组/风险，前端点击只有 label 气泡、悬停只有 desc+文件路径；旧 /impact 只回 structuralRisk（防泄漏可达集），弹层所需明细无接口。\n② 目标：单击节点打开带遮罩的 NodeDetailModal（九区块、空区块不渲染），删除 node-bubble、tooltip 精简；新增 GET /api/projects/:id/diagrams/:did/nodes/:nodeId/impact 单节点明细接口（旧接口不动）；风险色级用已有 riskMap 零请求渲染。\n③ 验收口径：见 T9-T10；总体=单击一次读全承载字段、遮罩/ESC/× 关闭无残留、拖动不误触。",
+  "branchName": "dev-0.6",
+  "status": "test",
+  "taskIds": [
+    "853de372-93bc-45d1-8727-e06808063ed2",
+    "0a23b0d0-b83c-4544-84f4-a285329ff2eb"
+  ],
+  "createdAt": 1795079367356,
+  "updatedAt": 1795084229875
+}

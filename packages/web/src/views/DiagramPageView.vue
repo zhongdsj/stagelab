@@ -9,8 +9,12 @@
 
       <template v-if="!collapsed">
         <button class="back-btn" type="button" @click="goBack">← 返回项目</button>
+        <!-- 全项目搜索：图页内直接搜文档/分片/图/需求/任务 -->
+        <div class="sidebar-search">
+          <SearchBox :project-id="props.id" placeholder="全项目搜索" align="left" />
+        </div>
         <!-- 按类型分块展示图列表（类图 / 架构图 / 流程图） -->
-        <template v-if="diagrams.length">
+        <div v-if="diagrams.length" class="diagram-list">
           <div v-for="group in groups" :key="group.key" class="diagram-block">
             <div class="block-head">
               <span class="block-title">{{ group.label }}</span>
@@ -24,12 +28,23 @@
                 :class="{ active: d.diagramId === props.diagramId }"
                 @click="openDiagram(d.diagramId)"
               >
-                <span class="tab-title">{{ d.title }}</span>
-                <span class="diagram-type">{{ typeLabel(d.type) }}</span>
+                <span class="tab-row">
+                  <span class="tab-title">{{ d.title }}</span>
+                  <span class="diagram-type">{{ typeLabel(d.type) }}</span>
+                </span>
+                <!-- T8：展示 diagramId（等宽），点击复制，便于与 AI 给的 id 对应 -->
+                <button
+                  class="tab-id"
+                  type="button"
+                  :title="`图 ID：${d.diagramId}（点击复制）`"
+                  @click.stop="copyId(d.diagramId)"
+                >
+                  {{ d.diagramId }}
+                </button>
               </span>
             </div>
           </div>
-        </template>
+        </div>
         <p v-else class="hint">暂无图</p>
       </template>
     </aside>
@@ -55,8 +70,11 @@
 import { computed, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import DiagramView from "../components/diagram/DiagramView.vue";
+import SearchBox from "../components/common/SearchBox.vue";
 import { getProjectIndex, ApiError } from "../api/index";
 import type { ProjectIndexResult } from "../api/projects";
+import { copyText } from "../utils/clipboard";
+import { message } from "../utils/message";
 
 const props = defineProps<{ id: string; diagramId: string }>();
 
@@ -130,6 +148,13 @@ function openDiagram(diagramId: string) {
   router.push(`/projects/${props.id}/diagrams/${diagramId}`);
 }
 
+/** T8：复制图 ID 到剪贴板（反馈统一走顶部居中轻提示） */
+async function copyId(id: string) {
+  const ok = await copyText(id);
+  if (ok) message.success("图 ID 已复制");
+  else message.error("复制失败，请手动选择");
+}
+
 /** 返回项目详情页 */
 function goBack() {
   router.push(`/projects/${props.id}`);
@@ -144,6 +169,9 @@ onMounted(load);
   gap: 16px;
   align-items: stretch;
   width: 100%;
+  /* 视口 − 顶栏 56px − .app-main 上下 padding 48px；左右两栏共用这一高度 */
+  height: calc(100vh - 104px);
+  min-height: 480px;
   padding: 16px;
   box-sizing: border-box;
 }
@@ -155,16 +183,25 @@ onMounted(load);
   gap: 10px;
   width: 240px;
   min-width: 240px;
+  height: 100%;
+  min-height: 0;
   padding: 12px;
+  box-sizing: border-box;
   background: #fff;
   border: 1px solid #e4e7ed;
   border-radius: 8px;
   transition: width 0.2s ease, min-width 0.2s ease;
-  overflow: hidden;
+  /* 展开态不裁剪：搜索框结果浮层需越出侧栏边界；折叠态仍裁掉内容 */
+  overflow: visible;
 }
 .diagram-sidebar.collapsed {
   width: 52px;
   min-width: 52px;
+  overflow: hidden;
+}
+/* 搜索框与图列表之间的分隔 */
+.sidebar-search {
+  flex: none;
 }
 .sidebar-toggle {
   display: flex;
@@ -204,8 +241,20 @@ onMounted(load);
 .back-btn:hover {
   color: #409eff;
 }
+/* 图列表独立滚动：侧栏高度固定，只有这一段随内容滚动 */
+.diagram-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-right: 4px;
+}
 /* 按类型分块的层级展示 */
 .diagram-block {
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -237,9 +286,9 @@ onMounted(load);
 }
 .diagram-tab {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 6px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 3px;
   padding: 6px 10px;
   font-size: 13px;
   border: 1px solid #dcdfe6;
@@ -258,9 +307,36 @@ onMounted(load);
   border-color: #409eff;
   color: #fff;
 }
+.tab-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
 .tab-title {
   overflow: hidden;
   text-overflow: ellipsis;
+}
+/* T8：图 ID 行（等宽、弱化，点击复制） */
+.tab-id {
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: monospace;
+  font-size: 11px;
+  color: #909399;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tab-id:hover {
+  color: #409eff;
+  text-decoration: underline;
+}
+.diagram-tab.active .tab-id {
+  color: rgba(255, 255, 255, 0.85);
 }
 .diagram-type {
   font-size: 11px;
@@ -271,10 +347,15 @@ onMounted(load);
   opacity: 0.85;
   flex-shrink: 0;
 }
-/* 图内容占满剩余宽度 */
+/* 图内容占满剩余宽高；内部 DiagramView 自己滚动/缩放画布 */
 .diagram-content {
   flex: 1;
   min-width: 0;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 .hint {
   color: #909399;
