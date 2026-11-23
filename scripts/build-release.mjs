@@ -2,14 +2,14 @@
  * 单包发布构建：将 monorepo 打包为单一 npm CLI 包 stagelab。
  *
  * 产物布局（发布包 files 只含 dist）：
- * - dist/cli.js   server + shared 业务代码经 esbuild bundle（运行时第三方依赖外部化）
+ * - dist/cli.mjs  server + shared 业务代码经 esbuild bundle（运行时第三方依赖外部化）
  * - dist/web/     web 生产构建产物（由 stagelab start 静态托管）
  *
  * 运行时依赖声明在根 package.json dependencies 中，安装 stagelab 时由 npm 解析。
  */
 import { build } from "esbuild";
 import { execSync } from "node:child_process";
-import { cpSync, mkdirSync } from "node:fs";
+import { cpSync, mkdirSync, rmSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -57,6 +57,8 @@ await build({
 
 console.log("[build:release] 拷贝 web 产物 -> dist/web ...");
 const webTarget = path.join(root, "dist/web");
+// 先清空旧产物，避免历史 hash 资源（index-*.js/css）被一起打进发布包
+rmSync(webTarget, { recursive: true, force: true });
 mkdirSync(webTarget, { recursive: true });
 cpSync(path.join(root, "packages/web/dist"), webTarget, { recursive: true });
 
